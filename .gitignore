@@ -13,3 +13,4 @@ pbirs_measures.json
 __pycache__/
 *.pyc
 .env
+.measures_cache.json

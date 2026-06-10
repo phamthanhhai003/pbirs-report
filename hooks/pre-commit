@@ -34,27 +34,4 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Step 4: Tạo HTML preview
-"$PYTHON" scripts/generate_preview.py "$WSL_TEMP/pbirs_measures.json" "$WSL_TEMP/pbirs_preview.html"
-
-# Step 5: Mở browser
-case "$(uname -s)" in
-    Darwin*)              open "$WSL_TEMP/pbirs_preview.html" ;;
-    CYGWIN*|MINGW*|MSYS*) start "$WIN_TEMP\\pbirs_preview.html" ;;
-    Linux*)
-        if grep -qi microsoft /proc/version 2>/dev/null; then
-            explorer.exe "$(wslpath -w "$WSL_TEMP/pbirs_preview.html")"
-        else
-            xdg-open "$WSL_TEMP/pbirs_preview.html"
-        fi ;;
-esac
-
-# Step 6: Xác nhận
-if [ -t 0 ]; then
-    read -p "Tiep tuc commit? (y/n): " confirm
-    [ "$confirm" != "y" ] && echo "Commit huy" && exit 1
-else
-    echo "Khong co terminal — tu dong tiep tuc"
-fi
-
-git add source/ .measures_cache.json 2>/dev/null
+git add source/ 2>/dev/null
