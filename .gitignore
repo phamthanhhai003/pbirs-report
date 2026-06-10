@@ -1,6 +1,13 @@
-# Ignore binary .pbix — chỉ track source folder
+# Binary .pbix — chỉ track source folder
 *.pbix
 *.pbix.bak
+
+# Machine-specific config — mỗi máy tự tạo từ config.example.ps1
+scripts/config.ps1
+
+# Preview và temp files — không commit
+*preview*.html
+pbirs_measures.json
 
 # Python
 __pycache__/

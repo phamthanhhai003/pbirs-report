@@ -1,10 +1,7 @@
-param(
-    [string]$OutputDir = "source",
-    [string]$RsDir     = "C:\Program Files\Microsoft Power BI Desktop RS\bin",
-    [string]$TeDir     = "C:\Program Files (x86)\Tabular Editor"
-)
+param([string]$OutputDir = "source")
 
-# Load DLLs
+. "$PSScriptRoot\config.ps1"
+
 Get-ChildItem $RsDir -Filter "*.dll" | ForEach-Object {
     try { [System.Reflection.Assembly]::LoadFrom($_.FullName) | Out-Null } catch {}
 }
@@ -13,14 +10,13 @@ Get-ChildItem $TeDir -Filter "*.dll" | ForEach-Object {
 }
 Add-Type -Path (Join-Path $TeDir "Microsoft.AnalysisServices.Tabular.dll")
 
-# Find running PBI Desktop RS msmdsrv port
 $msmdsrvProc = Get-Process msmdsrv -ErrorAction SilentlyContinue |
     Where-Object {
         (Get-WmiObject Win32_Process -Filter "ProcessId=$($_.Id)").CommandLine -like "*Power BI Desktop SSRS*"
     } | Select-Object -First 1
 
 if (!$msmdsrvProc) {
-    Write-Host "ERROR: PBI Desktop RS is not running or no file is open. Open the .pbix file first."
+    Write-Host "ERROR: PBI Desktop RS is not running or no file is open."
     exit 1
 }
 
@@ -36,9 +32,8 @@ if (!$port) {
 
 Write-Host "Connecting to PBI Desktop RS on port $port..."
 
-$server = New-Object Microsoft.AnalysisServices.Tabular.Server
+$server      = New-Object Microsoft.AnalysisServices.Tabular.Server
 $server.Connect("localhost:$port")
-
 $model       = $server.Databases[0].Model
 $measuresDir = Join-Path $OutputDir "measures"
 New-Item -ItemType Directory -Path $measuresDir -Force | Out-Null

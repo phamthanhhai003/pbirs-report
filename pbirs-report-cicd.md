@@ -11,25 +11,45 @@ Dev sửa báo cáo Power BI → xem preview thay đổi → commit → tự đ�
 ```
 1. Dev sửa measure trong PBI Desktop RS → Save .pbix
         ↓
-2. git commit  (file vẫn mở trong PBI Desktop RS)
+2. git commit  (file vẫn đang mở trong PBI Desktop RS)
         ↓
 3. Pre-commit hook tự chạy:
-   - Connect AMO → PBI Desktop RS đang chạy (port động)
-   - Extract tất cả measures → source/measures/**/*.dax
-   - So sánh với HEAD → generate HTML preview before/after
-   - Mở browser → hiện diff
-   - Hỏi: tiếp tục hay hủy? (y/n)
+   a. extract_dax.ps1   — connect AMO → msmdsrv.exe đang chạy (port động)
+                        → extract tất cả measures → source/measures/**/*.dax
+   b. eval_measures.ps1 — chạy từng measure qua AdomdClient (DAX query)
+                        → lưu kết quả HTML vào %TEMP%\pbirs_measures.json
+   c. generate_preview.py — so sánh với HEAD:.measures_cache.json
+                          → chỉ render measures đã thay đổi
+                          → HTML before/after side-by-side
+   d. Mở browser → user xem trực tiếp kết quả render (không phải diff code)
+   e. Hỏi xác nhận: tiếp tục hay hủy? (y/n)
         ↓ y
-4. Commit hoàn tất — .dax files + CreditReport.pbix vào git
+4. Commit hoàn tất — .dax files + .measures_cache.json + CreditReport.pbix
         ↓
-5. git push → Jenkins pipeline chạy:
-   - Upload CreditReport.pbix lên PBIRS (ReportingServicesTools)
+5. git push → Jenkins pipeline:
+   - upload_pbirs.ps1 → Write-RsRestCatalogItem → PBIRS cập nhật
         ↓
 6. Report trên PBIRS được cập nhật tự động
 ```
 
-> **Lưu ý:** File phải đang mở trong PBI Desktop RS khi commit.
-> pbi-tools bị loại bỏ — DataModel là binary ABF, không compatible.
+> **Lưu ý:** File phải đang mở trong PBI Desktop RS khi commit (msmdsrv.exe phải đang chạy).
+> pbi-tools bị loại bỏ — DataModel là binary ABF (XPress9 compressed), không compatible.
+
+---
+
+## Environment
+
+| | |
+|--|--|
+| PBIRS Version | 15.0.1121.109 (May 2026) |
+| PBIRS Host | `DESKTOP-HHC5U09` |
+| REST API base | `http://DESKTOP-HHC5U09/reports/api/v2.0` |
+| Auth | **NTLM (Windows Auth)** — confirmed via `WWW-Authenticate: NTLM` |
+| PBI Desktop RS | `C:\Program Files\Microsoft Power BI Desktop RS\bin` |
+| Tabular Editor 2 | `C:\Program Files (x86)\Tabular Editor` |
+| msmdsrv port | Động — detect qua `netstat -ano` theo PID |
+| Credentials | `Admin` / env var `PBIRS_PASS` (mặc định `20032003` local) |
+| WSL2 note | `localhost` không reach từ WSL2 — dùng `DESKTOP-HHC5U09` hoặc Windows host IP |
 
 ---
 
@@ -41,23 +61,27 @@ pbirs-report/
 │   └── measures/
 │       ├── final_provision_report/
 │       │   ├── Provision_HTML.dax
-│       │   └── Provision_HTML_v2.dax
+│       │   └── ...
 │       ├── final_repayment_report/
 │       │   └── Repayment_HTML.dax
-│       └── ...                        ← git track, readable trong VS Code
+│       └── ...                         ← git tracked, readable trong VS Code
 ├── scripts/
-│   ├── generate_preview.py            ← tạo HTML diff before/after
-│   ├── deploy_pbirs.py                ← upload .pbix lên PBIRS (NTLM)
-│   ├── extract_dax.ps1                ← connect AMO → extract measures
-│   └── upload_pbirs.ps1               ← upload .pbix qua ReportingServicesTools
+│   ├── extract_dax.ps1                 ← AMO connect → extract measures ra .dax files
+│   ├── eval_measures.ps1               ← AdomdClient → chạy DAX → lưu HTML JSON
+│   ├── generate_preview.py             ← so sánh cache → render HTML before/after
+│   ├── upload_pbirs.ps1                ← ReportingServicesTools → deploy .pbix lên PBIRS
+│   ├── deploy_pbirs.py                 ← NTLM deploy (backup, dùng khi PS không available)
+│   ├── patch_measure.ps1               ← chỉnh sửa measure trực tiếp qua AMO (test)
+│   └── restore_measure.ps1             ← restore measure từ .dax file qua AMO (test)
 ├── hooks/
-│   └── pre-commit                     ← source of truth, copy vào .git/hooks/
+│   └── pre-commit                      ← source of truth, copy vào .git/hooks/
 ├── .git/hooks/
-│   └── pre-commit                     ← active hook
+│   └── pre-commit                      ← active hook
 ├── .vscode/
-│   └── tasks.json                     ← auto git pull khi mở VS Code
-├── Jenkinsfile                        ← upload .pbix lên PBIRS
-├── CreditReport.pbix                  ← tracked trong git
+│   └── tasks.json                      ← auto git pull khi mở VS Code
+├── Jenkinsfile
+├── CreditReport.pbix
+├── .measures_cache.json                ← auto-generated, track HTML output của measures
 ├── requirements.txt
 └── .gitignore
 ```
@@ -66,287 +90,184 @@ pbirs-report/
 
 ## Các file đã build
 
-### 1. `.git/hooks/pre-commit`
+### 1. `hooks/pre-commit`
 
 ```bash
 #!/bin/bash
+PYTHON="python"
+command -v "$PYTHON" >/dev/null 2>&1 || PYTHON="python3"
+command -v "$PYTHON" >/dev/null 2>&1 || PYTHON="python.exe"
 
-# Extract DAX từ PBI Desktop RS đang chạy (file phải đang mở)
-powershell.exe -ExecutionPolicy Bypass -File "scripts/extract_dax.ps1" -OutputDir "$SOURCE_DIR"
+# Step 1: Extract DAX measures ra source/
+powershell.exe -ExecutionPolicy Bypass -File "scripts/extract_dax.ps1" -OutputDir "./source"
 
-# Generate HTML preview từ DAX diff
-git diff credit-report/Model/ > /tmp/changes.diff
-python scripts/generate_preview.py /tmp/changes.diff > /tmp/preview.html
+# Step 2: Chạy từng measure → lưu HTML output vào %TEMP%\pbirs_measures.json
+WIN_TEMP="$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\r')"
+WSL_TEMP="$(wslpath "$WIN_TEMP" 2>/dev/null || echo "/tmp")"
+powershell.exe -ExecutionPolicy Bypass -File "scripts/eval_measures.ps1"
 
-# Mở browser cho user xem
-xdg-open /tmp/preview.html   # Linux
-# start /tmp/preview.html    # Windows
+# Step 3: So sánh với HEAD cache → tạo HTML preview chỉ measures đã đổi
+"$PYTHON" scripts/generate_preview.py "$WSL_TEMP/pbirs_measures.json" "$WSL_TEMP/pbirs_preview.html"
 
-# Hỏi user
-read -p "Tiếp tục commit? (y/n): " confirm
-if [ "$confirm" != "y" ]; then
-    echo "Commit hủy"
-    exit 1
-fi
-
-git add credit-report/
-```
-
----
-
-### 2. `scripts/generate_preview.py`
-
-Đọc git diff của `.dax` files → render HTML bảng so sánh before/after → user thấy chính xác công thức thay đổi gì.
-
----
-
-### 3. `scripts/deploy_pbirs.py`
-
-```python
-import requests
-from requests_ntlm import HttpNtlmAuth
-
-PBIRS_HOST = "http://172.25.240.1/reports"  # Windows host IP từ WSL2
-auth = HttpNtlmAuth("DOMAIN\\username", "password")  # thay DOMAIN\\username + password
-
-def deploy(local_name: str, pbix_path: str):
-    # Tìm report trùng tên trên PBIRS
-    items = requests.get(
-        f"{PBIRS_HOST}/api/v2.0/PowerBIReports",
-        auth=auth
-    ).json()["value"]
-
-    match = next((i for i in items if i["Name"] == local_name), None)
-
-    if not match:
-        print(f"'{local_name}' không tồn tại trên server — skip")
-        return
-
-    # Ghi đè qua endpoint đúng cho .pbix
-    with open(pbix_path, "rb") as f:
-        requests.put(
-            f"{PBIRS_HOST}/api/v2.0/PowerBIReports('{match['Id']}')/Content",
-            headers={"Content-Type": "application/octet-stream"},
-            data=f,
-            auth=auth
-        )
-    print(f"Deployed: {match['Path']}")
-```
-
----
-
-### 4. `.vscode/tasks.json`
-
-Tự chạy `git pull` mỗi khi mở repo bằng VS Code:
-
-```json
-{
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Auto Pull",
-      "type": "shell",
-      "command": "git pull",
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "shared"
-      }
-    }
-  ]
-}
-```
-
-> Lần đầu mở VS Code sẽ hỏi "Allow automatic tasks?" → bấm **Allow**.
-
----
-
-### 5. `Jenkinsfile` (deploy stage)
-
-```groovy
-// Không dùng pbi-tools — upload .pbix trực tiếp bằng ReportingServicesTools
-stage('Deploy to PBIRS') {
-    steps {
-        bat 'powershell -ExecutionPolicy Bypass -File scripts/upload_pbirs.ps1'
-    }
-}
-```
-
----
-
-## Environment
-
-| | |
-|--|--|
-| PBIRS Version | 15.0.1121.109 (May 2026) |
-| PBIRS Service | `PowerBIReportServer` (local) |
-| REST API base | `http://172.25.240.1/reports/api/v2.0` |
-| Auth | **NTLM (Windows Auth)** — confirmed via `WWW-Authenticate: NTLM` header |
-| WSL2 note | `localhost` không reach được từ WSL2 — dùng Windows host IP `172.25.240.1` |
-
----
-
-## Cần xác nhận trước khi build
-
-- [x] Start PBIRS service, truy cập web portal xác nhận hoạt động — UP tại `172.25.240.1` / `DESKTOP-HHC5U09`
-- [x] Xác nhận auth method — **NTLM**
-- [ ] Xác nhận `pbi-tools` compatible với file `.pbix` của Credit Report
-- [ ] Quyết định folder map: tên file → folder trên PBIRS
-
----
-
-## Tasks triển khai
-
-### Task 1 — Test pbi-tools extract + compile
-
-```bash
-# Bước 1: Cài pbi-tools
-winget install pbi-tools
-# hoặc
-choco install pbi-tools
-
-# Bước 2: Extract file thực
-cd credit-report/
-pbi-tools extract CreditReport.pbix -extractFolder ./source
-
-# Bước 3: Compile lại
-pbi-tools compile ./source -outPath CreditReport_test.pbix -overwrite
-
-# Bước 4: Mở cả 2 file trong PBI Desktop, so sánh
-# → measure, layout, data source còn nguyên không
-```
-
----
-
-### Task 2 — Jenkins Windows agent
-
-Kiểm tra agent hiện có: **Jenkins UI → Manage Jenkins → Nodes** → xem node nào có label `windows`
-
-**Nếu có agent Windows** — đổi Jenkinsfile:
-
-```groovy
-agent { label 'windows' }
-
-stage('Deploy to PBIRS') {
-    steps {
-        bat 'pbi-tools compile ./source -outPath CreditReport.pbix -overwrite'
-        bat 'python scripts/deploy_pbirs.py'
-    }
-}
-```
-
-**Nếu chưa có agent Windows:**
-
-| Option | Cách làm |
-|--------|----------|
-| Dùng máy local làm agent | Cài Jenkins agent trên máy Windows, connect về Jenkins master |
-| Docker Windows container | Chỉ work nếu Jenkins chạy trên Windows host |
-
-> Thực tế nhất: cài Jenkins agent trên máy Windows local vì PBIRS đang chạy ở đó.
-
----
-
-### Task 3 — Fix pre-commit hook cho Windows
-
-```bash
-#!/bin/bash
-
-# Extract .pbix → text files
-pbi-tools extract CreditReport.pbix -extractFolder ./source
-
-# Generate HTML preview
-git diff source/Model/ > /tmp/changes.diff
-python scripts/generate_preview.py /tmp/changes.diff > /tmp/preview.html
-
-# Mở browser — detect OS
+# Step 4: Mở browser (WSL2 aware)
+PREVIEW_FILE="$WIN_TEMP\\pbirs_preview.html"
 case "$(uname -s)" in
-    Linux*)              xdg-open /tmp/preview.html ;;
-    Darwin*)             open /tmp/preview.html ;;
-    CYGWIN*|MINGW*|MSYS*) explorer.exe "$(wslpath -w /tmp/preview.html 2>/dev/null || echo /tmp/preview.html)" ;;
+    Darwin*) open "$PREVIEW_FILE" ;;
+    CYGWIN*|MINGW*|MSYS*) start "$PREVIEW_FILE" ;;
+    Linux*)
+        if grep -qi microsoft /proc/version 2>/dev/null; then
+            explorer.exe "$(wslpath -w "$WSL_TEMP/pbirs_preview.html")"
+        else xdg-open "$WSL_TEMP/pbirs_preview.html"; fi ;;
 esac
 
-# read -p không work trong VS Code terminal → fallback
+# Step 5: Xác nhận
 if [ -t 0 ]; then
-    read -p "Tiếp tục commit? (y/n): " confirm
-    [ "$confirm" != "y" ] && echo "Commit hủy" && exit 1
+    read -p "Tiep tuc commit? (y/n): " confirm
+    [ "$confirm" != "y" ] && echo "Commit huy" && exit 1
 else
-    echo "Không có terminal — tự động tiếp tục"
+    echo "Khong co terminal — tu dong tiep tuc"
 fi
 
+git add source/ .measures_cache.json 2>/dev/null
 git add source/
 ```
 
 ---
 
-### Task 4 — Credentials PBIRS
+### 2. `scripts/extract_dax.ps1`
 
-Kiểm tra auth type: mở `http://localhost/reports`
-- Windows popup = Windows Auth
-- Form login = Basic Auth
+Connect AMO vào msmdsrv.exe đang chạy → extract tất cả measures ra `.dax` files.
 
-**Windows Auth** (dùng credentials máy hiện tại — không cần hardcode):
+- Load DLLs từ PBI Desktop RS bin + Tabular Editor 2
+- Tìm port msmdsrv qua `netstat -ano` theo PID
+- Với mỗi measure: tạo file `source/measures/<table>/<measure>.dax`
+- Format file: `MEASURE 'table'[name] =\n<expression>`
 
-```python
-from requests_negotiate_sspi import HttpNegotiateAuth
-auth = HttpNegotiateAuth()
+---
+
+### 3. `scripts/eval_measures.ps1`
+
+Chạy từng measure qua AdomdClient → lưu HTML output vào JSON.
+
+```powershell
+# Load DLLs
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.AnalysisServices.AdomdClient")
+
+# Tìm port msmdsrv động
+$port = (netstat -ano | Select-String $pid_ | Select-String "LISTENING" | ...)
+
+# AMO: lấy danh sách measures
+$server.Connect("localhost:$port")
+# ...
+
+# AdomdClient: chạy từng measure
+$conn = New-Object Microsoft.AnalysisServices.AdomdClient.AdomdConnection("Data Source=localhost:$port")
+$cmd.CommandText = "EVALUATE ROW(`"R`", 'table'[measure])"
+# result lưu vào $results["table__measure"] = HTML string
+
+$results | ConvertTo-Json | Set-Content $OutputJson -Encoding UTF8
 ```
 
-```bash
-pip install requests-negotiate-sspi
+Output: `%TEMP%\pbirs_measures.json` — format `{ "table__measure": "<html>" }`
+
+---
+
+### 4. `scripts/generate_preview.py`
+
+So sánh output hiện tại với `HEAD:.measures_cache.json` → render chỉ measures đã thay đổi.
+
+- `git show HEAD:.measures_cache.json` → previous state
+- Tìm `changed_keys = [k for k in current if current[k] != previous.get(k)]`
+- Mỗi measure thay đổi: render BEFORE (header đỏ) | AFTER (header xanh) side-by-side
+- HTML output là rendered HTML table — không phải code diff
+- Lưu `.measures_cache.json` mới để commit cùng
+
+---
+
+### 5. `scripts/upload_pbirs.ps1`
+
+Deploy `.pbix` lên PBIRS dùng ReportingServicesTools module.
+
+```powershell
+Import-Module ReportingServicesTools
+$cred = New-Object System.Management.Automation.PSCredential("Admin",
+    (ConvertTo-SecureString $env:PBIRS_PASS -AsPlainText -Force))
+# Xóa report cũ (nếu có) rồi upload lại
+Remove-RsRestCatalogItem -ReportServerUri "http://DESKTOP-HHC5U09/reports" -RsItem "/Credit Report" ...
+Write-RsRestCatalogItem -ReportServerUri "http://DESKTOP-HHC5U09/reports" -Path "CreditReport.pbix" ...
 ```
 
-**Basic Auth:**
+---
 
-```python
-import os
-auth = (os.environ["PBIRS_USER"], os.environ["PBIRS_PASS"])
-```
+### 6. `scripts/patch_measure.ps1` / `restore_measure.ps1`
+
+Utility dùng khi test — chỉnh sửa hoặc restore measure trực tiếp qua AMO mà không cần reopen PBI Desktop RS.
+
+- `patch_measure.ps1 -Action remove` — xóa block HTML khỏi expression
+- `restore_measure.ps1 -DaxFile <path>` — restore từ file `.dax` (`Get-Content -Raw`)
+
+---
+
+### 7. `Jenkinsfile`
 
 ```groovy
-// Lưu trong Jenkins credentials store, inject qua env:
-environment {
-    PBIRS_USER = credentials('pbirs-user')
-    PBIRS_PASS = credentials('pbirs-pass')
+pipeline {
+    agent { label 'windows' }
+    environment {
+        PBIRS_HOST = 'http://DESKTOP-HHC5U09/reports'
+        PBIRS_USER = credentials('pbirs-user')
+        PBIRS_PASS = credentials('pbirs-pass')
+    }
+    stages {
+        stage('Deploy to PBIRS') {
+            steps {
+                bat 'powershell -ExecutionPolicy Bypass -File scripts/upload_pbirs.ps1'
+            }
+        }
+    }
 }
 ```
 
 ---
 
-### Task 5 — Repo structure
+### 8. `.measures_cache.json`
 
-**Option A — 1 repo tất cả report (khuyến nghị):**
+Auto-generated bởi `generate_preview.py` mỗi commit.
 
-```
-powerbi-reports/
-├── CreditReport/
-│   └── source/Model/tables/.../measures/
-├── AccountingReport/
-│   └── source/
-├── scripts/
-│   ├── deploy_pbirs.py        ← dùng chung
-│   └── generate_preview.py   ← dùng chung
-├── .vscode/tasks.json
-└── Jenkinsfile
+```json
+{
+  "final_provision_report__Provision_HTML": "<table>...</table>",
+  "final_repayment_report__Repayment_HTML": "<table>...</table>",
+  ...
+}
 ```
 
-CI/CD scan tất cả subfolder, deploy report nào có thay đổi.
-
-**Option B — mỗi report 1 repo:** độc lập hoàn toàn, pipeline riêng từng repo.
-
-> Nên chọn A — scripts dùng chung, 1 Jenkins pipeline, dễ maintain khi số report tăng.
+Commit cùng với `.dax` files. Lần commit sau dùng `git show HEAD:.measures_cache.json` để so sánh.
 
 ---
 
-## Tools cần cài
+## Prerequisites
 
-```bash
-# pbi-tools (Windows)
-winget install pbi-tools
-# hoặc download từ https://pbi.tools
+| Tool | Version/Path | Dùng để |
+|------|-------------|---------|
+| PBI Desktop RS | `C:\Program Files\Microsoft Power BI Desktop RS` | Cần mở file khi commit |
+| Tabular Editor 2 | `C:\Program Files (x86)\Tabular Editor` | AMO DLLs cho extract + patch |
+| ReportingServicesTools | PS module, installed globally | Upload .pbix lên PBIRS |
+| Python 3 | trong PATH | generate_preview.py |
+| Git + WSL2 | — | Pre-commit hook chạy trong WSL2 |
 
-# Python — auth support
-pip install requests-ntlm
-pip install requests-negotiate-sspi  # nếu dùng Windows Auth không cần hardcode credentials
-```
+---
+
+## Checklist
+
+- [x] PBIRS service UP tại `DESKTOP-HHC5U09`
+- [x] NTLM auth xác nhận
+- [x] Upload .pbix hoạt động (ReportingServicesTools)
+- [x] extract_dax.ps1 — extract measures qua AMO
+- [x] eval_measures.ps1 — chạy measures qua AdomdClient
+- [x] generate_preview.py — before/after HTML preview, chỉ measures đã đổi
+- [x] Pre-commit hook — end-to-end flow hoạt động
+- [x] .measures_cache.json — change detection giữa các commit
+- [ ] Jenkins Windows agent setup
+- [ ] Jenkins pipeline test (push → auto deploy)
+- [ ] Credentials dùng env var (không hardcode) trong upload_pbirs.ps1
