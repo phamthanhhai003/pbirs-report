@@ -24,10 +24,12 @@ def git_show_prev_json():
 
 def build_preview(current: dict, previous: dict) -> str:
     changed_keys = [k for k in current if current.get(k) != previous.get(k) and current.get(k)]
-    all_keys = changed_keys if changed_keys else [k for k in current if current.get(k) and k != "PageNum__Page Number Value"]
+
+    if not changed_keys:
+        return "<html><body style='font-family:Segoe UI;padding:40px;background:#f1f5f9;'><div style='background:#fff;border-radius:8px;padding:24px;text-align:center;color:#6b7280;'>No changes detected.</div></body></html>"
 
     sections = ""
-    for key in all_keys:
+    for key in changed_keys:
         name = key.replace("__", " / ").replace("_", " ")
         after_html = current.get(key, "")
         before_html = previous.get(key, "")
