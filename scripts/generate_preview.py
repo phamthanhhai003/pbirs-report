@@ -9,12 +9,12 @@ PREVIEW_FILE  = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.environ.ge
 
 def git_show_prev_json():
     result = subprocess.run(
-        ["git", "show", "HEAD:.measures_cache.json"],
-        capture_output=True, text=True
+        ["git", "show", "HEAD:scripts/measures_cache.json"],
+        capture_output=True
     )
     if result.returncode == 0:
         try:
-            return json.loads(result.stdout)
+            return json.loads(result.stdout.decode("utf-8-sig"))
         except Exception:
             pass
     return {}
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     with open(PREVIEW_FILE, "w", encoding="utf-8") as f:
         f.write(html)
 
-    with open(".measures_cache.json", "w", encoding="utf-8") as f:
+    with open("scripts/measures_cache.json", "w", encoding="utf-8") as f:
         json.dump(current, f, ensure_ascii=False, indent=2)
 
     print(f"Preview saved: {PREVIEW_FILE}")
