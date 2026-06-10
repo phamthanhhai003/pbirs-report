@@ -27,11 +27,15 @@ Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
 
 ### User muốn xóa/ẩn một thứ gì đó khỏi report
 
-→ **Nếu là Provision report, card là một trong:** Total Loans, Total Outstanding, Total Commitment, Total Provision, Outstanding Delta:
+→ Chạy `patch_measure.ps1` với tên card. Script **tự scan tất cả measures** tìm card đó, không cần chỉ định report:
 ```bash
-powershell.exe -ExecutionPolicy Bypass -File scripts/patch_measure.ps1 -Action remove
+powershell.exe -ExecutionPolicy Bypass -File scripts/patch_measure.ps1 -CardLabel "Total Write-Off"
 ```
-`patch_measure.ps1` tìm và xóa block HTML chứa tên card đó. Mặc định target `Provision_HTML / final_provision_report`.
+Nếu cùng tên card xuất hiện ở nhiều report, thêm `-Table` để giới hạn:
+```bash
+powershell.exe -ExecutionPolicy Bypass -File scripts/patch_measure.ps1 -CardLabel "Total Write-Off" -Table "final_extra_accountable_report"
+```
+Works cho mọi report có card HTML dạng `<div>Label</div><div>Value</div>`.
 
 → **Nếu là report khác hoặc thay đổi phức tạp hơn:**  
 AI không thể tự sửa DAX của report đó. Hướng dẫn user:

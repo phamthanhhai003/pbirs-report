@@ -1,7 +1,8 @@
 param(
-    [string]$Action  = "remove",
-    [string]$Table   = "final_provision_report",
-    [string]$Measure = "Provision_HTML"
+    [string]$Action    = "remove",
+    [string]$CardLabel = "Total Loans",
+    [string]$Table     = "",
+    [string]$Measure   = ""
 )
 
 . "$PSScriptRoot\config.ps1"
@@ -21,23 +22,48 @@ $port = (netstat -ano | Select-String $msmdsrvProc.Id.ToString() |
 
 $server = New-Object Microsoft.AnalysisServices.Tabular.Server
 $server.Connect("localhost:$port")
-$m    = $server.Databases[0].Model.Tables[$Table].Measures[$Measure]
-$expr = $m.Expression
+$model = $server.Databases[0].Model
 
-if ($Action -eq "remove") {
-    $startIdx = $expr.IndexOf('Total Loans')
-    if ($startIdx -lt 0) { Write-Host "Total Loans not found"; exit 0 }
-    $blockStart  = $expr.LastIndexOf('"<div', $startIdx)
-    $closeMarker = "</div></div>"
-    $closeIdx    = $expr.IndexOf($closeMarker, $startIdx) + $closeMarker.Length
-    $quoteEnd    = $expr.IndexOf('"', $closeIdx)
-    $ampEnd      = $expr.IndexOf('&', $quoteEnd)
-    $m.Expression = $expr.Substring(0, $blockStart) + $expr.Substring($ampEnd + 1).TrimStart()
-    Write-Host "Removed Total Loans card"
-} elseif ($Action -eq "restore") {
-    Write-Host "Use restore_measure.ps1 instead"
-    exit 0
+# Build candidate list — filter by Table/Measure if provided, else scan all
+$candidates = @()
+foreach ($t in $model.Tables) {
+    if ($Table -and $t.Name -ne $Table) { continue }
+    foreach ($m in $t.Measures) {
+        if ($Measure -and $m.Name -ne $Measure) { continue }
+        if ($m.Expression -match [regex]::Escape($CardLabel)) {
+            $candidates += @{ Table = $t.Name; Measure = $m.Name; Obj = $m }
+        }
+    }
 }
 
-$server.Databases[0].Model.SaveChanges()
+if ($candidates.Count -eq 0) {
+    Write-Host "NOT FOUND: '$CardLabel' in any measure$(if ($Table) { " (Table=$Table)" })$(if ($Measure) { " (Measure=$Measure)" })"
+    $server.Disconnect(); exit 0
+}
+
+$changed = 0
+foreach ($c in $candidates) {
+    $expr = $c.Obj.Expression
+
+    if ($Action -eq "remove") {
+        $startIdx   = $expr.IndexOf($CardLabel)
+        $blockStart = $expr.LastIndexOf('"<div', $startIdx)
+        $closeMarker = "</div></div>"
+        $closeIdx   = $expr.IndexOf($closeMarker, $startIdx) + $closeMarker.Length
+        $quoteEnd   = $expr.IndexOf('"', $closeIdx)
+        $ampEnd     = $expr.IndexOf('&', $quoteEnd)
+        if ($blockStart -lt 0 -or $ampEnd -lt 0) {
+            Write-Host "SKIP $($c.Table).$($c.Measure) — block boundary not found"
+            continue
+        }
+        $c.Obj.Expression = $expr.Substring(0, $blockStart) + $expr.Substring($ampEnd + 1).TrimStart()
+        Write-Host "Removed '$CardLabel' from $($c.Table).$($c.Measure)"
+        $changed++
+    }
+}
+
+if ($changed -gt 0) {
+    $model.SaveChanges()
+    Write-Host "Saved ($changed measure(s) updated)"
+}
 $server.Disconnect()
