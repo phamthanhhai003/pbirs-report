@@ -1,0 +1,55 @@
+#!/bin/bash
+
+PYTHON="python"
+command -v "$PYTHON" >/dev/null 2>&1 || PYTHON="python3"
+command -v "$PYTHON" >/dev/null 2>&1 || PYTHON="python.exe"
+
+TEMP_DIR="$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\r')"
+PREVIEW_FILE="$TEMP_DIR\\pbirs_preview.html"
+
+# Step 1: Extract DAX text files (for git tracking)
+echo "Extracting DAX measures..."
+powershell.exe -ExecutionPolicy Bypass -File "scripts/extract_dax.ps1" -OutputDir "./source"
+if [ $? -ne 0 ]; then
+    echo "ERROR: Make sure CreditReport.pbix is open in PBI Desktop RS."
+    exit 1
+fi
+
+# Step 2: Evaluate measures → get rendered HTML output
+echo "Evaluating measures..."
+powershell.exe -ExecutionPolicy Bypass -File "scripts/eval_measures.ps1"
+if [ $? -ne 0 ]; then
+    echo "ERROR: eval_measures.ps1 failed"
+    exit 1
+fi
+
+# Step 3: Build before/after HTML preview
+WIN_TEMP="$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\r')"
+WSL_TEMP="$(wslpath "$WIN_TEMP" 2>/dev/null || echo "/tmp")"
+"$PYTHON" scripts/generate_preview.py "$WSL_TEMP/pbirs_measures.json" "$WSL_TEMP/pbirs_preview.html"
+if [ $? -ne 0 ]; then
+    echo "WARNING: Could not generate preview"
+fi
+
+# Step 4: Open browser
+case "$(uname -s)" in
+    Darwin*)             open "$PREVIEW_FILE" ;;
+    CYGWIN*|MINGW*|MSYS*) start "$PREVIEW_FILE" ;;
+    Linux*)
+        if grep -qi microsoft /proc/version 2>/dev/null; then
+            explorer.exe "$(wslpath -w "$PREVIEW_FILE")"
+        else
+            xdg-open "$PREVIEW_FILE"
+        fi ;;
+esac
+
+# Step 5: Confirm
+if [ -t 0 ]; then
+    read -p "Tiep tuc commit? (y/n): " confirm
+    [ "$confirm" != "y" ] && echo "Commit huy" && exit 1
+else
+    echo "Khong co terminal — tu dong tiep tuc"
+fi
+
+git add source/ .measures_cache.json 2>/dev/null
+git add source/

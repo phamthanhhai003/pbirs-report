@@ -3,9 +3,8 @@ import json
 import subprocess
 import os
 
-PREVIEW_FILE = os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_preview.html")
-MEASURES_JSON = os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_measures.json")
-PREV_JSON = os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_measures_prev.json")
+MEASURES_JSON = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_measures.json")
+PREVIEW_FILE  = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_preview.html")
 
 
 def git_show_prev_json():
