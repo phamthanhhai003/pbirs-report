@@ -1,83 +1,99 @@
 import sys
-import re
-import html
+import json
+import subprocess
+import os
+
+PREVIEW_FILE = os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_preview.html")
+MEASURES_JSON = os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_measures.json")
+PREV_JSON = os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_measures_prev.json")
 
 
-def parse_diff(diff_text: str):
-    """Parse git diff into list of (filename, before, after) tuples."""
-    changes = []
-    current_file = None
-    before_lines = []
-    after_lines = []
+def git_show_prev_json():
+    """Get measure HTML values from previous commit's .dax files (best-effort)."""
+    prev = {}
+    result = subprocess.run(
+        ["git", "show", "HEAD:scripts/.measures_cache.json"],
+        capture_output=True, text=True
+    )
+    if result.returncode == 0:
+        try:
+            prev = json.loads(result.stdout)
+        except Exception:
+            pass
+    return prev
 
-    for line in diff_text.splitlines():
-        if line.startswith("diff --git"):
-            if current_file:
-                changes.append((current_file, "\n".join(before_lines), "\n".join(after_lines)))
-            m = re.search(r"b/(.+)$", line)
-            current_file = m.group(1) if m else line
-            before_lines = []
-            after_lines = []
-        elif line.startswith("---") or line.startswith("+++") or line.startswith("@@"):
-            continue
-        elif line.startswith("-"):
-            before_lines.append(line[1:])
-        elif line.startswith("+"):
-            after_lines.append(line[1:])
+
+def build_preview(current: dict, previous: dict) -> str:
+    changed_keys = [k for k in current if current.get(k) != previous.get(k) and current.get(k)]
+    all_keys = changed_keys if changed_keys else [k for k in current if current.get(k) and k != "PageNum__Page Number Value"]
+
+    sections = ""
+    for key in all_keys:
+        name = key.replace("__", " / ").replace("_", " ")
+        after_html = current.get(key, "")
+        before_html = previous.get(key, "")
+        changed = after_html != before_html
+
+        badge = "<span style='background:#fbbf24;color:#78350f;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:8px;'>CHANGED</span>" if changed else ""
+
+        if changed and before_html:
+            panes = f"""
+            <div style='display:flex;gap:0;'>
+              <div style='flex:1;border-right:3px solid #e2e8f0;'>
+                <div style='background:#fee2e2;color:#991b1b;font-size:11px;font-weight:700;padding:6px 14px;text-transform:uppercase;letter-spacing:1px;'>BEFORE</div>
+                <div style='padding:12px;overflow-x:auto;'>{before_html}</div>
+              </div>
+              <div style='flex:1;'>
+                <div style='background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:6px 14px;text-transform:uppercase;letter-spacing:1px;'>AFTER</div>
+                <div style='padding:12px;overflow-x:auto;'>{after_html}</div>
+              </div>
+            </div>"""
         else:
-            before_lines.append(line[1:] if line.startswith(" ") else line)
-            after_lines.append(line[1:] if line.startswith(" ") else line)
+            panes = f"""
+            <div style='background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:6px 14px;text-transform:uppercase;letter-spacing:1px;'>CURRENT</div>
+            <div style='padding:12px;overflow-x:auto;'>{after_html}</div>"""
 
-    if current_file:
-        changes.append((current_file, "\n".join(before_lines), "\n".join(after_lines)))
-
-    return changes
-
-
-def render_html(changes):
-    rows = ""
-    for filename, before, after in changes:
-        rows += f"""
-        <tr class="filename-row"><td colspan="2">{html.escape(filename)}</td></tr>
-        <tr>
-            <td class="before"><pre>{html.escape(before)}</pre></td>
-            <td class="after"><pre>{html.escape(after)}</pre></td>
-        </tr>"""
+        sections += f"""
+        <div style='background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.1);margin:16px;overflow:hidden;'>
+          <div style='background:#1e293b;color:#f0a500;font-size:12px;font-weight:700;padding:8px 14px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;'>
+            {name}{badge}
+          </div>
+          {panes}
+        </div>"""
 
     return f"""<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>DAX Preview</title>
+<meta charset='utf-8'>
+<title>Report Preview</title>
 <style>
-  body {{ font-family: monospace; background: #1e1e1e; color: #d4d4d4; margin: 0; }}
-  h1 {{ padding: 16px; background: #252526; margin: 0; font-size: 14px; }}
-  table {{ width: 100%; border-collapse: collapse; }}
-  th {{ background: #252526; padding: 8px; text-align: left; font-size: 12px; color: #9d9d9d; }}
-  td {{ vertical-align: top; padding: 8px; border-bottom: 1px solid #333; font-size: 12px; }}
-  td.before {{ background: #3a1a1a; width: 50%; }}
-  td.after  {{ background: #1a3a1a; width: 50%; }}
-  tr.filename-row td {{ background: #2d2d2d; color: #ce9178; padding: 6px 8px; font-weight: bold; }}
-  pre {{ margin: 0; white-space: pre-wrap; word-break: break-word; }}
+  * {{ box-sizing: border-box; }}
+  body {{ margin: 0; font-family: Segoe UI, sans-serif; background: #f1f5f9; }}
 </style>
 </head>
 <body>
-<h1>DAX Changes Preview</h1>
-<table>
-  <tr><th>BEFORE</th><th>AFTER</th></tr>
-  {rows}
-</table>
+<div style='background:#003366;color:#fff;padding:14px 20px;font-size:15px;font-weight:700;border-bottom:4px solid #f0a500;'>
+  PBIRS Report Preview
+  {"<span style='background:#fbbf24;color:#78350f;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:700;margin-left:12px;'>Changes detected</span>" if changed_keys else ""}
+</div>
+{sections}
 </body>
 </html>"""
 
 
 if __name__ == "__main__":
-    diff_file = sys.argv[1] if len(sys.argv) > 1 else "/dev/stdin"
-    with open(diff_file, "r", encoding="utf-8") as f:
-        diff_text = f.read()
+    with open(MEASURES_JSON, encoding="utf-8") as f:
+        current = json.load(f)
 
-    changes = parse_diff(diff_text)
-    if not changes:
-        print("<html><body><p>No DAX changes detected.</p></body></html>")
-    else:
-        print(render_html(changes))
+    previous = git_show_prev_json()
+
+    html = build_preview(current, previous)
+
+    with open(PREVIEW_FILE, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    # Save current as cache for next diff
+    with open(".measures_cache.json", "w", encoding="utf-8") as f:
+        json.dump(current, f, ensure_ascii=False, indent=2)
+
+    print(f"Preview saved: {PREVIEW_FILE}")
