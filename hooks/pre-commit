@@ -4,18 +4,29 @@ PYTHON="python"
 command -v "$PYTHON" >/dev/null 2>&1 || PYTHON="python3"
 command -v "$PYTHON" >/dev/null 2>&1 || PYTHON="python.exe"
 
-TEMP_DIR="$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\r')"
-PREVIEW_FILE="$TEMP_DIR\\pbirs_preview.html"
+WIN_TEMP="$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\r')"
+WSL_TEMP="$(wslpath "$WIN_TEMP" 2>/dev/null || echo "/tmp")"
 
-# Step 1: Extract DAX text files (for git tracking)
+# Step 1: Extract DAX từ live model
 echo "Extracting DAX measures..."
 powershell.exe -ExecutionPolicy Bypass -File "scripts/extract_dax.ps1" -OutputDir "./source"
 if [ $? -ne 0 ]; then
-    echo "ERROR: Make sure CreditReport.pbix is open in PBI Desktop RS."
+    echo "ERROR: Make sure the .pbix file is open in PBI Desktop RS."
     exit 1
 fi
 
-# Step 2: Evaluate measures → get rendered HTML output
+# Step 2: Skip eval nếu không có measure nào thay đổi
+CHANGED=$(git diff --name-only source/measures/ 2>/dev/null)
+if [ -z "$CHANGED" ]; then
+    echo "No measure changes — skip preview."
+    git add source/ 2>/dev/null
+    exit 0
+fi
+
+echo "Changed measures:"
+echo "$CHANGED"
+
+# Step 3: Eval chỉ khi có thay đổi
 echo "Evaluating measures..."
 powershell.exe -ExecutionPolicy Bypass -File "scripts/eval_measures.ps1"
 if [ $? -ne 0 ]; then
@@ -23,27 +34,22 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Step 3: Build before/after HTML preview
-WIN_TEMP="$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\r')"
-WSL_TEMP="$(wslpath "$WIN_TEMP" 2>/dev/null || echo "/tmp")"
+# Step 4: Tạo HTML preview
 "$PYTHON" scripts/generate_preview.py "$WSL_TEMP/pbirs_measures.json" "$WSL_TEMP/pbirs_preview.html"
-if [ $? -ne 0 ]; then
-    echo "WARNING: Could not generate preview"
-fi
 
-# Step 4: Open browser
+# Step 5: Mở browser
 case "$(uname -s)" in
-    Darwin*)             open "$PREVIEW_FILE" ;;
-    CYGWIN*|MINGW*|MSYS*) start "$PREVIEW_FILE" ;;
+    Darwin*)              open "$WSL_TEMP/pbirs_preview.html" ;;
+    CYGWIN*|MINGW*|MSYS*) start "$WIN_TEMP\\pbirs_preview.html" ;;
     Linux*)
         if grep -qi microsoft /proc/version 2>/dev/null; then
-            explorer.exe "$(wslpath -w "$PREVIEW_FILE")"
+            explorer.exe "$(wslpath -w "$WSL_TEMP/pbirs_preview.html")"
         else
-            xdg-open "$PREVIEW_FILE"
+            xdg-open "$WSL_TEMP/pbirs_preview.html"
         fi ;;
 esac
 
-# Step 5: Confirm
+# Step 6: Xác nhận
 if [ -t 0 ]; then
     read -p "Tiep tuc commit? (y/n): " confirm
     [ "$confirm" != "y" ] && echo "Commit huy" && exit 1
@@ -52,4 +58,3 @@ else
 fi
 
 git add source/ .measures_cache.json 2>/dev/null
-git add source/
