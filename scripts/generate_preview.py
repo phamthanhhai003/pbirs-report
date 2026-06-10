@@ -2,9 +2,44 @@ import sys
 import json
 import subprocess
 import os
+import difflib
+import re
 
 MEASURES_JSON = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_measures.json")
 PREVIEW_FILE  = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.environ.get("TEMP", "/tmp"), "pbirs_preview.html")
+
+
+def extract_diff_chunks(before_html: str, after_html: str, context: int = 300):
+    """Return (before_snippet, after_snippet) showing only the changed region."""
+    # Find common prefix/suffix char positions
+    min_len = min(len(before_html), len(after_html))
+    prefix = 0
+    while prefix < min_len and before_html[prefix] == after_html[prefix]:
+        prefix += 1
+
+    suffix = 0
+    while suffix < min_len - prefix and before_html[-(suffix+1)] == after_html[-(suffix+1)]:
+        suffix += 1
+
+    # Expand to nearest tag boundary for cleaner rendering
+    def snap_to_tag(s, pos, direction="left"):
+        if direction == "left":
+            i = s.rfind("<", 0, pos)
+            return i if i >= 0 else 0
+        else:
+            i = s.find(">", pos)
+            return i + 1 if i >= 0 else len(s)
+
+    b_start = max(0, snap_to_tag(before_html, prefix - context, "left"))
+    b_end   = min(len(before_html), snap_to_tag(before_html, len(before_html) - suffix + context, "right"))
+    a_start = max(0, snap_to_tag(after_html,  prefix - context, "left"))
+    a_end   = min(len(after_html),  snap_to_tag(after_html,  len(after_html)  - suffix + context, "right"))
+
+    ellipsis = "<div style='color:#9ca3af;font-size:10px;padding:4px 8px;'>...</div>"
+    before_chunk = (ellipsis if b_start > 0 else "") + before_html[b_start:b_end] + (ellipsis if b_end < len(before_html) else "")
+    after_chunk  = (ellipsis if a_start > 0 else "") + after_html[a_start:a_end]  + (ellipsis if a_end  < len(after_html)  else "")
+
+    return before_chunk, after_chunk
 
 
 def git_show_prev_json():
@@ -38,15 +73,16 @@ def build_preview(current: dict, previous: dict) -> str:
         badge = "<span style='background:#fbbf24;color:#78350f;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:8px;'>CHANGED</span>" if changed else ""
 
         if changed and before_html:
+            before_chunk, after_chunk = extract_diff_chunks(before_html, after_html)
             panes = f"""
             <div style='display:flex;gap:0;'>
-              <div style='flex:1;border-right:3px solid #e2e8f0;'>
+              <div style='flex:1;border-right:3px solid #e2e8f0;min-width:0;'>
                 <div style='background:#fee2e2;color:#991b1b;font-size:11px;font-weight:700;padding:6px 14px;text-transform:uppercase;letter-spacing:1px;'>BEFORE</div>
-                <div style='padding:12px;overflow-x:auto;'>{before_html}</div>
+                <div style='padding:12px;overflow-x:auto;'>{before_chunk}</div>
               </div>
-              <div style='flex:1;'>
+              <div style='flex:1;min-width:0;'>
                 <div style='background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:6px 14px;text-transform:uppercase;letter-spacing:1px;'>AFTER</div>
-                <div style='padding:12px;overflow-x:auto;'>{after_html}</div>
+                <div style='padding:12px;overflow-x:auto;'>{after_chunk}</div>
               </div>
             </div>"""
         else:
