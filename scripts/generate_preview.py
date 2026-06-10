@@ -72,22 +72,7 @@ def build_preview(current: dict, previous: dict) -> str:
 
         badge = "<span style='background:#fbbf24;color:#78350f;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:8px;'>CHANGED</span>" if changed else ""
 
-        if changed and before_html:
-            before_chunk, after_chunk = extract_diff_chunks(before_html, after_html)
-            panes = f"""
-            <div style='display:flex;gap:0;'>
-              <div style='flex:1;border-right:3px solid #e2e8f0;min-width:0;'>
-                <div style='background:#fee2e2;color:#991b1b;font-size:11px;font-weight:700;padding:6px 14px;text-transform:uppercase;letter-spacing:1px;'>BEFORE</div>
-                <div style='padding:12px;overflow-x:auto;'>{before_chunk}</div>
-              </div>
-              <div style='flex:1;min-width:0;'>
-                <div style='background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:6px 14px;text-transform:uppercase;letter-spacing:1px;'>AFTER</div>
-                <div style='padding:12px;overflow-x:auto;'>{after_chunk}</div>
-              </div>
-            </div>"""
-        else:
-            panes = f"""
-            <div style='background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:6px 14px;text-transform:uppercase;letter-spacing:1px;'>CURRENT</div>
+        panes = f"""
             <div style='padding:12px;overflow-x:auto;'>{after_html}</div>"""
 
         sections += f"""
