@@ -1,0 +1,364 @@
+﻿MEASURE 'final_monthly_disbursement_by_branch'[Disbursement_Monthly_HTML] =
+
+VAR SelectedYear   = SELECTEDVALUE( 'Calendar_Disbursement'[Year] )
+VAR SelectedMonth  = SELECTEDVALUE( 'Calendar_Disbursement'[report_month] )
+VAR MaxMonth       = MAXX( final_monthly_disbursement_by_branch,
+                        FORMAT( [report_year], "0000" ) & "-" & FORMAT( [report_month], "00" ) )
+VAR ActiveMonth    = IF( ISBLANK(SelectedMonth), MaxMonth, SelectedMonth )
+VAR ActiveYearTxt  = IF( NOT ISBLANK(SelectedYear), SelectedYear,
+                        IF( NOT ISBLANK(SelectedMonth), LEFT(SelectedMonth, 4),
+                            LEFT(MaxMonth, 4) ) )
+VAR ActiveMonthNum = VALUE( RIGHT( ActiveMonth, 2 ) )
+VAR PeriodLabel =
+    IF( NOT ISBLANK(SelectedMonth),
+        "Month of " & FORMAT( DATE( VALUE(ActiveYearTxt), ActiveMonthNum, 1 ), "MMMM YYYY" ),
+        "Year " & ActiveYearTxt )
+VAR MonthLabel =
+    SWITCH( ActiveMonthNum,
+        1, "JANEIRU",   2, "FEVEREIRU", 3, "MARSU",    4, "ABRIL",
+        5, "MAIU",      6, "JUNU",      7, "JULLU",     8, "AGOSTU",
+        9, "SETEMBRU", 10, "OUTUBRU",  11, "NOVEMBRU", 12, "DEZEMBRU",
+        FORMAT( ActiveMonthNum, "0" ) )
+VAR MonthDays =
+    SWITCH( ActiveMonthNum, 2, "28", 4, "30", 6, "30", 9, "30", 11, "30", "31" )
+VAR ActiveYearNum  = VALUE( ActiveYearTxt )
+VAR tbl =
+    FILTER(
+        final_monthly_disbursement_by_branch,
+        VALUE([report_year]) = ActiveYearNum
+         && ( ISBLANK(SelectedMonth) || [report_month] = ActiveMonthNum )
+         && [Credit_Product] <> "TOTAL"
+         && NOT ISBLANK( [Branch] )
+    )
+VAR tbl_total =
+    FILTER(
+        final_monthly_disbursement_by_branch,
+        VALUE([report_year]) = ActiveYearNum
+         && ( ISBLANK(SelectedMonth) || [report_month] = ActiveMonthNum )
+         && [Credit_Product] = "TOTAL"
+    )
+VAR GT_tgt  = SUMX( tbl_total, IFERROR( VALUE([monthly_target]),       0 ) )
+VAR GT_disb = SUMX( tbl_total, IFERROR( VALUE([total_disbursement]),   0 ) )
+VAR GT_cli  = SUMX( tbl_total, IFERROR( VALUE([total_clients]),        0 ) )
+VAR GT_var  = SUMX( tbl_total, IFERROR( VALUE([variance]),             0 ) )
+VAR GT_pct  = IFERROR( DIVIDE( GT_disb, GT_tgt ), 0 )
+VAR Sty =
+    "<style>" &
+    ".dm{font-family:Segoe UI,Calibri,sans-serif;font-size:10.5px;color:#1e2d40;}" &
+    ".dm-t{width:100%;border-collapse:collapse;}" &
+    ".dm-t td{padding:4px 9px;border-bottom:1px solid #e8edf3;vertical-align:middle;white-space:nowrap;}" &
+    ".dm-t tr:hover td{background:#f5f8ff;}" &
+    ".th{background:#003366!important;color:#fff!important;font-weight:700;font-size:10px;text-transform:uppercase;border-bottom:3px solid #f0a500!important;padding:7px 9px!important;text-align:left;}" &
+    ".bh td{background:#1a4a7a!important;color:#fff!important;font-weight:700;font-size:11px;border-bottom:2px solid #f0a500!important;padding:6px 10px!important;}" &
+    ".pr td{background:#f8fafc;}" &
+    ".st td{background:#e8f0fb!important;font-weight:700;color:#003366;border-top:1px solid #b8cce4!important;}" &
+    ".gt td{background:#003366!important;color:#fff!important;font-weight:800;font-size:11px;border-top:3px solid #f0a500!important;}" &
+    ".gt td.ar{font-family:Consolas,monospace;text-align:right;color:#f0a500!important;}" &
+    ".ar{text-align:right!important;font-family:Consolas,monospace;font-size:10px;}" &
+    ".ac{text-align:center!important;font-size:10px;}" &
+    ".no{font-size:9px;color:#9ca3af;text-align:center;width:28px;}" &
+    ".tg{color:#1a4a7a;}" &
+    ".zero{color:#d1d5db;}" &
+    "</style>"
+VAR Hdr =
+    "<div style='background:#003366;padding:16px 20px;border-bottom:4px solid #f0a500;display:flex;align-items:center;'><img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;object-fit:contain;flex-shrink:0;margin-right:20px;' /><div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;'>AKUMULASAUN DESEMBOLSU KREDITU</div>" &
+    "<div style='color:#cbd5e1;font-size:11px;'>1-" & MonthDays & " " & MonthLabel & " " & ActiveYearTxt & "</div>" &
+    "</div></div>"
+VAR TH =
+    "<table class='dm-t'><thead><tr>" &
+    "<td class='th ac' style='width:28px;'>Nu.</td>" &
+    "<td class='th'>Sukursal / Produtu Kreditu</td>" &
+    "<td class='th' style='text-align:right;'>Targetu Kreditu</td>" &
+    "<td class='th' style='text-align:right;'>Total Desembolsu</td>" &
+    "<td class='th' style='text-align:center;'>Total Kliente</td>" &
+    "<td class='th' style='text-align:right;'>Variasaun</td>" &
+    "<td class='th' style='text-align:center;'>%</td>" &
+    "</tr></thead><tbody>"
+VAR PRow_DILI =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "DILI" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_GLENO =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "GLENO" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_MALIANA =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "MALIANA" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_AILEU =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "AILEU" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_OECUSSE =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "OECUSSE" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_BAUCAU =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "BAUCAU" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_SAME =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "SAME" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_AINARO =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "AINARO" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_SUAI =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "SUAI" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_VIQUEQUE =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "VIQUEQUE" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_LOSPALOS =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "LOSPALOS" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_LIQUICA =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "LIQUICA" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR PRow_MANATUTO =
+    CONCATENATEX(
+        FILTER( tbl, [Branch] = "MANATUTO" && NOT ISBLANK( [Credit_Product_No] ) ),
+        "<tr class='pr'><td class='no'>" & [Credit_Product_No] & "</td><td>" & [Credit_Product] & "</td>" &
+        "<td class='ar tg'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([monthly_target]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ar' style='font-weight:600;'>" & IF( IFERROR(VALUE([total_disbursement]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_disbursement]),0),"#,##0.00") ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([total_clients]),0)=0, "<span class='zero'>-</span>", FORMAT(IFERROR(VALUE([total_clients]),0),"#,##0") ) & "</td>" &
+        "<td class='ar'>" & IF( IFERROR(VALUE([monthly_target]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([variance]),0)>=0, "<span style='color:#16a34a;font-weight:600;'>+" & FORMAT(IFERROR(VALUE([variance]),0),"#,##0.00") & "</span>", "<span style='color:#dc2626;font-weight:600;'>(" & FORMAT(ABS(IFERROR(VALUE([variance]),0)),"#,##0.00") & ")</span>" ) ) & "</td>" &
+        "<td class='ac'>" & IF( IFERROR(VALUE([pct]),0)=0, "<span class='zero'>-</span>", IF( IFERROR(VALUE([pct]),0)<=1, "<span style='color:#16a34a;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>", "<span style='color:#dc2626;'>" & FORMAT(IFERROR(VALUE([pct]),0)*100,"0.0") & "%</span>" ) ) & "</td>" &
+        "</tr>",
+        , IFERROR( VALUE([Credit_Product_No]), 99 ), ASC
+    )
+VAR Sub =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'></td><td class='ar' style='font-weight:800;'>" &
+    IF( GT_disb=0, "<span class='zero'>-</span>", FORMAT(GT_disb,"#,##0.00") ) &
+    "</td><td class='ac' style='font-weight:800;'>" &
+    IF( GT_cli=0, "<span class='zero'>-</span>", FORMAT(GT_cli,"#,##0") ) &
+    "</td><td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR BH_DILI     = "<tr class='bh'><td colspan='7'>DILI</td></tr>"
+VAR BH_GLENO    = "<tr class='bh'><td colspan='7'>GLENO</td></tr>"
+VAR BH_MALIANA  = "<tr class='bh'><td colspan='7'>MALIANA</td></tr>"
+VAR BH_AILEU    = "<tr class='bh'><td colspan='7'>AILEU</td></tr>"
+VAR BH_OECUSSE  = "<tr class='bh'><td colspan='7'>OECUSSE</td></tr>"
+VAR BH_BAUCAU   = "<tr class='bh'><td colspan='7'>BAUCAU</td></tr>"
+VAR BH_SAME     = "<tr class='bh'><td colspan='7'>SAME</td></tr>"
+VAR BH_AINARO   = "<tr class='bh'><td colspan='7'>AINARO</td></tr>"
+VAR BH_SUAI     = "<tr class='bh'><td colspan='7'>SUAI</td></tr>"
+VAR BH_VIQUEQUE = "<tr class='bh'><td colspan='7'>VIQUEQUE</td></tr>"
+VAR BH_LOSPALOS = "<tr class='bh'><td colspan='7'>LOSPALOS</td></tr>"
+VAR BH_LIQUICA  = "<tr class='bh'><td colspan='7'>LIQUICA</td></tr>"
+VAR BH_MANATUTO = "<tr class='bh'><td colspan='7'>MANATUTO</td></tr>"
+VAR ST_DILI =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="DILI"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="DILI"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="DILI"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="DILI"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="DILI"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="DILI"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_GLENO =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="GLENO"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="GLENO"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="GLENO"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="GLENO"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="GLENO"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="GLENO"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_MALIANA =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="MALIANA"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="MALIANA"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="MALIANA"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="MALIANA"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="MALIANA"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="MALIANA"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_AILEU =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="AILEU"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="AILEU"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="AILEU"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="AILEU"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="AILEU"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="AILEU"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_OECUSSE =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="OECUSSE"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="OECUSSE"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="OECUSSE"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="OECUSSE"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="OECUSSE"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="OECUSSE"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_BAUCAU =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="BAUCAU"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="BAUCAU"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="BAUCAU"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="BAUCAU"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="BAUCAU"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="BAUCAU"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_SAME =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="SAME"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="SAME"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="SAME"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="SAME"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="SAME"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="SAME"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_AINARO =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="AINARO"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="AINARO"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="AINARO"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="AINARO"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="AINARO"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="AINARO"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_SUAI =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="SUAI"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="SUAI"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="SUAI"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="SUAI"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="SUAI"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="SUAI"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_VIQUEQUE =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="VIQUEQUE"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="VIQUEQUE"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="VIQUEQUE"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="VIQUEQUE"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="VIQUEQUE"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="VIQUEQUE"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_LOSPALOS =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="LOSPALOS"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="LOSPALOS"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="LOSPALOS"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="LOSPALOS"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="LOSPALOS"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="LOSPALOS"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_LIQUICA =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="LIQUICA"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="LIQUICA"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="LIQUICA"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="LIQUICA"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="LIQUICA"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="LIQUICA"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR ST_MANATUTO =
+    "<tr class='st'><td></td><td>TOTAL</td>" &
+    "<td class='ar tg'>" & IF(SUMX(FILTER(tbl_total,[Branch]="MANATUTO"),IFERROR(VALUE([monthly_target]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="MANATUTO"),IFERROR(VALUE([monthly_target]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="MANATUTO"),IFERROR(VALUE([total_disbursement]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="MANATUTO"),IFERROR(VALUE([total_disbursement]),0)),"#,##0.00")) & "</td>" &
+    "<td class='ac' style='font-weight:800;'>" & IF(SUMX(FILTER(tbl_total,[Branch]="MANATUTO"),IFERROR(VALUE([total_clients]),0))=0,"<span class='zero'>-</span>",FORMAT(SUMX(FILTER(tbl_total,[Branch]="MANATUTO"),IFERROR(VALUE([total_clients]),0)),"#,##0")) & "</td>" &
+    "<td class='ar'><span class='zero'>-</span></td><td class='ac'><span class='zero'>-</span></td></tr>"
+VAR GrandTotal =
+    "<tr class='gt'><td></td><td>GRAND TOTAL (ALL BRANCHES)</td>" &
+    "<td class='ar'>" & IF( GT_tgt=0, " - ", FORMAT(GT_tgt,"#,##0.00") ) & "</td>" &
+    "<td class='ar'>" & IF( GT_disb=0, " - ", FORMAT(GT_disb,"#,##0.00") ) & "</td>" &
+    "<td class='ar'>" & IF( GT_cli=0, " - ", FORMAT(GT_cli,"#,##0") ) & "</td>" &
+    "<td class='ar'>" & IF( GT_tgt=0, " - ", IF( GT_var>=0, "+" & FORMAT(GT_var,"#,##0.00"), "(" & FORMAT(ABS(GT_var),"#,##0.00") & ")" ) ) & "</td>" &
+    "<td class='ar'>" & IF( GT_pct=0, " - ", FORMAT(GT_pct*100,"0.0") & "%" ) & "</td>" &
+    "</tr>"
+VAR Ftr =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-size:10px;color:#9ca3af;'>All amounts in USD</span>" &
+    "<span style='font-size:10px;color:#9ca3af;'>BNCTL  -  Confidential</span>" &
+    "</div>"
+RETURN
+    "<div class='dm'>" & Sty & Hdr &
+    "<div style='overflow-x:auto;'>" & TH &
+    BH_DILI     & PRow_DILI     & ST_DILI     &
+    BH_GLENO    & PRow_GLENO    & ST_GLENO    &
+    BH_MALIANA  & PRow_MALIANA  & ST_MALIANA  &
+    BH_AILEU    & PRow_AILEU    & ST_AILEU    &
+    BH_OECUSSE  & PRow_OECUSSE  & ST_OECUSSE  &
+    BH_BAUCAU   & PRow_BAUCAU   & ST_BAUCAU   &
+    BH_SAME     & PRow_SAME     & ST_SAME     &
+    BH_AINARO   & PRow_AINARO   & ST_AINARO   &
+    BH_SUAI     & PRow_SUAI     & ST_SUAI     &
+    BH_VIQUEQUE & PRow_VIQUEQUE & ST_VIQUEQUE &
+    BH_LOSPALOS & PRow_LOSPALOS & ST_LOSPALOS &
+    BH_LIQUICA  & PRow_LIQUICA  & ST_LIQUICA  &
+    BH_MANATUTO & PRow_MANATUTO & ST_MANATUTO &
+    GrandTotal &
+    "</tbody></table></div>" &
+    Ftr & "</div>"

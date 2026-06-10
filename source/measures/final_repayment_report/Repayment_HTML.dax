@@ -1,0 +1,219 @@
+﻿MEASURE 'final_repayment_report'[Repayment_HTML] =
+VAR SelectedYear  = SELECTEDVALUE( 'Calendar_Credit'[Year] )
+VAR SelectedMonth = SELECTEDVALUE( 'Calendar_Credit'[report_month] )
+VAR MaxDate       = MAX( final_repayment_report[load_date] )
+VAR MaxYear       = LEFT( MaxDate, 4 )
+VAR ActiveYear    = IF( ISBLANK(SelectedYear),  MaxYear,  SelectedYear )
+VAR ActiveMonth   = IF( ISBLANK(SelectedMonth), LEFT(MaxDate,7), SelectedMonth )
+VAR MonthDirectFiltered =
+    ISFILTERED('Calendar_Credit'[report_month]) || ISFILTERED('Calendar_Credit'[MonthLabel]) ||
+    ISFILTERED('Calendar_Credit'[MonthNum])     || ISFILTERED('Calendar_Credit'[SortKey])
+VAR YearOnlyMode = ISFILTERED('Calendar_Credit'[Year]) && NOT MonthDirectFiltered
+VAR IsMonthMode  = NOT YearOnlyMode
+VAR ModeTag      = IF(IsMonthMode, "MoM", "YoY")
+VAR PeriodLabel  =
+    IF( MonthDirectFiltered,
+        "For the Month of " & FORMAT( DATE( VALUE(LEFT(ActiveMonth,4)), VALUE(RIGHT(ActiveMonth,2)), 1 ), "MMMM YYYY" ),
+        "For the Year " & ActiveYear )
+
+VAR SnapDate  = IF(MonthDirectFiltered, MAXX(FILTER(final_repayment_report, LEFT([load_date],7)<=ActiveMonth), [load_date]), IF(YearOnlyMode, MAXX(FILTER(final_repayment_report, LEFT([load_date],4)=ActiveYear), [load_date]), MaxDate))
+VAR PriorYear = FORMAT(VALUE(LEFT(SnapDate,4))-1, "0000")
+VAR CompDate  = IF(IsMonthMode, MAXX(FILTER(final_repayment_report, [load_date]<SnapDate), [load_date]), MAXX(FILTER(final_repayment_report, LEFT([load_date],4)=PriorYear), [load_date]))
+VAR CurrLabel = IF(ISBLANK(SnapDate), "Current", FORMAT(DATE(VALUE(LEFT(SnapDate,4)), VALUE(MID(SnapDate,6,2)), 1), "MMM YYYY"))
+VAR CompLabel = IF(ISBLANK(CompDate), "N/A",     FORMAT(DATE(VALUE(LEFT(CompDate,4)), VALUE(MID(CompDate,6,2)), 1), "MMM YYYY"))
+VAR tblCurr   = FILTER(final_repayment_report, [load_date] = SnapDate)
+VAR tblComp   = FILTER(final_repayment_report, [load_date] = CompDate)
+
+VAR TotalOutC  = SUMX( tblCurr, IFERROR( VALUE([outstanding]), 0 ) )
+VAR TotalOutP  = SUMX( tblComp, IFERROR( VALUE([outstanding]), 0 ) )
+VAR TotalOutD  = TotalOutC - TotalOutP
+VAR TotalInstC = SUMX( tblCurr, IFERROR( VALUE([last_instalment]), 0 ) )
+VAR TotalInstP = SUMX( tblComp, IFERROR( VALUE([last_instalment]), 0 ) )
+VAR TotalInstD = TotalInstC - TotalInstP
+VAR RowCount   = COUNTROWS( tblCurr )
+
+VAR Sty =
+    "<style>" &
+    ".rp{font-family:Segoe UI,Calibri,sans-serif;font-size:10.5px;color:#1e2d40;}" &
+    ".rp-t{width:100%;border-collapse:collapse;}" &
+    ".rp-t td{padding:4px 8px;border-bottom:1px solid #e8edf3;vertical-align:middle;white-space:nowrap;}" &
+    ".rp-t tr:hover td{background:#f5f8ff;}" &
+    ".rp-t thead th{background:#003366;color:#fff;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;border-bottom:3px solid #f0a500;padding:7px 8px;text-align:left;white-space:nowrap;}" &
+    ".rp-t thead th.ar{text-align:right;}" &
+    ".rp-t thead th.ac{text-align:center;}" &
+    ".ar{text-align:right!important;font-family:Consolas,monospace;font-size:10px;}" &
+    ".ac{text-align:center!important;font-size:10px;}" &
+    ".lid{font-family:Consolas,monospace;font-size:10px;color:#374151;}" &
+    ".nm{font-weight:600;font-size:10.5px;}" &
+    ".ct{font-size:10px;color:#1a4a7a;}" &
+    ".br{font-size:10px;color:#374151;}" &
+    ".cl-STD{background:#dcfce7;color:#166534;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".cl-SUB{background:#fff7ed;color:#c2410c;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".cl-DBT{background:#fef3c7;color:#b45309;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".cl-LSS{background:#fee2e2;color:#dc2626;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".cl-OTH{background:#f3f4f6;color:#6b7280;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".gt td{background:#003366!important;color:#fff!important;font-weight:800;font-size:11px;border-top:2px solid #f0a500!important;}" &
+    ".gt td.ar{font-family:Consolas,monospace;text-align:right;color:#f0a500!important;}" &
+    ".zero{color:#d1d5db;}" &
+    ".pos{color:#16a34a;font-weight:700;font-family:Consolas,monospace;}" &
+    ".neg{color:#dc2626;font-weight:700;font-family:Consolas,monospace;}" &
+    ".neu{color:#6b7280;font-family:Consolas,monospace;}" &
+    ".nr td{background:#fefce8!important;}" &
+    ".ch td{background:#f0fdf4!important;}" &
+    "</style>"
+
+VAR Hdr =
+    "<div style='background:#003366;padding:16px 20px;border-bottom:4px solid #f0a500;display:flex;align-items:center;'>" &
+    "<img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;object-fit:contain;flex-shrink:0;margin-right:20px;' /><div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;'>REPAYMENT REPORT  -  " & ModeTag & " COMPARISON</div>" &
+    "<div style='color:#cbd5e1;font-size:11px;'>" & PeriodLabel & "</div>" &
+    "<div style='color:#94a3b8;font-size:10px;margin-top:3px;'>Current: " & CurrLabel & " &nbsp;vs&nbsp; Previous: " & CompLabel & "</div>" &
+    "</div></div>"
+
+VAR Summary =
+    "<div style='display:flex;gap:12px;flex-wrap:wrap;padding:14px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0;'>" &
+    "<div style='background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:160px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Total Loans</div><div style='font-size:14px;font-weight:800;color:#003366;font-family:Consolas,monospace;'>" & FORMAT(RowCount,"#,##0") & "</div></div>" &
+    "<div style='background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:160px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Outstanding (" & CurrLabel & ")</div><div style='font-size:14px;font-weight:800;color:#003366;font-family:Consolas,monospace;'>" & FORMAT(TotalOutC,"#,##0.00") & "</div></div>" &
+    "<div style='background:#e0f2fe;border:1px solid #bae6fd;border-radius:6px;padding:10px 16px;min-width:160px;'><div style='font-size:9px;color:#0369a1;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Prev (" & CompLabel & ")</div><div style='font-size:14px;font-weight:800;color:#0369a1;font-family:Consolas,monospace;'>" & FORMAT(TotalOutP,"#,##0.00") & "</div></div>" &
+    "<div style='background:#" & IF(TotalOutD<0,"dcfce7",IF(TotalOutD>0,"fee2e2","f3f4f6")) & ";border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:120px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Delta</div><div style='font-size:14px;font-weight:800;" & IF(TotalOutD<0,"color:#16a34a",IF(TotalOutD>0,"color:#dc2626","color:#6b7280")) & ";font-family:Consolas,monospace;'>" & FORMAT(TotalOutD,"+#,##0.00;-#,##0.00;0.00") & "</div></div>" &
+    "<div style='background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:160px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Last Instalment (" & CurrLabel & ")</div><div style='font-size:14px;font-weight:800;color:#1a4a7a;font-family:Consolas,monospace;'>" & FORMAT(TotalInstC,"#,##0.00") & "</div></div>" &
+    "<div style='background:#e0f2fe;border:1px solid #bae6fd;border-radius:6px;padding:10px 16px;min-width:160px;'><div style='font-size:9px;color:#0369a1;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Prev (" & CompLabel & ")</div><div style='font-size:14px;font-weight:800;color:#0369a1;font-family:Consolas,monospace;'>" & FORMAT(TotalInstP,"#,##0.00") & "</div></div>" &
+    "<div style='background:#" & IF(TotalInstD>0,"dcfce7",IF(TotalInstD<0,"fee2e2","f3f4f6")) & ";border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:120px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Delta</div><div style='font-size:14px;font-weight:800;" & IF(TotalInstD>0,"color:#16a34a",IF(TotalInstD<0,"color:#dc2626","color:#6b7280")) & ";font-family:Consolas,monospace;'>" & FORMAT(TotalInstD,"+#,##0.00;-#,##0.00;0.00") & "</div></div>" &
+    "</div>"
+
+VAR TH =
+    "<table class='rp-t'><thead><tr>" &
+    "<th rowspan='2'>LOAN ID</th>" &
+    "<th rowspan='2'>ORIGINAL ID</th>" &
+    "<th rowspan='2'>CUSTOMER NAME</th>" &
+    "<th rowspan='2'>ACCOUNT OFFICER</th>" &
+    "<th rowspan='2'>BRANCH</th>" &
+    "<th rowspan='2'>PRODUCT</th>" &
+    "<th rowspan='2' class='ac'>CLASS.</th>" &
+    "<th rowspan='2' class='ar'>BASE AMT</th>" &
+    "<th colspan='3' style='background:#1a4a7a;color:#fff;text-align:center;font-size:10px;padding:7px 8px;border-bottom:2px solid #f0a500;font-style:italic;'>OUTSTANDING [" & ModeTag & "]</th>" &
+    "<th colspan='3' style='background:#1a4a7a;color:#fff;text-align:center;font-size:10px;padding:7px 8px;border-bottom:2px solid #f0a500;font-style:italic;'>LAST INSTALMENT [" & ModeTag & "]</th>" &
+    "<th rowspan='2' class='ac'>LAST REP. DATE</th>" &
+    "<th rowspan='2' class='ac'>MATURITY</th>" &
+    "</tr><tr>" &
+    "<th class='ar'>" & CurrLabel & "</th><th class='ar'>" & CompLabel & "</th><th class='ar'>DELTA</th>" &
+    "<th class='ar'>" & CurrLabel & "</th><th class='ar'>" & CompLabel & "</th><th class='ar'>DELTA</th>" &
+    "</tr></thead><tbody>"
+
+VAR GrandTotal =
+    "<tr class='gt'>" &
+    "<td colspan='8'>GRAND TOTAL (" & FORMAT(RowCount,"#,##0") & " loans)</td>" &
+    "<td class='ar'>" & FORMAT(TotalOutC,"#,##0.00") & "</td>" &
+    "<td class='ar'>" & FORMAT(TotalOutP,"#,##0.00") & "</td>" &
+    "<td class='ar'>" & FORMAT(TotalOutD,"+#,##0.00;-#,##0.00;0.00") & "</td>" &
+    "<td class='ar'>" & FORMAT(TotalInstC,"#,##0.00") & "</td>" &
+    "<td class='ar'>" & FORMAT(TotalInstP,"#,##0.00") & "</td>" &
+    "<td class='ar'>" & FORMAT(TotalInstD,"+#,##0.00;-#,##0.00;0.00") & "</td>" &
+    "<td colspan='2'></td>" &
+    "</tr>"
+
+VAR _PgSize  = 30
+VAR _PgNum   = SELECTEDVALUE('PageNum'[Page Number], 1)
+VAR _TotRows = COUNTROWS(tblCurr)
+VAR _TotPg   = MAX(1, CEILING(_TotRows / _PgSize, 1))
+VAR _PgValid = MIN(MAX(1, _PgNum), _TotPg)
+VAR _Skip    = (_PgValid - 1) * _PgSize
+VAR tblPage  = EXCEPT(
+    TOPN(_Skip + _PgSize, tblCurr, IFERROR(VALUE([loan_id2]),0), ASC),
+    TOPN(_Skip,           tblCurr, IFERROR(VALUE([loan_id2]),0), ASC)
+)
+
+VAR DataRows = CONCATENATEX(
+    tblPage,
+    VAR _lid   = [loan_id2]
+    VAR _olid  = [original_loan_id]
+    VAR _nm    = [customer_name]
+    VAR _ao    = [account_officer]
+    VAR _brn   = [branch_code]
+    VAR _brnm  = [branch_name]
+    VAR _prod  = [product_name]
+    VAR _cls   = [classification]
+    VAR _base  = IFERROR( VALUE([base_amount]), 0 )
+    VAR _outC  = IFERROR( VALUE([outstanding]), 0 )
+    VAR _instC = IFERROR( VALUE([last_instalment]), 0 )
+    VAR _lrd   = [last_rep_date]
+    VAR _mat   = [maturity_date]
+    VAR _cr    = FILTER(tblComp, [loan_id2] = _lid)
+    VAR _outP  = MAXX(_cr, IFERROR(VALUE([outstanding]),0))
+    VAR _instP = MAXX(_cr, IFERROR(VALUE([last_instalment]),0))
+    VAR _isN   = ISBLANK(MAXX(_cr, [loan_id2]))
+    VAR _outD  = _outC  - IF(_isN,0,_outP)
+    VAR _instD = _instC - IF(_isN,0,_instP)
+    VAR _rCls  = IF(_isN," class='nr'",IF(OR(_outD<>0,_instD<>0)," class='ch'",""))
+    VAR _oC    = IF(_outD<0," pos",IF(_outD>0," neg"," neu"))
+    VAR _iC    = IF(_instD>0," pos",IF(_instD<0," neg"," neu"))
+    VAR _clsB  = SWITCH(UPPER(_cls),
+        "STANDARD",    "<span class='cl-STD'>STANDARD</span>",
+        "SUB-STANDARD","<span class='cl-SUB'>SUB-STD</span>",
+        "SUBSTANDARD", "<span class='cl-SUB'>SUB-STD</span>",
+        "DOUBTFUL",    "<span class='cl-DBT'>DOUBTFUL</span>",
+        "LOSS",        "<span class='cl-LSS'>LOSS</span>",
+        IF(ISBLANK(_cls),"<span class='zero'> - </span>","<span class='cl-OTH'>" & _cls & "</span>"))
+    RETURN "<tr" & _rCls & ">" &
+    "<td class='lid'>" & _lid & "</td>" &
+    "<td class='lid'>" & IF(ISBLANK(_olid),"<span class='zero'> - </span>",_olid) & "</td>" &
+    "<td class='nm'>" & _nm & "</td>" &
+    "<td class='ct'>" & COALESCE(_ao,"") & "</td>" &
+    "<td class='br'>" & _brn & IF(ISBLANK(_brnm),"","<div style='font-size:9px;color:#6b7280;margin-top:1px;'>" & _brnm & "</div>") & "</td>" &
+    "<td class='ct'>" & _prod & "</td>" &
+    "<td class='ac'>" & _clsB & "</td>" &
+    "<td class='ar'>" & IF(_base=0,"<span class='zero'>-</span>",FORMAT(_base,"#,##0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:600;'>" & FORMAT(_outC,"#,##0.00") & "</td>" &
+    "<td class='ar'>" & IF(_isN,"<span class='zero'>NEW</span>",FORMAT(_outP,"#,##0.00")) & "</td>" &
+    "<td class='ar" & _oC & "'>" & IF(_isN,"NEW",FORMAT(_outD,"+#,##0.00;-#,##0.00;0.00")) & "</td>" &
+    "<td class='ar' style='font-weight:600;color:#003366;'>" & IF(_instC=0,"<span class='zero'>-</span>",FORMAT(_instC,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(_isN,"<span class='zero'>NEW</span>",IF(_instP=0,"<span class='zero'>-</span>",FORMAT(_instP,"#,##0.00"))) & "</td>" &
+    "<td class='ar" & _iC & "'>" & IF(_isN,"NEW",FORMAT(_instD,"+#,##0.00;-#,##0.00;0.00")) & "</td>" &
+    "<td class='ac'>" & COALESCE(_lrd,"") & "</td>" &
+    "<td class='ac'>" & COALESCE(_mat,"") & "</td>" &
+    "</tr>",
+    ,
+    IFERROR(VALUE([loan_id2]),0), ASC
+)
+
+VAR Ftr =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-size:10px;color:#9ca3af;'>All amounts in USD</span>" &
+    "<span style='font-size:10px;color:#9ca3af;'>BNCTL  -  Confidential</span>" &
+    "</div>"
+
+VAR _WinStart  = MAX(1, _PgValid - 4)
+VAR _WinEnd    = MIN(_TotPg, _PgValid + 4)
+VAR _ShowFirst = _WinStart > 1
+VAR _ShowLast  = _WinEnd < _TotPg
+VAR _PgButtons =
+    IF(_ShowFirst,
+        "<span style='display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:5px;font-size:12px;margin:0 2px;background:#f1f5f9;color:#64748b;'>1</span>" &
+        IF(_WinStart > 2, "<span style='color:#94a3b8;margin:0 2px;'>...</span>", ""),
+        ""
+    ) &
+    CONCATENATEX(
+        GENERATESERIES(_WinStart, _WinEnd, 1),
+        VAR _p   = [Value]
+        VAR _act = _p = _PgValid
+        RETURN
+        "<span style='display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:5px;font-size:12px;margin:0 2px;" &
+        "font-weight:" & IF(_act,"700","400") & ";" &
+        IF(_act,"background:#3b82f6;color:#fff;box-shadow:0 2px 4px rgba(59,130,246,0.35);","background:#f1f5f9;color:#64748b;") & "'>" & _p & "</span>",
+        "",
+        [Value], ASC
+    ) &
+    IF(_ShowLast,
+        IF(_WinEnd < _TotPg - 1, "<span style='color:#94a3b8;margin:0 2px;'>...</span>", "") &
+        "<span style='display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:5px;font-size:12px;margin:0 2px;background:#f1f5f9;color:#64748b;'>" & _TotPg & "</span>",
+        ""
+    )
+VAR PgBar =
+    "<div style='background:#f8fafc;border-top:2px solid #e2e8f0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;'>" &
+    "<span style='font-size:11px;color:#64748b;'>Showing <b style='color:#1e293b;'>" & (_Skip+1) & "</b> &ndash; <b style='color:#1e293b;'>" & MIN(_Skip+_PgSize,_TotRows) & "</b> of <b style='color:#1e293b;'>" & _TotRows & "</b> records</span>" &
+    "<div style='display:flex;align-items:center;'>" & _PgButtons & "</div>" &
+    "<span style='font-size:10px;color:#94a3b8;font-style:italic;'>Use PageNum slicer</span>" &
+    "</div>"
+
+RETURN "<div class='rp'>" & Sty & Hdr & Summary & "<div style='overflow-x:auto;'>" & TH & DataRows & GrandTotal & "</tbody></table></div>" & Ftr & PgBar & "</div>"

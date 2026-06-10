@@ -1,0 +1,142 @@
+﻿MEASURE 'final_loan_sector_daily_report'[LoanSector_Daily_HTML] =
+VAR SelectedYear  = SELECTEDVALUE( 'Calendar_Credit'[Year] )
+VAR SelectedMonth = SELECTEDVALUE( 'Calendar_Credit'[report_month] )
+VAR MaxDate       = MAX( final_loan_sector_daily_report[load_date] )
+VAR MaxYear       = LEFT( MaxDate, 4 )
+VAR ActiveYear    = IF( ISBLANK(SelectedYear),  MaxYear,  SelectedYear )
+VAR ActiveMonth   = IF( ISBLANK(SelectedMonth), LEFT( MaxDate, 7 ), SelectedMonth )
+VAR PeriodLabel   =
+    IF( NOT ISBLANK(SelectedMonth),
+        FORMAT( DATE( LEFT(ActiveMonth,4), RIGHT(ActiveMonth,2), 1 ), "MMMM YYYY" ),
+        ActiveYear )
+
+-- Láº¥y Ä‘Ãºng load_date má»›i nháº¥t trong ká»³ Ä‘á»ƒ trÃ¡nh duplicate
+VAR tblPeriod =
+    FILTER(
+        final_loan_sector_daily_report,
+        IF( NOT ISBLANK(SelectedMonth),
+            LEFT([load_date],7) = ActiveMonth,
+            LEFT([load_date],4) = ActiveYear )
+    )
+VAR LatestDate = MAXX( tblPeriod, [load_date] )
+VAR tbl        = FILTER( tblPeriod, [load_date] = LatestDate )
+
+-- Sector data (exclude Grand Total row where credit_by_sector=0)
+VAR data  = FILTER( tbl, VALUE([credit_by_sector]) <> 0 )
+VAR grand = FILTER( tbl, VALUE([credit_by_sector]) = 0 )
+
+-- Grand total row
+VAR GT_STD  = SUMX( grand, IFERROR(VALUE([standard]),0) )
+VAR GT_US   = SUMX( grand, IFERROR(VALUE([under_supervision]),0) )
+VAR GT_SS   = SUMX( grand, IFERROR(VALUE([sub_standard]),0) )
+VAR GT_DBT  = SUMX( grand, IFERROR(VALUE([doubtful]),0) )
+VAR GT_LOSS = SUMX( grand, IFERROR(VALUE([loss]),0) )
+VAR GT_TOT  = GT_STD + GT_US + GT_SS + GT_DBT + GT_LOSS
+
+-- Style
+VAR Sty =
+    "<style>" &
+    ".ls{font-family:Segoe UI,Calibri,sans-serif;font-size:10.5px;color:#1e2d40;}" &
+    ".ls-t{width:100%;border-collapse:collapse;}" &
+    ".ls-t td,.ls-t th{padding:5px 10px;border-bottom:1px solid #e8edf3;vertical-align:middle;}" &
+    ".ls-t th{background:#003366;color:#fff;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;border-bottom:3px solid #f0a500;padding:7px 10px;text-align:left;white-space:nowrap;}" &
+    ".ls-t th.ar{text-align:right;}" &
+    ".ls-t tr:hover td{background:#f5f8ff;}" &
+    ".ar{text-align:right!important;font-family:Consolas,monospace;font-size:10px;}" &
+    ".ac{text-align:center!important;font-size:10px;}" &
+    ".sn{color:#6b7280;font-size:10px;width:50px;text-align:center;}" &
+    ".nm{font-weight:600;}" &
+    ".cl-STD{color:#166534;font-weight:600;}" &
+    ".cl-US{color:#c2410c;font-weight:600;}" &
+    ".cl-SS{color:#b45309;font-weight:600;}" &
+    ".cl-DBT{color:#d97706;font-weight:600;}" &
+    ".cl-LSS{color:#dc2626;font-weight:600;}" &
+    ".cl-TOT{color:#003366;font-weight:700;}" &
+    ".gt td{background:#003366!important;color:#fff!important;font-weight:800;font-size:11px;border-top:2px solid #f0a500!important;}" &
+    ".gt td.ar{font-family:Consolas,monospace;text-align:right;color:#f0a500!important;}" &
+    ".zero{color:#d1d5db;}" &
+    "</style>"
+
+VAR Hdr =
+    "<div style='background:#003366;padding:16px 20px;border-bottom:4px solid #f0a500;display:flex;align-items:center;'><img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;object-fit:contain;flex-shrink:0;margin-right:20px;' /><div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;'>LOAN CLASSIFICATION BY SECTOR - DAILY REPORT</div>" &
+    "<div style='color:#cbd5e1;font-size:11px;'>" & PeriodLabel & "</div>" &
+    "</div></div>"
+
+VAR TH =
+    "<table class='ls-t'><thead><tr>" &
+    "<th class='ac'>NO.</th>" &
+    "<th>SECTOR NAME</th>" &
+    "<th class='ar' style='color:#16a34a;'>STANDARD</th>" &
+    "<th class='ar' style='color:#fb923c;'>UNDER-SUPERVISION</th>" &
+    "<th class='ar' style='color:#f59e0b;'>SUB-STANDARD</th>" &
+    "<th class='ar' style='color:#f97316;'>DOUBTFUL</th>" &
+    "<th class='ar' style='color:#ef4444;'>LOSS</th>" &
+    "<th class='ar'>LOAN CLASSIFICATION BY SECTOR</th>" &
+    "</tr></thead><tbody>"
+
+VAR DataRows =
+    CONCATENATEX(
+        data,
+        "<tr>" &
+        "<td class='sn'>" & [credit_by_sector] & "</td>" &
+        "<td class='nm'>" & [naran_sector] & "</td>" &
+        "<td class='ar cl-STD'>" &
+            IF( IFERROR(VALUE([standard]),0) = 0, "<span class='zero'>-</span>",
+                FORMAT(IFERROR(VALUE([standard]),0),"#,##0.00") ) &
+        "</td>" &
+        "<td class='ar cl-US'>" &
+            IF( IFERROR(VALUE([under_supervision]),0) = 0, "<span class='zero'>-</span>",
+                FORMAT(IFERROR(VALUE([under_supervision]),0),"#,##0.00") ) &
+        "</td>" &
+        "<td class='ar cl-SS'>" &
+            IF( IFERROR(VALUE([sub_standard]),0) = 0, "<span class='zero'>-</span>",
+                FORMAT(IFERROR(VALUE([sub_standard]),0),"#,##0.00") ) &
+        "</td>" &
+        "<td class='ar cl-DBT'>" &
+            IF( IFERROR(VALUE([doubtful]),0) = 0, "<span class='zero'>-</span>",
+                FORMAT(IFERROR(VALUE([doubtful]),0),"#,##0.00") ) &
+        "</td>" &
+        "<td class='ar cl-LSS'>" &
+            IF( IFERROR(VALUE([loss]),0) = 0, "<span class='zero'>-</span>",
+                FORMAT(IFERROR(VALUE([loss]),0),"#,##0.00") ) &
+        "</td>" &
+        "<td class='ar cl-TOT'>" &
+            FORMAT(
+                IFERROR(VALUE([standard]),0) +
+                IFERROR(VALUE([under_supervision]),0) +
+                IFERROR(VALUE([sub_standard]),0) +
+                IFERROR(VALUE([doubtful]),0) +
+                IFERROR(VALUE([loss]),0),
+                "#,##0.00") &
+        "</td>" &
+        "</tr>",
+        ,
+        IFERROR(VALUE([credit_by_sector]),99), ASC
+    )
+
+VAR GrandTotal =
+    "<tr class='gt'>" &
+    "<td class='ac'>-</td>" &
+    "<td>GRAND TOTAL</td>" &
+    "<td class='ar'>" & IF(GT_STD=0,"-",FORMAT(GT_STD,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_US=0,"-",FORMAT(GT_US,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_SS=0,"-",FORMAT(GT_SS,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_DBT=0,"-",FORMAT(GT_DBT,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_LOSS=0,"-",FORMAT(GT_LOSS,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & FORMAT(GT_TOT,"#,##0.00") & "</td>" &
+    "</tr>"
+
+VAR Ftr =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-size:10px;color:#9ca3af;'>All amounts in USD</span>" &
+    "<span style='font-size:10px;color:#9ca3af;'>BNCTL - Confidential</span>" &
+    "</div>"
+
+RETURN
+    "<div class='ls'>" & Sty & Hdr &
+    "<div style='overflow-x:auto;'>" &
+    TH & DataRows & GrandTotal & "</tbody></table></div>" &
+    Ftr & "</div>"
+

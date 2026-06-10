@@ -1,0 +1,2 @@
+﻿MEASURE 'PageNum'[Page Number Value] =
+SELECTEDVALUE('PageNum'[Page Number], 1)

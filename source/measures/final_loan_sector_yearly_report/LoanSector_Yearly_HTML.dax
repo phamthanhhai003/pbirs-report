@@ -1,0 +1,122 @@
+﻿MEASURE 'final_loan_sector_yearly_report'[LoanSector_Yearly_HTML] =
+VAR SelectedYear  = SELECTEDVALUE( 'Calendar_Credit'[Year] )
+VAR SelectedMonth = SELECTEDVALUE( 'Calendar_Credit'[report_month] )
+VAR MaxDate       = MAX( final_loan_sector_yearly_report[load_date] )
+VAR MaxYear       = LEFT( MaxDate, 4 )
+VAR ActiveYear    = IF( ISBLANK(SelectedYear),  MaxYear,  SelectedYear )
+VAR ActiveMonth   = IF( ISBLANK(SelectedMonth), LEFT( MaxDate, 7 ), SelectedMonth )
+VAR PeriodLabel   =
+    IF( NOT ISBLANK(SelectedMonth),
+        FORMAT( DATE( LEFT(ActiveMonth,4), RIGHT(ActiveMonth,2), 1 ), "MMMM YYYY" ),
+        ActiveYear )
+VAR tbl =
+    FILTER(
+        final_loan_sector_yearly_report,
+        IF( NOT ISBLANK(SelectedMonth),
+            LEFT([load_date],7) = ActiveMonth,
+            LEFT([load_date],4) = ActiveYear )
+    )
+VAR data  = FILTER( tbl, VALUE([credit_by_sector]) <> 0 )
+VAR grand = FILTER( tbl, VALUE([credit_by_sector]) = 0 )
+-- Grand Total row values
+VAR GT_M1  = SUMX( grand, IFERROR(VALUE([month_dec_prior]),0) )
+VAR GT_M2  = SUMX( grand, IFERROR(VALUE([month_jan]),0) )
+VAR GT_M3  = SUMX( grand, IFERROR(VALUE([month_feb]),0) )
+VAR GT_M4  = SUMX( grand, IFERROR(VALUE([month_mar]),0) )
+VAR GT_M5  = SUMX( grand, IFERROR(VALUE([month_apr]),0) )
+VAR GT_M6  = SUMX( grand, IFERROR(VALUE([month_may]),0) )
+VAR GT_M7  = SUMX( grand, IFERROR(VALUE([month_jun]),0) )
+VAR GT_M8  = SUMX( grand, IFERROR(VALUE([month_jul]),0) )
+VAR GT_M9  = SUMX( grand, IFERROR(VALUE([month_aug]),0) )
+VAR GT_M10 = SUMX( grand, IFERROR(VALUE([month_sep]),0) )
+VAR GT_M11 = SUMX( grand, IFERROR(VALUE([month_oct]),0) )
+VAR GT_M12 = SUMX( grand, IFERROR(VALUE([month_nov]),0) )
+VAR Sty =
+    "<style>" &
+    ".ly{font-family:Segoe UI,Calibri,sans-serif;font-size:10.5px;color:#1e2d40;}" &
+    ".ly-t{width:100%;border-collapse:collapse;}" &
+    ".ly-t td,.ly-t th{padding:5px 9px;border-bottom:1px solid #e8edf3;vertical-align:middle;white-space:nowrap;}" &
+    ".ly-t th{background:#003366;color:#fff;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;border-bottom:3px solid #f0a500;padding:7px 9px;text-align:left;}" &
+    ".ly-t th.ar{text-align:right;}" &
+    ".ly-t tr:hover td{background:#f5f8ff;}" &
+    ".ar{text-align:right!important;font-family:Consolas,monospace;font-size:9.5px;}" &
+    ".ac{text-align:center!important;font-size:10px;}" &
+    ".sn{color:#6b7280;font-size:10px;width:40px;text-align:center;}" &
+    ".nm{font-weight:600;font-size:10.5px;min-width:180px;}" &
+    ".gt td{background:#003366!important;color:#fff!important;font-weight:800;font-size:11px;border-top:2px solid #f0a500!important;}" &
+    ".gt td.ar{font-family:Consolas,monospace;text-align:right;color:#f0a500!important;}" &
+    ".cur-col{background:#e8f0fb!important;font-weight:700;}" &
+    ".zero{color:#d1d5db;}" &
+    "</style>"
+VAR Hdr =
+    "<div style='background:#003366;padding:16px 20px;border-bottom:4px solid #f0a500;display:flex;align-items:center;'><img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;object-fit:contain;flex-shrink:0;margin-right:20px;' /><div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;'>LOAN REPORT BY SECTOR  -  YEARLY (ROLLING 12 MONTHS)</div>" &
+    "<div style='color:#cbd5e1;font-size:11px;'>" & PeriodLabel & "</div>" &
+    "</div></div>"
+VAR TH =
+    "<table class='ly-t'><thead><tr>" &
+    "<th class='ac'>NO.</th>" &
+    "<th>SECTOR NAME</th>" &
+    "<th class='ar'>DEZEMBRU 2025</th>" &
+    "<th class='ar'>JANEIRU 2026</th>" &
+    "<th class='ar'>FEVEREIRU 2026</th>" &
+    "<th class='ar'>MARSU 2026</th>" &
+    "<th class='ar'>ABRIL 2026</th>" &
+    "<th class='ar'>MAIU 2026</th>" &
+    "<th class='ar'>JUNU 2026</th>" &
+    "<th class='ar'>JULLU 2026</th>" &
+    "<th class='ar'>AGOSTU 2026</th>" &
+    "<th class='ar'>SETEMBRU 2026</th>" &
+    "<th class='ar'>OUTUBRU 2026</th>" &
+    "<th class='ar'>NOVEMBRU 2026</th>" &
+    "</tr></thead><tbody>"
+VAR DataRows =
+    CONCATENATEX(
+        FILTER( data, IFERROR(VALUE([credit_by_sector]),0) > 0 ),
+        "<tr>" &
+        "<td class='sn'>" & [credit_by_sector] & "</td>" &
+        "<td class='nm'>" & [naran_sector] & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_dec_prior]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_dec_prior]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_jan]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_jan]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_feb]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_feb]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_mar]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_mar]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_apr]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_apr]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_may]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_may]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_jun]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_jun]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_jul]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_jul]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_aug]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_aug]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_sep]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_sep]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_oct]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_oct]),0),"#,##0.00")) & "</td>" &
+        "<td class='ar'>" & IF(IFERROR(VALUE([month_nov]),0)=0,"<span class='zero'>-</span>",FORMAT(IFERROR(VALUE([month_nov]),0),"#,##0.00")) & "</td>" &
+        "</tr>",
+        ,
+        IFERROR(VALUE([credit_by_sector]),99), ASC
+    )
+VAR GrandTotal =
+    "<tr class='gt'>" &
+    "<td class='ac'> - </td>" &
+    "<td>GRAND TOTAL</td>" &
+    "<td class='ar'>" & IF(GT_M1=0," - ",FORMAT(GT_M1,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M2=0," - ",FORMAT(GT_M2,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M3=0," - ",FORMAT(GT_M3,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M4=0," - ",FORMAT(GT_M4,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M5=0," - ",FORMAT(GT_M5,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M6=0," - ",FORMAT(GT_M6,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M7=0," - ",FORMAT(GT_M7,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M8=0," - ",FORMAT(GT_M8,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M9=0," - ",FORMAT(GT_M9,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M10=0," - ",FORMAT(GT_M10,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M11=0," - ",FORMAT(GT_M11,"#,##0.00")) & "</td>" &
+    "<td class='ar'>" & IF(GT_M12=0," - ",FORMAT(GT_M12,"#,##0.00")) & "</td>" &
+    "</tr>"
+VAR Ftr =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-size:10px;color:#9ca3af;'>All amounts in USD &nbsp;|&nbsp; Tetum month names per BCTL convention</span>" &
+    "<span style='font-size:10px;color:#9ca3af;'>BNCTL  -  Confidential</span>" &
+    "</div>"
+RETURN
+    "<div class='ly'>" & Sty & Hdr &
+    "<div style='overflow-x:auto;'>" &
+    TH & DataRows & GrandTotal & "</tbody></table></div>" &
+    Ftr & "</div>"

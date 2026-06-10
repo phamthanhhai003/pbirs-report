@@ -1,0 +1,344 @@
+﻿MEASURE 'final_provision_report'[Provision_HTML_v2] =
+-- ================================================================
+-- PROVISION REPORT v2 â€” Config-Driven Columns
+-- ================================================================
+-- ADD NEW COLUMN (3 steps):
+--   1. _cfg  â†’ add 1 row: {"key",1,"source_table","LABEL","aln","typ",ord}
+--   2. CONCATENATEX vars â†’ VAR _key = MAXX(FILTER(tblXxx,[loan_id]=_lid),[col])
+--      (skip if same-table col â€” value already in row context)
+--   3. CONCATENATEX RETURN â†’ IF(show("key"),"<td>"&_key&"</td>","") &
+--
+-- HIDE/SHOW: change 1â†’0 or 0â†’1 in _cfg
+-- RENAME   : change "LABEL" in _cfg
+-- REORDER  : change ord number in _cfg
+--
+-- ord ranges:
+--   1-10  : descriptor cols (GRAND TOTAL colspan)
+--   11-12 : amount cols before OUTSTANDING group
+--   21-25 : cols between OUTSTANDING and PROVISION
+--   31+   : cols after PROVISION
+-- ================================================================
+
+-- ================================================================
+-- SECTION 1: COLUMN CONFIG â€” Edit here
+-- ================================================================
+VAR _cfg = DATATABLE(
+    "k",  STRING,
+    "v",  INTEGER,
+    "src",STRING,
+    "lbl",STRING,
+    "aln",STRING,
+    "typ",STRING,
+    "ord",INTEGER,
+{
+    -- final_provision_report
+    {"loan_id",         1,"final_provision_report","LOAN ID",        "l","text", 1},
+    {"orig_loan_id",    1,"final_provision_report","ORIG LOAN ID",   "l","text", 2},
+    {"arrangement_id",  1,"final_provision_report","ARRANGEMENT ID", "l","text", 3},
+    {"branch",          1,"final_provision_report","BRANCH",         "l","text", 4},
+    {"cust_no",         1,"final_provision_report","CUST NO",        "c","text", 5},
+    {"cust_name",       1,"final_provision_report","CUSTOMER NAME",  "l","text", 6},
+    {"category",        1,"final_provision_report","CAT",            "c","text", 7},
+    {"product",         1,"final_provision_report","PRODUCT",        "l","text", 8},
+    {"ccy",             1,"final_provision_report","CCY",            "c","text", 9},
+    {"classification",  1,"final_provision_report","CLASSIFICATION", "c","text",10},
+    {"local_ccy_amt",   1,"final_provision_report","LOCAL CCY AMT",  "r","num", 11},
+    {"base_amount",     1,"final_provision_report","BASE AMOUNT",    "r","num", 12},
+    -- [OUTSTANDING group auto-inserted at ord 20]
+    {"value_date",      1,"final_provision_report","VALUE DATE",     "c","date",21},
+    {"commitment",      1,"final_provision_report","COMMITMENT",     "r","num", 22},
+    {"odd",             1,"final_provision_report","ODD",            "c","num", 23},
+    {"start_date",      1,"final_provision_report","START DATE",     "c","date",24},
+    {"mat_date",        1,"final_provision_report","MAT DATE",       "c","date",25},
+    -- [PROVISION group auto-inserted at ord 30]
+    {"status",          1,"final_provision_report","STATUS",         "c","text",31},
+    -- final_repayment_report (join by loan_id)
+    {"account_officer", 1,"final_repayment_report","ACCOUNT OFFICER","l","text",32},
+    {"legal_id",        0,"final_repayment_report","LEGAL ID",       "l","text",33},
+    {"last_rep_date",   1,"final_repayment_report","LAST REPAY",     "c","date",34}
+    -- ADD NEW COLUMN ROW ABOVE THIS LINE
+})
+
+-- ================================================================
+-- SECTION 2: DATE / COMPARISON â€” Do not edit
+-- ================================================================
+VAR SelectedYear  = SELECTEDVALUE('Calendar_Credit'[Year])
+VAR SelectedMonth = SELECTEDVALUE('Calendar_Credit'[report_month])
+VAR MaxDate       = MAX(final_provision_report[load_date])
+VAR ActiveYear    = IF(ISBLANK(SelectedYear),LEFT(MaxDate,4),SelectedYear)
+VAR ActiveMonth   = IF(ISBLANK(SelectedMonth),LEFT(MaxDate,7),SelectedMonth)
+VAR MonthDirectFiltered =
+    ISFILTERED('Calendar_Credit'[report_month]) ||
+    ISFILTERED('Calendar_Credit'[MonthLabel])   ||
+    ISFILTERED('Calendar_Credit'[MonthNum])     ||
+    ISFILTERED('Calendar_Credit'[SortKey])
+VAR YearOnlyMode = ISFILTERED('Calendar_Credit'[Year]) && NOT MonthDirectFiltered
+VAR IsMonthMode  = NOT YearOnlyMode
+VAR ModeTag      = IF(IsMonthMode,"MoM","YoY")
+VAR PeriodLabel  =
+    IF(MonthDirectFiltered,
+        "For the Month of " & FORMAT(DATE(VALUE(LEFT(ActiveMonth,4)),VALUE(RIGHT(ActiveMonth,2)),1),"MMMM YYYY"),
+        "For the Year " & ActiveYear)
+VAR SnapDate =
+    IF(MonthDirectFiltered,
+        MAXX(FILTER(final_provision_report,LEFT([load_date],7)<=ActiveMonth),[load_date]),
+    IF(YearOnlyMode,
+        MAXX(FILTER(final_provision_report,LEFT([load_date],4)=ActiveYear),[load_date]),
+        MaxDate))
+VAR CompDate =
+    IF(IsMonthMode,
+        MAXX(FILTER(final_provision_report,[load_date]<SnapDate),[load_date]),
+        MAXX(FILTER(final_provision_report,LEFT([load_date],4)=FORMAT(VALUE(LEFT(SnapDate,4))-1,"0000")),[load_date]))
+VAR CurrLabel = IF(ISBLANK(SnapDate),"Current",FORMAT(DATE(VALUE(LEFT(SnapDate,4)),VALUE(MID(SnapDate,6,2)),1),"MMM YYYY"))
+VAR CompLabel = IF(ISBLANK(CompDate),"N/A",FORMAT(DATE(VALUE(LEFT(CompDate,4)),VALUE(MID(CompDate,6,2)),1),"MMM YYYY"))
+VAR tblCurr   = FILTER(final_provision_report,[load_date]=SnapDate)
+VAR tblComp   = FILTER(final_provision_report,[load_date]=CompDate)
+-- Cross-table sources (add new tables here, after SnapDate)
+VAR tblRepay  = FILTER(final_repayment_report,[load_date]=SnapDate)
+
+-- ================================================================
+-- SECTION 3 (internal): AGGREGATES + PAGINATION
+-- ================================================================
+VAR TotalOutCurr    = SUMX(tblCurr,ABS(IFERROR(VALUE([outstanding]),0)))
+VAR TotalOutComp    = SUMX(tblComp,ABS(IFERROR(VALUE([outstanding]),0)))
+VAR TotalOutDelta   = TotalOutCurr - TotalOutComp
+VAR TotalCommitment = SUMX(tblCurr,IFERROR(VALUE([commitment]),0))
+VAR TotalProvCurr   = SUMX(tblCurr,ABS(IFERROR(VALUE([provision]),0)))
+VAR TotalProvComp   = SUMX(tblComp,ABS(IFERROR(VALUE([provision]),0)))
+VAR TotalProvDelta  = TotalProvCurr - TotalProvComp
+VAR RowCount        = COUNTROWS(tblCurr)
+VAR _PgSize  = 30
+VAR _PgNum   = SELECTEDVALUE('PageNum'[Page Number],1)
+VAR _TotRows = COUNTROWS(tblCurr)
+VAR _TotPg   = MAX(1,CEILING(_TotRows/_PgSize,1))
+VAR _PgValid = MIN(MAX(1,_PgNum),_TotPg)
+VAR _Skip    = (_PgValid-1)*_PgSize
+VAR tblPage  = EXCEPT(
+    TOPN(_Skip+_PgSize,tblCurr,[loan_id],ASC),
+    TOPN(_Skip,        tblCurr,[loan_id],ASC))
+
+-- ================================================================
+-- SECTION 3b: STYLES + HEADER â€” Rarely edit
+-- ================================================================
+VAR Sty =
+    "<style>.pv{font-family:Segoe UI,Calibri,sans-serif;font-size:10.5px;color:#1e2d40;}" &
+    ".pv-t{width:100%;border-collapse:collapse;}" &
+    ".pv-t td{padding:4px 8px;border-bottom:1px solid #e8edf3;vertical-align:middle;white-space:nowrap;}" &
+    ".pv-t tr:hover td{background:#f5f8ff;}" &
+    ".pv-t thead th{background:#003366;color:#fff;font-weight:700;font-size:10px;text-transform:uppercase;" &
+    "letter-spacing:0.4px;border-bottom:3px solid #f0a500;padding:7px 8px;text-align:left;white-space:nowrap;}" &
+    ".pv-t thead th.ar{text-align:right;}.pv-t thead th.ac{text-align:center;}" &
+    ".ar{text-align:right!important;font-family:Consolas,monospace;font-size:10px;}" &
+    ".ac{text-align:center!important;font-size:10px;}" &
+    ".nm{font-weight:500;font-size:10.5px;}.lid{font-family:Consolas,monospace;font-size:10px;color:#374151;}" &
+    ".cl-STD{background:#dcfce7;color:#166534;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".cl-SUB{background:#fff7ed;color:#c2410c;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".cl-DBT{background:#fef3c7;color:#b45309;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".cl-LSS{background:#fee2e2;color:#dc2626;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".cl-OTH{background:#f3f4f6;color:#6b7280;font-weight:700;font-size:9px;padding:2px 7px;border-radius:10px;display:inline-block;}" &
+    ".st-CUR{color:#16a34a;font-weight:600;font-size:10px;}.st-OTH{color:#dc2626;font-weight:600;font-size:10px;}" &
+    ".gt td{background:#003366!important;color:#fff!important;font-weight:800;font-size:11px;border-top:2px solid #f0a500!important;}" &
+    ".gt td.ar{font-family:Consolas,monospace;text-align:right;color:#f0a500!important;}" &
+    ".zero{color:#d1d5db;}.pos{color:#16a34a;font-weight:700;font-family:Consolas,monospace;}" &
+    ".neg{color:#dc2626;font-weight:700;font-family:Consolas,monospace;}.neu{color:#6b7280;font-family:Consolas,monospace;}" &
+    ".nr td{background:#fefce8!important;}.ch td{background:#f0fdf4!important;}</style>"
+VAR Hdr =
+    "<div style='background:#003366;padding:16px 20px;border-bottom:4px solid #f0a500;display:flex;align-items:center;'>" &
+    "<img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;object-fit:contain;flex-shrink:0;margin-right:20px;' /><div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;'>PROVISION REPORT - PAST DUE - " & ModeTag & " COMPARISON</div>" &
+    "<div style='color:#cbd5e1;font-size:11px;'>" & PeriodLabel & "</div>" &
+    "<div style='color:#94a3b8;font-size:10px;margin-top:3px;'>Current: " & CurrLabel & " vs Previous: " & CompLabel & "</div>" &
+    "</div></div>"
+VAR Summary =
+    "<div style='display:flex;gap:12px;flex-wrap:wrap;padding:14px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0;'>" &
+    "<div style='background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:120px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Total Loans</div><div style='font-size:20px;font-weight:800;color:#003366;font-family:Consolas,monospace;'>" & FORMAT(RowCount,"#,##0") & "</div></div>" &
+    "<div style='background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:180px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Total Outstanding</div><div style='font-size:15px;font-weight:800;color:#003366;font-family:Consolas,monospace;'>" & FORMAT(TotalOutCurr,"#,##0.00") & "</div></div>" &
+    "<div style='background:#e0f2fe;border:1px solid #bae6fd;border-radius:6px;padding:10px 16px;min-width:180px;'><div style='font-size:9px;color:#0369a1;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Prev (" & CompLabel & ")</div><div style='font-size:15px;font-weight:800;color:#0369a1;font-family:Consolas,monospace;'>" & FORMAT(TotalOutComp,"#,##0.00") & "</div></div>" &
+    "<div style='background:#" & IF(TotalOutDelta>0,"dcfce7",IF(TotalOutDelta<0,"fee2e2","f3f4f6")) & ";border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:140px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Outstanding Delta</div><div style='font-size:14px;font-weight:800;" & IF(TotalOutDelta>0,"color:#16a34a",IF(TotalOutDelta<0,"color:#dc2626","color:#6b7280")) & ";font-family:Consolas,monospace;'>" & FORMAT(TotalOutDelta,"+#,##0.00;-#,##0.00;0.00") & "</div></div>" &
+    "<div style='background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:180px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Total Commitment</div><div style='font-size:15px;font-weight:800;color:#1a4a7a;font-family:Consolas,monospace;'>" & FORMAT(TotalCommitment,"#,##0.00") & "</div></div>" &
+    "<div style='background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:180px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Total Provision</div><div style='font-size:15px;font-weight:800;color:#dc2626;font-family:Consolas,monospace;'>" & FORMAT(TotalProvCurr,"#,##0.00") & "</div></div>" &
+    "<div style='background:#e0f2fe;border:1px solid #bae6fd;border-radius:6px;padding:10px 16px;min-width:180px;'><div style='font-size:9px;color:#0369a1;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Prev (" & CompLabel & ")</div><div style='font-size:15px;font-weight:800;color:#dc2626;font-family:Consolas,monospace;'>" & FORMAT(TotalProvComp,"#,##0.00") & "</div></div>" &
+    "<div style='background:#" & IF(TotalProvDelta>0,"dcfce7",IF(TotalProvDelta<0,"fee2e2","f3f4f6")) & ";border:1px solid #e2e8f0;border-radius:6px;padding:10px 16px;min-width:140px;'><div style='font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;'>Provision Delta</div><div style='font-size:14px;font-weight:800;" & IF(TotalProvDelta>0,"color:#16a34a",IF(TotalProvDelta<0,"color:#dc2626","color:#6b7280")) & ";font-family:Consolas,monospace;'>" & FORMAT(TotalProvDelta,"+#,##0.00;-#,##0.00;0.00") & "</div></div>" &
+    "</div>"
+
+-- ================================================================
+-- SECTION 4: TABLE HEADER â€” auto-generated from _cfg
+-- ================================================================
+VAR _span = MAX(1, COUNTROWS(FILTER(_cfg,[v]=1 && [ord]<=10)))
+VAR _th_a =
+    CONCATENATEX(FILTER(_cfg,[v]=1 && [ord]<=12),
+        "<th rowspan='2'"&IF([aln]="r"," class='ar'",IF([aln]="c"," class='ac'",""))&">"&[lbl]&"</th>",
+        "",[ord],ASC)
+VAR _th_b =
+    CONCATENATEX(FILTER(_cfg,[v]=1 && [ord]>=21 && [ord]<=25),
+        "<th rowspan='2'"&IF([aln]="r"," class='ar'",IF([aln]="c"," class='ac'",""))&">"&[lbl]&"</th>",
+        "",[ord],ASC)
+VAR _th_c =
+    CONCATENATEX(FILTER(_cfg,[v]=1 && [ord]>=31),
+        "<th rowspan='2'"&IF([aln]="r"," class='ar'",IF([aln]="c"," class='ac'",""))&">"&[lbl]&"</th>",
+        "",[ord],ASC)
+VAR TH =
+    "<table class='pv-t'><thead><tr>" &
+    _th_a &
+    "<th colspan='3' style='background:#1a4a7a;text-align:center;'>OUTSTANDING [" & ModeTag & "]</th>" &
+    _th_b &
+    "<th colspan='3' style='background:#1a4a7a;text-align:center;'>PROVISION [" & ModeTag & "]</th>" &
+    _th_c &
+    "</tr><tr>" &
+    "<th class='ar'>"&CurrLabel&"</th><th class='ar'>"&CompLabel&"</th><th class='ar'>DELTA</th>" &
+    "<th class='ar'>"&CurrLabel&"</th><th class='ar'>"&CompLabel&"</th><th class='ar'>DELTA</th>" &
+    "</tr></thead><tbody>"
+
+-- ================================================================
+-- SECTION 5: DATA ROWS
+-- ADD cross-table VAR: VAR _col = MAXX(FILTER(tblXxx,[loan_id]=_lid),[col])
+-- ADD data cell:       IF(MAXX(FILTER(_cfg,[k]="key"),[v])=1,"<td>"&_col&"</td>","") &
+-- ================================================================
+VAR DataRows =
+    CONCATENATEX(
+        tblPage,
+        -- Values from main table
+        VAR _lid  = [loan_id]
+        VAR _olid = [original_loan_id]
+        VAR _arr  = [arrangement_id]
+        VAR _brn  = [branch_code]
+        VAR _brnm = [branch_name]
+        VAR _cust = [cust_number]
+        VAR _nm   = [customer_name]
+        VAR _cat  = [category]
+        VAR _prod = [product_name]
+        VAR _ccy  = [currency]
+        VAR _cls  = [classification]
+        VAR _lca  = ABS(IFERROR(VALUE([local_ccy_amt]),0))
+        VAR _ba   = ABS(IFERROR(VALUE([base_amount]),0))
+        VAR _outC = ABS(IFERROR(VALUE([outstanding]),0))
+        VAR _vd   = [value_date]
+        VAR _comm = IFERROR(VALUE([commitment]),0)
+        VAR _odd  = IFERROR(VALUE([over_due_days]),0)
+        VAR _sd   = [start_date]
+        VAR _md   = [mat_date]
+        VAR _prvC = ABS(IFERROR(VALUE([provision]),0))
+        VAR _sts  = [status]
+        -- Cross-table: final_repayment_report
+        VAR _account_officer = MAXX(FILTER(tblRepay,[loan_id]=_lid),[account_officer])
+        VAR _legal_id        = MAXX(FILTER(tblRepay,[loan_id]=_lid),[legal_id])
+        VAR _last_rep_date   = MAXX(FILTER(tblRepay,[loan_id]=_lid),[last_rep_date])
+        -- ADD NEW CROSS-TABLE VAR ABOVE THIS LINE
+        -- Comparison logic (do not edit)
+        VAR _cr   = FILTER(tblComp,[loan_id]=_lid)
+        VAR _outP = MAXX(_cr,ABS(IFERROR(VALUE([outstanding]),0)))
+        VAR _prvP = MAXX(_cr,ABS(IFERROR(VALUE([provision]),0)))
+        VAR _isN  = ISBLANK(MAXX(_cr,[loan_id]))
+        VAR _outD = _outC - IF(_isN,0,_outP)
+        VAR _prvD = _prvC - IF(_isN,0,_prvP)
+        VAR _rCls = IF(_isN," class='nr'",IF(OR(_outD<>0,_prvD<>0)," class='ch'",""))
+        VAR _oC   = IF(_outD>0," pos",IF(_outD<0," neg"," neu"))
+        VAR _pC   = IF(_prvD>0," pos",IF(_prvD<0," neg"," neu"))
+        VAR _clsB = SWITCH(UPPER(_cls),
+            "STANDARD",    "<span class='cl-STD'>STANDARD</span>",
+            "SUB-STANDARD","<span class='cl-SUB'>SUB-STD</span>",
+            "SUBSTANDARD", "<span class='cl-SUB'>SUB-STD</span>",
+            "DOUBTFUL",    "<span class='cl-DBT'>DOUBTFUL</span>",
+            "LOSS",        "<span class='cl-LSS'>LOSS</span>",
+            IF(ISBLANK(_cls),"<span class='zero'>-</span>","<span class='cl-OTH'>"&_cls&"</span>"))
+        VAR _stsB = IF(UPPER(_sts)="CURRENT","<span class='st-CUR'>CURRENT</span>",
+            IF(ISBLANK(_sts),"<span class='zero'>-</span>","<span class='st-OTH'>"&UPPER(_sts)&"</span>"))
+        RETURN "<tr"&_rCls&">" &
+        -- ord 1-10: descriptor cols
+        IF(MAXX(FILTER(_cfg,[k]="loan_id"),[v])=1,        "<td class='lid'>"&_lid&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="orig_loan_id"),[v])=1,   "<td class='lid'>"&IF(ISBLANK(_olid),"<span class='zero'>-</span>",_olid)&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="arrangement_id"),[v])=1, "<td class='lid'>"&_arr&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="branch"),[v])=1,         "<td style='font-size:10px;'>"&_brn&IF(ISBLANK(_brnm),"","<div style='font-size:9px;color:#6b7280;'>"&_brnm&"</div>")&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="cust_no"),[v])=1,        "<td class='ac' style='font-size:10px;color:#6b7280;'>"&_cust&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="cust_name"),[v])=1,      "<td class='nm'>"&_nm&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="category"),[v])=1,       "<td class='ac' style='font-size:10px;color:#6b7280;'>"&_cat&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="product"),[v])=1,        "<td style='font-size:10px;'>"&_prod&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="ccy"),[v])=1,            "<td class='ac' style='font-size:10px;font-weight:600;color:#1a4a7a;'>"&_ccy&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="classification"),[v])=1, "<td class='ac'>"&_clsB&"</td>", "") &
+        -- ord 11-12: amount cols
+        IF(MAXX(FILTER(_cfg,[k]="local_ccy_amt"),[v])=1,  "<td class='ar'>"&IF(_lca=0,"<span class='zero'>-</span>",FORMAT(_lca,"#,##0.00"))&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="base_amount"),[v])=1,    "<td class='ar'>"&IF(_ba=0,"<span class='zero'>-</span>",FORMAT(_ba,"#,##0.00"))&"</td>", "") &
+        -- OUTSTANDING group (always shown)
+        "<td class='ar' style='font-weight:600;'>"&IF(_outC=0,"<span class='zero'>-</span>",FORMAT(_outC,"#,##0.00"))&"</td>" &
+        "<td class='ar'>"&IF(_isN,"<span class='zero'>NEW</span>",IF(_outP=0,"<span class='zero'>-</span>",FORMAT(_outP,"#,##0.00")))&"</td>" &
+        "<td class='ar"&_oC&"'>"&IF(_isN,"NEW",FORMAT(_outD,"+#,##0.00;-#,##0.00;0.00"))&"</td>" &
+        -- ord 21-25: between groups
+        IF(MAXX(FILTER(_cfg,[k]="value_date"),[v])=1,     "<td class='ac' style='font-size:10px;'>"&IF(ISBLANK(_vd),"<span class='zero'>-</span>",LEFT(_vd,4)&"-"&MID(_vd,5,2)&"-"&RIGHT(_vd,2))&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="commitment"),[v])=1,     "<td class='ar'>"&IF(_comm=0,"<span class='zero'>-</span>",FORMAT(_comm,"#,##0.00"))&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="odd"),[v])=1,            "<td class='ac' style='font-size:10px;"&IF(_odd>0,"color:#dc2626;font-weight:700;","color:#d1d5db;")&"'>"&IF(_odd=0,"-",FORMAT(_odd,"#,##0")&" d")&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="start_date"),[v])=1,     "<td class='ac' style='font-size:10px;'>"&IF(ISBLANK(_sd),"<span class='zero'>-</span>",LEFT(_sd,4)&"-"&MID(_sd,5,2)&"-"&RIGHT(_sd,2))&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="mat_date"),[v])=1,       "<td class='ac' style='font-size:10px;'>"&IF(ISBLANK(_md),"<span class='zero'>-</span>",LEFT(_md,4)&"-"&MID(_md,5,2)&"-"&RIGHT(_md,2))&"</td>", "") &
+        -- PROVISION group (always shown)
+        "<td class='ar' style='font-weight:600;"&IF(_prvC>0,"color:#dc2626;","color:#d1d5db;")&"'>"&IF(_prvC=0,"-",FORMAT(_prvC,"#,##0.00"))&"</td>" &
+        "<td class='ar'>"&IF(_isN,"<span class='zero'>NEW</span>",IF(_prvP=0,"<span class='zero'>-</span>",FORMAT(_prvP,"#,##0.00")))&"</td>" &
+        "<td class='ar"&_pC&"'>"&IF(_isN,"NEW",FORMAT(_prvD,"+#,##0.00;-#,##0.00;0.00"))&"</td>" &
+        -- ord 31+: after provision
+        IF(MAXX(FILTER(_cfg,[k]="status"),[v])=1,          "<td class='ac'>"&_stsB&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="account_officer"),[v])=1, "<td style='font-size:10px;'>"&COALESCE(_account_officer,"<span class='zero'>-</span>")&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="legal_id"),[v])=1,        "<td class='lid'>"&COALESCE(_legal_id,"<span class='zero'>-</span>")&"</td>", "") &
+        IF(MAXX(FILTER(_cfg,[k]="last_rep_date"),[v])=1, "<td class='ac' style='font-size:10px;'>"&COALESCE(_last_rep_date,"<span class='zero'>-</span>")&"</td>", "") &
+        -- ADD NEW COLUMN DATA ABOVE THIS LINE
+        "</tr>",
+        ,
+        [loan_id], ASC
+    )
+
+-- ================================================================
+-- SECTION 6: GRAND TOTAL â€” auto-generated from _cfg
+-- ================================================================
+VAR _gt_lca = IF(MAXX(FILTER(_cfg,[k]="local_ccy_amt"),[v])=1,
+    "<td class='ar'>"&FORMAT(SUMX(tblCurr,ABS(IFERROR(VALUE([local_ccy_amt]),0))),"#,##0.00")&"</td>","")
+VAR _gt_ba  = IF(MAXX(FILTER(_cfg,[k]="base_amount"),[v])=1,
+    "<td class='ar'>"&FORMAT(SUMX(tblCurr,ABS(IFERROR(VALUE([base_amount]),0))),"#,##0.00")&"</td>","")
+VAR _gt_b   = CONCATENATEX(FILTER(_cfg,[v]=1 && [ord]>=21 && [ord]<=25),
+    VAR _a = IF([aln]="r","ar","ac") RETURN "<td class='"&_a&"'>-</td>",
+    "",[ord],ASC)
+VAR _gt_c   = CONCATENATEX(FILTER(_cfg,[v]=1 && [ord]>=31),
+    "<td class='ac'>-</td>", "",[ord],ASC)
+VAR GrandTotal =
+    "<tr class='gt'><td colspan='"&_span&"'>GRAND TOTAL ("&FORMAT(RowCount,"#,##0")&" loans)</td>" &
+    _gt_lca & _gt_ba &
+    "<td class='ar'>"&FORMAT(TotalOutCurr,"#,##0.00")&"</td>" &
+    "<td class='ar'>"&FORMAT(TotalOutComp,"#,##0.00")&"</td>" &
+    "<td class='ar'>"&FORMAT(TotalOutDelta,"+#,##0.00;-#,##0.00;0.00")&"</td>" &
+    _gt_b &
+    "<td class='ar'>"&FORMAT(TotalProvCurr,"#,##0.00")&"</td>" &
+    "<td class='ar'>"&FORMAT(TotalProvComp,"#,##0.00")&"</td>" &
+    "<td class='ar'>"&FORMAT(TotalProvDelta,"+#,##0.00;-#,##0.00;0.00")&"</td>" &
+    _gt_c & "</tr>"
+
+-- ================================================================
+-- SECTION 7: PAGINATION BAR â€” Do not edit
+-- ================================================================
+VAR _WinStart  = MAX(1,_PgValid-4)
+VAR _WinEnd    = MIN(_TotPg,_PgValid+4)
+VAR _PgButtons =
+    IF(_WinStart>1,
+        "<span style='display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:5px;font-size:12px;margin:0 2px;background:#f1f5f9;color:#64748b;'>1</span>" &
+        IF(_WinStart>2,"<span style='color:#94a3b8;margin:0 2px;'>...</span>",""),
+        "") &
+    CONCATENATEX(
+        GENERATESERIES(_WinStart,_WinEnd,1),
+        VAR _p = [Value]
+        VAR _a = _p = _PgValid
+        RETURN "<span style='display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:5px;font-size:12px;margin:0 2px;font-weight:"&IF(_a,"700","400")&";"&IF(_a,"background:#3b82f6;color:#fff;","background:#f1f5f9;color:#64748b;")&"'>"&_p&"</span>",
+        "",[Value],ASC) &
+    IF(_WinEnd<_TotPg,
+        IF(_WinEnd<_TotPg-1,"<span style='color:#94a3b8;margin:0 2px;'>...</span>","") &
+        "<span style='display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:5px;font-size:12px;margin:0 2px;background:#f1f5f9;color:#64748b;'>"&_TotPg&"</span>",
+        "")
+VAR PgBar =
+    "<div style='background:#f8fafc;border-top:2px solid #e2e8f0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;'>" &
+    "<span style='font-size:11px;color:#64748b;'>Showing <b style='color:#1e293b;'>"&(_Skip+1)&"</b> - <b style='color:#1e293b;'>"&MIN(_Skip+_PgSize,_TotRows)&"</b> of <b style='color:#1e293b;'>"&_TotRows&"</b> records</span>" &
+    "<div style='display:flex;align-items:center;'>"&_PgButtons&"</div>" &
+    "<span style='font-size:10px;color:#94a3b8;font-style:italic;'>Use PageNum slicer</span></div>"
+
+RETURN
+    "<div class='pv'>" & Sty & Hdr & Summary &
+    "<div style='overflow-x:auto;'>" & TH & DataRows & GrandTotal &
+    "</tbody></table></div>" &
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-size:10px;color:#9ca3af;'>All amounts in USD | Negative amounts as absolute values</span>" &
+    "<span style='font-size:10px;color:#9ca3af;'>BNCTL - Confidential</span></div>" &
+    PgBar & "</div>"
