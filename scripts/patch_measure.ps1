@@ -53,7 +53,7 @@ foreach ($c in $candidates) {
         $quoteEnd   = $expr.IndexOf('"', $closeIdx)
         $ampEnd     = $expr.IndexOf('&', $quoteEnd)
         if ($blockStart -lt 0 -or $ampEnd -lt 0) {
-            Write-Host "SKIP $($c.Table).$($c.Measure) — block boundary not found"
+            Write-Host "SKIP $($c.Table).$($c.Measure) -- block boundary not found"
             continue
         }
         $c.Obj.Expression = $expr.Substring(0, $blockStart) + $expr.Substring($ampEnd + 1).TrimStart()
@@ -64,6 +64,6 @@ foreach ($c in $candidates) {
 
 if ($changed -gt 0) {
     $model.SaveChanges()
-    Write-Host "Saved ($changed measure(s) updated)"
+    Write-Host "Saved $changed measure(s) updated"
 }
 $server.Disconnect()

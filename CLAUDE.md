@@ -13,7 +13,7 @@ Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
    ```
    Nếu không có → báo user mở file .pbix trong PBI Desktop RS trước.
 
-2. **Sau khi chạy `patch_measure.ps1` hoặc `restore_measure.ps1`**, PostToolUse hook tự chạy eval + preview. AI **không tự chạy thêm** eval hay preview — sẽ bị chạy đôi.
+2. **Sau khi chạy `patch_measure.ps1` hoặc `restore_measure.ps1`**, PostToolUse hook tự chạy eval + preview. Nếu sau ~15 giây không thấy preview mở → AI chủ động chạy tay (không chờ thêm).
 
 3. **Sau khi preview mở**, hỏi user: *"Preview ổn chưa? Muốn commit không?"*
 
@@ -42,14 +42,16 @@ AI không thể tự sửa DAX của report đó. Hướng dẫn user:
 - Mở PBI Desktop RS → sửa DAX trực tiếp → Ctrl+S → rồi `git commit`
 - Pre-commit hook sẽ tự extract + preview
 
-### User muốn thêm lại / restore
+### User muốn thêm lại / restore (hoặc áp dụng thay đổi DAX file)
 
-→ Restore từ file .dax đã lưu:
+→ **Luôn truyền đủ 3 tham số** — thiếu `-Table` → script dùng default `final_provision_report`, write sai measure, không có lỗi rõ ràng:
 ```bash
 powershell.exe -ExecutionPolicy Bypass -File scripts/restore_measure.ps1 \
-  -DaxFile "source/measures/final_provision_report/Provision_HTML_v2.dax" \
-  -Measure "Provision_HTML"
+  -DaxFile "source/measures/<table>/<measure>.dax" \
+  -Table "<table>" \
+  -Measure "<measure>"
 ```
+Tra `<table>` và `<measure>` trong bảng **Measures hiện có** bên dưới.
 
 ### User muốn xem preview hiện tại (không commit)
 
@@ -89,10 +91,10 @@ powershell.exe -ExecutionPolicy Bypass -File scripts/upload_pbirs.ps1
 
 | Có thể | Không thể |
 |--------|-----------|
-| Sửa Provision_HTML (xóa/restore card) | Sửa DAX của report khác (Repayment, Disbursement...) |
-| Extract, eval, preview bất kỳ report nào | Tự tạo DAX measure mới |
-| Deploy bất kỳ .pbix nào đang mở | Chạy khi PBI Desktop RS đóng |
-| Commit + push | Tự quyết commit/push không hỏi user |
+| Sửa DAX bất kỳ report nào trong bảng measures | Tự tạo DAX measure mới (chưa có .dax file) |
+| Xóa/restore card HTML qua patch/restore script | Chạy khi PBI Desktop RS đóng |
+| Extract, eval, preview bất kỳ report nào | Tự quyết commit/push không hỏi user |
+| Deploy bất kỳ .pbix nào đang mở | |
 
 ---
 
