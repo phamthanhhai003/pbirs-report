@@ -9,14 +9,16 @@ Khi user yêu cầu sửa report, chạy đúng luồng dưới đây.
 
 ```
 1. Dùng patch_measure.ps1 hoặc restore_measure.ps1 để sửa measure trong live model
-2. Chạy git commit → pre-commit hook tự động:
+   → PostToolUse hook TỰ ĐỘNG chạy eval + mở preview ngay sau khi AI gọi script
+   → AI KHÔNG cần tự chạy eval hay preview — hook đã lo
+2. User xem preview trong browser (BEFORE | AFTER side-by-side)
+3. Hỏi user: có muốn commit không?
+4. git commit → pre-commit hook tự động:
    - Extract tất cả measures → source/measures/
-   - Eval measures qua AdomdClient → HTML output
-   - So sánh với HEAD cache → render preview chỉ measures đã đổi
-   - Mở browser: BEFORE | AFTER side-by-side
-   - Hỏi xác nhận y/n
-3. Sau khi commit: hỏi user có muốn push không
-4. git push → Jenkins tự deploy lên PBIRS 192.168.100.98
+   - Skip eval nếu không có DAX thay đổi
+   - Nếu có thay đổi: eval + preview + hỏi xác nhận y/n
+5. Sau khi commit: hỏi user có muốn push không
+6. git push → Jenkins tự deploy lên PBIRS 192.168.100.98
 ```
 
 > **Bắt buộc:** File .pbix phải đang mở trong PBI Desktop RS khi commit.
