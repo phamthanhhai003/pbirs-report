@@ -81,7 +81,7 @@ def build_preview(current: dict, previous: dict) -> str:
 
 
 if __name__ == "__main__":
-    with open(MEASURES_JSON, encoding="utf-8") as f:
+    with open(MEASURES_JSON, encoding="utf-8-sig") as f:
         current = json.load(f)
 
     previous = git_show_prev_json()

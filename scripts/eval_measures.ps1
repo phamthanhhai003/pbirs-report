@@ -51,4 +51,3 @@ $conn.Close()
 
 $results | ConvertTo-Json -Depth 3 | Set-Content $OutputJson -Encoding UTF8
 Write-Host "Saved $($results.Count) measures to $OutputJson"
-test
