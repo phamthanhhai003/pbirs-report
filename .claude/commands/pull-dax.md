@@ -11,7 +11,8 @@ Dùng khi Desktop model lệch với repo — repo là source of truth.
 ## Thực thi
 
 ```bash
-powershell.exe -ExecutionPolicy Bypass -File scripts/sync_repo_to_desktop.ps1
+cd /mnt/d/pbirs-report && powershell.exe -ExecutionPolicy Bypass -File scripts/sync_repo_to_desktop.ps1
 ```
 
-Sau khi chạy xong: **Save file trong PBI Desktop RS (Ctrl+S)** để ghi vào .pbix.
+Script đọc từ `source/measures/**/*.dax` trong repo hiện tại.
+Sau khi chạy xong: **nhắc user Ctrl+S trong PBI Desktop RS** để ghi vào .pbix.
