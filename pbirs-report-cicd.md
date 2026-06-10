@@ -42,8 +42,8 @@ Dev sửa báo cáo Power BI → xem preview thay đổi → commit → tự đ�
 | | |
 |--|--|
 | PBIRS Version | 15.0.1121.109 (May 2026) |
-| PBIRS Host | `DESKTOP-HHC5U09` |
-| REST API base | `http://DESKTOP-HHC5U09/reports/api/v2.0` |
+| PBIRS Host | `192.168.100.98` |
+| REST API base | `http://192.168.100.98/reports/api/v2.0` |
 | Auth | **NTLM (Windows Auth)** — confirmed via `WWW-Authenticate: NTLM` |
 | PBI Desktop RS | `C:\Program Files\Microsoft Power BI Desktop RS\bin` |
 | Tabular Editor 2 | `C:\Program Files (x86)\Tabular Editor` |
