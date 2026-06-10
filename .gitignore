@@ -1,0 +1,8 @@
+# Ignore binary .pbix — chỉ track source folder
+*.pbix
+*.pbix.bak
+
+# Python
+__pycache__/
+*.pyc
+.env
