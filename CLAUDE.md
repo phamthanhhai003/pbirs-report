@@ -13,10 +13,23 @@ Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
    ```
    Nếu không có → báo user mở file .pbix trong PBI Desktop RS trước.
 
-2. **Sau khi chạy `patch_measure.ps1` hoặc `restore_measure.ps1`**, nhắc user mở PBI Desktop RS kiểm tra, rồi đưa ra **đúng 3 lựa chọn** (không làm gì thêm cho đến khi user chọn):
+2. **Sau khi sửa DAX**, luôn thực hiện đúng thứ tự:
 
-   > Sửa xong. Mở PBI Desktop RS kiểm tra kết quả, rồi chọn:
-   > 1. **Đồng ý và đẩy lên server** — commit + push luôn
+   **Bước A** — Apply vào Desktop trước:
+   ```bash
+   # Nếu sửa qua script patch/restore:
+   powershell.exe -ExecutionPolicy Bypass -File scripts/restore_measure.ps1 -DaxFile "..." -Table "..." -Measure "..."
+   # Nếu sửa nhiều measure hoặc pbix mới:
+   powershell.exe -ExecutionPolicy Bypass -File scripts/sync_repo_to_desktop.ps1 -PbixName "..."
+   ```
+
+   **Bước B** — Nhắc user kiểm tra:
+   > Đã apply vào Desktop. **Ctrl+S** trong PBI Desktop RS để save, sau đó mở report kiểm tra kết quả.
+
+   **Bước C** — Sau khi user xác nhận đã xem, đưa ra **đúng 3 lựa chọn**:
+
+   > Kiểm tra xong, chọn:
+   > 1. **Đồng ý và đẩy lên server** — commit + push + upload PBIRS
    > 2. **Tiếp tục sửa** — báo muốn sửa thêm gì
    > 3. **Revert lại** — hoàn tác, khôi phục về trạng thái trong repo
 
