@@ -111,4 +111,17 @@ $server.Disconnect()
 
 Write-Host ""
 Write-Host "Done - updated: $updated | skipped: $skipped | not found: $notFound"
-Write-Host "Remember: Ctrl+S in PBI Desktop RS to save to .pbix"
+
+# Autosave .pbix via SendKeys Ctrl+S
+if ($updated -gt 0) {
+    Add-Type -AssemblyName Microsoft.VisualBasic
+    Add-Type -AssemblyName System.Windows.Forms
+    try {
+        [Microsoft.VisualBasic.Interaction]::AppActivate($targetPbi.Id)
+        Start-Sleep -Milliseconds 400
+        [System.Windows.Forms.SendKeys]::SendWait("^s")
+        Write-Host "Autosaved .pbix"
+    } catch {
+        Write-Host "Autosave failed — Ctrl+S manually in PBI Desktop RS"
+    }
+}

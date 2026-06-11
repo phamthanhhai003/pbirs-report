@@ -24,7 +24,7 @@ Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
    ```
 
    **Bước B** — Nhắc user kiểm tra:
-   > Đã apply vào Desktop. **Ctrl+S** trong PBI Desktop RS để save, sau đó mở report kiểm tra kết quả.
+   > Đã apply và autosave vào Desktop. Mở report kiểm tra kết quả.
 
    **Bước C** — Sau khi user xác nhận đã xem, đưa ra **đúng 3 lựa chọn**:
 
