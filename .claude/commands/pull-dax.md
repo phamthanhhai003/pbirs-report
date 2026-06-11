@@ -1,18 +1,23 @@
 # pull-dax
 
-Ghi tất cả DAX từ repo (`source/measures/**/*.dax`) vào PBI Desktop RS đang chạy.
-Dùng khi Desktop model lệch với repo — repo là source of truth.
+Sync all DAX measures from repo (`source/measures/**/*.dax`) into the open Power BI Desktop RS instance.
+Use when Desktop model drifts from repo — repo is the source of truth.
 
-## Khi nào dùng
-- Mở PBI Desktop RS với file .pbix mới/reset
-- Desktop bị sửa tay không qua repo
-- Muốn đồng bộ repo → Desktop trước khi làm việc
+## When to use
+- Opened a new or reset .pbix in Power BI Desktop RS
+- Desktop was edited manually (not through repo)
+- Want to sync repo → Desktop before making changes
 
-## Thực thi
+## Execute
 
 ```bash
 cd /mnt/d/pbirs-report && powershell.exe -ExecutionPolicy Bypass -File scripts/sync_repo_to_desktop.ps1
 ```
 
-Script đọc từ `source/measures/**/*.dax` trong repo hiện tại.
-Sau khi chạy xong: **nhắc user Ctrl+S trong PBI Desktop RS** để ghi vào .pbix.
+If targeting a specific .pbix window (multiple files open), pass `-PbixName`:
+```bash
+powershell.exe -ExecutionPolicy Bypass -File scripts/sync_repo_to_desktop.ps1 -PbixName "Accounting"
+```
+
+Script reads from `source/measures/**/*.dax` in the current repo and applies each measure via AMO.
+After completion: auto-saves the .pbix via Ctrl+S and uploads to PBIRS automatically.

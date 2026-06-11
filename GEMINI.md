@@ -123,6 +123,7 @@ bash scripts/ps.sh -File scripts/upload_pbirs.ps1
 | Loan Sector Daily | `LoanSector_Daily_HTML` | `final_loan_sector_daily_report` |
 | Loan Sector Yearly | `LoanSector_Yearly_HTML` | `final_loan_sector_yearly_report` |
 | Extra Accountable | `ExtraAccountable_HTML` | `final_extra_accountable_report` |
+| Page Number | `Page Number Value` | `PageNum` |
 
 ### BNCTL_Treasury_Reports (`source/measures/BNCTL_Treasury_Reports/`)
 
@@ -144,6 +145,12 @@ bash scripts/ps.sh -File scripts/upload_pbirs.ps1
 | Expense | `Expense_HTML` | `final_expense_report` |
 | Liabilities | `Liabilities_HTML` | `final_liabilities_report` |
 | Ratio | `Ratio_HTML` | `final_ratio_report` |
+| BCTL | `BCTL_HTML` | `final_bctl_report` |
+| PO SIE | `PO_SIE_HTML` | `final_po_sie_report` |
+| PO SOC | `PO_SOC_HTML` | `final_po_soc_report` |
+| SIE | `SIE_HTML` | `final_sie_report` |
+| SOC Liabilities | `SOC_Liabilities_HTML` | `final_soc_liabilities_report` |
+| SOC Assets | `SOC_Assets_HTML` | `soc_assets_real_v2` |
 
 DAX files: `source/measures/<pbix-name>/<table>/<measure>.dax`
 
