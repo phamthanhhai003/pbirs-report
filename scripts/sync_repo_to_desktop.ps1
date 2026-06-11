@@ -1,4 +1,7 @@
-param([string]$SourceDir = "source/measures")
+param(
+    [string]$PbixName  = "",   # filter khi nhiều cửa sổ mở, e.g. "Credit Report"
+    [string]$SourceDir = ""    # override toàn bộ path nếu cần
+)
 
 . "$PSScriptRoot\config.ps1"
 
@@ -6,13 +9,43 @@ Get-ChildItem $RsDir -Filter '*.dll' | ForEach-Object { try { [System.Reflection
 Get-ChildItem $TeDir -Filter '*.dll' | ForEach-Object { try { [System.Reflection.Assembly]::LoadFrom($_.FullName) | Out-Null } catch {} }
 Add-Type -Path (Join-Path $TeDir 'Microsoft.AnalysisServices.Tabular.dll')
 
-$msmdsrvProc = Get-Process msmdsrv -ErrorAction SilentlyContinue |
+# Tìm PBI window
+$pbiProcs = Get-Process PBIDesktopRS,PBIDesktop -ErrorAction SilentlyContinue |
+    Where-Object { $_.MainWindowTitle -match ' - Power BI' }
+
+if (!$pbiProcs) {
+    Write-Host "ERROR: PBI Desktop RS not running. Open the .pbix file first."
+    exit 1
+}
+
+if ($PbixName) {
+    $pbiProcs = $pbiProcs | Where-Object { $_.MainWindowTitle -like "*$PbixName*" }
+}
+
+if (@($pbiProcs).Count -gt 1 -and !$PbixName) {
+    Write-Host "Multiple PBI windows open. Use -PbixName to specify one:"
+    $pbiProcs | ForEach-Object { Write-Host "  - $($_.MainWindowTitle -replace ' - Power BI.*','')" }
+    exit 1
+}
+
+$targetPbi = @($pbiProcs)[0]
+$pbixLabel = $targetPbi.MainWindowTitle -replace ' - Power BI.*', '' -replace '^\s+|\s+$', ''
+
+# Map msmdsrv → parent PBI process
+$allMsmdsrv = Get-Process msmdsrv -ErrorAction SilentlyContinue |
     Where-Object {
         (Get-WmiObject Win32_Process -Filter "ProcessId=$($_.Id)").CommandLine -like "*Power BI Desktop SSRS*"
-    } | Select-Object -First 1
+    }
+
+$msmdsrvProc = $allMsmdsrv | Where-Object {
+    $ppid = (Get-WmiObject Win32_Process -Filter "ProcessId=$($_.Id)").ParentProcessId
+    $ppid -eq $targetPbi.Id
+} | Select-Object -First 1
+
+if (!$msmdsrvProc) { $msmdsrvProc = $allMsmdsrv | Select-Object -First 1 }
 
 if (!$msmdsrvProc) {
-    Write-Host "ERROR: PBI Desktop RS not running. Open the .pbix file first."
+    Write-Host "ERROR: msmdsrv not found."
     exit 1
 }
 
@@ -25,12 +58,27 @@ $server = New-Object Microsoft.AnalysisServices.Tabular.Server
 $server.Connect("localhost:$port")
 $model = $server.Databases[0].Model
 
+# SourceDir: explicit override hoặc tự detect từ tên .pbix
+if (!$SourceDir) {
+    $repoRoot  = Split-Path $PSScriptRoot -Parent
+    $SourceDir = Join-Path $repoRoot "source\measures\$pbixLabel"
+}
+
+if (!(Test-Path $SourceDir)) {
+    Write-Host "ERROR: No measures folder for '$pbixLabel' at: $SourceDir"
+    Write-Host "Available:"
+    Get-ChildItem (Split-Path $SourceDir -Parent) -Directory | ForEach-Object { Write-Host "  - $($_.Name)" }
+    exit 1
+}
+
+Write-Host "Syncing '$pbixLabel' from: $SourceDir"
+
 $daxFiles = Get-ChildItem $SourceDir -Filter '*.dax' -Recurse
 $updated = 0; $skipped = 0; $notFound = 0
 
 foreach ($file in $daxFiles) {
     $lines = Get-Content $file.FullName -Encoding UTF8
-    $header = $lines[0] -replace '^\xEF\xBB\xBF', ''   # strip BOM
+    $header = $lines[0] -replace '^\xEF\xBB\xBF', ''
 
     if ($header -notmatch "MEASURE '([^']+)'\[([^\]]+)\]") {
         Write-Host "SKIP (no header): $($file.Name)"
@@ -63,3 +111,4 @@ $server.Disconnect()
 
 Write-Host ""
 Write-Host "Done — updated: $updated | skipped: $skipped | not found: $notFound"
+Write-Host "Remember: Ctrl+S in PBI Desktop RS to save to .pbix"

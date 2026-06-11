@@ -13,9 +13,9 @@ Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
    ```
    Nếu không có → báo user mở file .pbix trong PBI Desktop RS trước.
 
-2. **Sau khi chạy `patch_measure.ps1` hoặc `restore_measure.ps1`**, PostToolUse hook tự chạy eval + preview. Nếu sau ~15 giây không thấy preview mở → AI chủ động chạy tay (không chờ thêm).
+2. **Sau khi chạy `patch_measure.ps1` hoặc `restore_measure.ps1`**, nhắc user: *"Kiểm tra kết quả trực tiếp trong PBI Desktop RS. Ổn rồi thì báo để commit."*
 
-3. **Sau khi preview mở**, hỏi user: *"Preview ổn chưa? Muốn commit không?"*
+3. **Sau khi user xác nhận ổn**, hỏi: *"Muốn commit không?"*
 
 4. **Sau khi commit**, hỏi user: *"Muốn push lên PBIRS không?"*
 
@@ -47,22 +47,12 @@ AI không thể tự sửa DAX của report đó. Hướng dẫn user:
 → **Luôn truyền đủ 3 tham số** — thiếu `-Table` → script dùng default `final_provision_report`, write sai measure, không có lỗi rõ ràng:
 ```bash
 powershell.exe -ExecutionPolicy Bypass -File scripts/restore_measure.ps1 \
-  -DaxFile "source/measures/<table>/<measure>.dax" \
+  -DaxFile "source/measures/<pbix-name>/<table>/<measure>.dax" \
   -Table "<table>" \
   -Measure "<measure>"
 ```
+`<pbix-name>` = tên .pbix đang mở (xem cột **Pbix** trong bảng Measures bên dưới).  
 Tra `<table>` và `<measure>` trong bảng **Measures hiện có** bên dưới.
-
-### User muốn xem preview hiện tại (không commit)
-
-→ Chạy eval + generate preview thủ công:
-```bash
-powershell.exe -ExecutionPolicy Bypass -File scripts/eval_measures.ps1
-WIN_TEMP=$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\r')
-WSL_TEMP=$(wslpath "$WIN_TEMP")
-python3 scripts/generate_preview.py "$WSL_TEMP/pbirs_measures.json" "$WSL_TEMP/pbirs_preview.html"
-explorer.exe "$(wslpath -w "$WSL_TEMP/pbirs_preview.html")"
-```
 
 ### User muốn deploy lên server
 
@@ -74,15 +64,6 @@ Jenkins tự deploy sau khi push (khi Jenkins đã setup).
 Hoặc upload thủ công:
 ```bash
 powershell.exe -ExecutionPolicy Bypass -File scripts/upload_pbirs.ps1
-```
-
-### Preview hiện "No changes" dù đã sửa
-
-→ Cache baseline chưa đúng. Fix:
-```
-1. Restore measure về state CÓ thay đổi mong muốn
-2. Chạy eval → commit cache (git commit -m "cache: baseline")
-3. Mới sửa + chạy preview
 ```
 
 ---
@@ -100,6 +81,8 @@ powershell.exe -ExecutionPolicy Bypass -File scripts/upload_pbirs.ps1
 
 ## Measures hiện có
 
+### Credit Report (`source/measures/Credit Report/`)
+
 | Report | Measure | Table |
 |--------|---------|-------|
 | Provision | `Provision_HTML` | `final_provision_report` |
@@ -111,7 +94,15 @@ powershell.exe -ExecutionPolicy Bypass -File scripts/upload_pbirs.ps1
 | Loan Sector Yearly | `LoanSector_Yearly_HTML` | `final_loan_sector_yearly_report` |
 | Extra Accountable | `ExtraAccountable_HTML` | `final_extra_accountable_report` |
 
-DAX files: `source/measures/<table>/<measure>.dax`
+### BNCTL_Treasury_Reports (`source/measures/BNCTL_Treasury_Reports/`)
+
+| Report | Measure | Table |
+|--------|---------|-------|
+| Liquidity | `Liquidity_Measure` | `rpt_liquidity` |
+| Remittance Daily | `Report_Remittance_Incoming_SWIFT_IN` | `rpt_remittance_daily` |
+| Remittance Quarterly | `Quarterly_Remittance_Report` | `rpt_remittance_quarterly` |
+
+DAX files: `source/measures/<pbix-name>/<table>/<measure>.dax`
 
 ---
 

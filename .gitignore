@@ -5,12 +5,10 @@
 # Machine-specific config — mỗi máy tự tạo từ config.example.ps1
 scripts/config.ps1
 
-# Preview và temp files — không commit
-*preview*.html
-pbirs_measures.json
+# Cache / temp
+.measures_cache.json
 
 # Python
 __pycache__/
 *.pyc
 .env
-.measures_cache.json

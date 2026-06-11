@@ -1,0 +1,217 @@
+﻿MEASURE 'rpt_remittance_daily'[Report_Remittance_Incoming_SWIFT_IN] =
+
+
+// ---------- DISTINCT TABLE (prevents row duplication) ----------
+VAR _tbl = SUMMARIZE(
+    'rpt_remittance_daily',
+    'rpt_remittance_daily'[NO],
+    'rpt_remittance_daily'[DATE TRANSFER],
+    'rpt_remittance_daily'[TRANSACTION REF],
+    'rpt_remittance_daily'[REF NUMBER],
+    'rpt_remittance_daily'[ORDERING CUSTOMER],
+    'rpt_remittance_daily'[ORDERING CUSTOMER ACC NO],
+    'rpt_remittance_daily'[SENDER BIC],
+    'rpt_remittance_daily'[ORIGIN OF COUNTRY],
+    'rpt_remittance_daily'[DEBIT ACCOUNT],
+    'rpt_remittance_daily'[BENEFICIARY],
+    'rpt_remittance_daily'[GENDER],
+    'rpt_remittance_daily'[CREDIT ACCOUNT],
+    'rpt_remittance_daily'[DEBIT CCY],
+    'rpt_remittance_daily'[DEBIT AMOUNT],
+    'rpt_remittance_daily'[CHARGE CCY],
+    'rpt_remittance_daily'[CHARGES],
+    'rpt_remittance_daily'[CREDIT CCY],
+    'rpt_remittance_daily'[CREDIT AMOUNT],
+    'rpt_remittance_daily'[RATE BNCTL],
+    'rpt_remittance_daily'[REMARK],
+    'rpt_remittance_daily'[REMITTANCE INFORMATION]
+)
+
+// ---------- SAFE NUMERIC TOTALS ----------
+VAR _TotalDebit = SUMX(_tbl, VALUE(SUBSTITUTE([DEBIT AMOUNT], ",", "")))
+VAR _TotalCredit = SUMX(_tbl, VALUE(SUBSTITUTE([CREDIT AMOUNT], ",", "")))
+VAR _TotalCharges = SUMX(_tbl, VALUE(SUBSTITUTE([CHARGES], ",", "")))
+VAR _TxnCount = COUNTROWS(_tbl)
+
+// ---------- TABLE ROWS ----------
+VAR _Rows = CONCATENATEX(
+    _tbl,
+    "<tr>" &
+        "<td class='c'>" & [NO] & "</td>" &
+        "<td class='nw'>" & [DATE TRANSFER] & "</td>" &
+        "<td class='mono'>" & [TRANSACTION REF] & "</td>" &
+        "<td class='c'>" & [REF NUMBER] & "</td>" &
+        "<td>" & [ORDERING CUSTOMER] & "</td>" &
+        "<td class='mono'>" & [ORDERING CUSTOMER ACC NO] & "</td>" &
+        "<td class='mono'>" & [SENDER BIC] & "</td>" &
+        "<td>" & [ORIGIN OF COUNTRY] & "</td>" &
+        "<td class='mono c'>" & [DEBIT ACCOUNT] & "</td>" &
+        "<td>" & [BENEFICIARY] & "</td>" &
+        "<td class='c'>" & [GENDER] & "</td>" &
+        "<td class='mono c'>" & [CREDIT ACCOUNT] & "</td>" &
+        "<td class='c'>" & [DEBIT CCY] & "</td>" &
+        "<td class='amt'>$" & [DEBIT AMOUNT] & "</td>" &
+        "<td class='c'>" & [CHARGE CCY] & "</td>" &
+        "<td class='amt'>$" & [CHARGES] & "</td>" &
+        "<td class='c'>" & [CREDIT CCY] & "</td>" &
+        "<td class='amt credit'>$" & [CREDIT AMOUNT] & "</td>" &
+        "<td class='c'>" & [RATE BNCTL] & "</td>" &
+        "<td class='mono'>" & [REMARK] & "</td>" &
+        "<td>" & [REMITTANCE INFORMATION] & "</td>" &
+    "</tr>",
+    ,
+    INT([NO]), ASC
+)
+
+// ---------- FULL HTML ----------
+VAR _HTML =
+"<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Calibri, sans-serif; background: #f0f4f8; padding: 20px; color: #1e2d40; }
+  .report-container { max-width: 100%; margin: 0 auto; }
+
+  /* ===== HEADER (navy + gold, with logo) ===== */
+  .rm-hdr { background: #003366; padding: 16px 20px; border-bottom: 4px solid #f0a500; display: flex; align-items: center; gap: 20px; }
+  .rm-hdr img { height: 90px; width: auto; flex-shrink: 0; }
+  .rm-hdr-txt { flex: 1; }
+  .rm-hdr h1 { color: #fff; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .rm-hdr h2 { color: #f0a500; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+  .rm-hdr .rm-sub { color: #cbd5e1; font-size: 11px; }
+  .rm-badge { background: rgba(240,165,0,0.15); border: 1px solid #f0a500; border-radius: 6px; padding: 8px 18px; text-align: center; margin-left: auto; }
+  .rm-badge .lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #f0a500; font-weight: 600; }
+  .rm-badge .val { font-size: 20px; font-weight: 800; color: #fff; margin-top: 2px; }
+
+  /* ===== SUMMARY CARDS ===== */
+  .rm-cards { display: flex; gap: 0; border-bottom: 2px solid #f0a500; background: #003366; }
+  .rm-card { flex: 1; padding: 10px 16px; border-right: 1px solid #1a4a7a; text-align: center; }
+  .rm-card:last-child { border-right: none; }
+  .rm-card .lbl { font-size: 8.5px; text-transform: uppercase; letter-spacing: 1px; color: #93aec8; font-weight: 600; }
+  .rm-card .val { font-size: 15px; font-weight: 700; color: #fff; margin-top: 2px; }
+  .rm-card .val.gold { color: #f0a500; }
+
+  /* ===== TABLE SECTION (old measure layout — no sticky) ===== */
+  .table-section { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
+  .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .table-title { font-size: 14px; font-weight: 700; color: #003366; }
+  .table-count { font-size: 11px; background: rgba(240,165,0,0.12); color: #003366; padding: 4px 12px; border-radius: 20px; font-weight: 600; border: 1px solid #f0a500; }
+  .table-scroll { overflow-x: auto; max-height: 600px; overflow-y: auto; border-radius: 8px; border: 1px solid #e5e7eb; }
+
+  /* ===== DATA TABLE (simple — no sticky columns) ===== */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table thead th {
+    background: #004680; color: #fff;
+    padding: 10px 10px; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+    border: 1px solid #003366; white-space: nowrap;
+    position: sticky; top: 0; z-index: 2;
+  }
+  .data-table tbody td {
+    padding: 6px 10px; border: 1px solid #d1d5db; font-size: 11px;
+  }
+  .data-table tbody tr:nth-child(even) { background: #f9fafb; }
+  .data-table tbody tr:hover { background: #f5f8ff; }
+
+  /* Cell helpers */
+  .c { text-align: center; }
+  .nw { white-space: nowrap; }
+  .mono { font-size: 10px; font-family: Consolas, monospace; }
+  .amt { text-align: right; font-weight: 500; font-family: Consolas, monospace; }
+  .credit { color: #006d3a; font-weight: 600; }
+
+  /* ===== FOOTER ===== */
+  .rm-ftr { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 7px 15px; display: flex; justify-content: space-between; }
+  .rm-ftr span { font-size: 10px; color: #9ca3af; }
+</style>
+</head>
+<body>
+<div class='report-container'>
+
+  <!-- ===== HEADER WITH LOGO ===== -->
+  <div class='rm-hdr'>
+    <img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' alt='BNCTL Logo'/>
+    <div class='rm-hdr-txt'>
+      <h1>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</h1>
+      <h2>Report Remittance — Incoming Transfer (SWIFT IN)</h2>
+      <div class='rm-sub'>Daily / Weekly / Monthly / Yearly</div>
+    </div>
+    <div class='rm-badge'>
+      <div class='lbl'>Total Transactions</div>
+      <div class='val'>" & FORMAT(_TxnCount, "#,##0") & "</div>
+    </div>
+  </div>
+
+  <!-- ===== SUMMARY CARDS ===== -->
+  <div class='rm-cards'>
+    <div class='rm-card'>
+      <div class='lbl'>Total Debit Amount</div>
+      <div class='val'>" & FORMAT(_TotalDebit, "$#,##0.00") & "</div>
+    </div>
+    <div class='rm-card'>
+      <div class='lbl'>Total Credit Amount</div>
+      <div class='val gold'>" & FORMAT(_TotalCredit, "$#,##0.00") & "</div>
+    </div>
+    <div class='rm-card'>
+      <div class='lbl'>Total Charges</div>
+      <div class='val'>" & FORMAT(_TotalCharges, "$#,##0.00") & "</div>
+    </div>
+    <div class='rm-card'>
+      <div class='lbl'>Avg. Transfer</div>
+      <div class='val'>" & FORMAT(DIVIDE(_TotalDebit, _TxnCount, 0), "$#,##0.00") & "</div>
+    </div>
+  </div>
+
+  <!-- ===== DATA TABLE ===== -->
+  <div class='table-section'>
+    <div class='table-header'>
+      <div class='table-title'>Incoming Transfer — Transaction Detail</div>
+      <div class='table-count'>" & FORMAT(_TxnCount, "#,##0") & " records</div>
+    </div>
+    <div class='table-scroll'>
+      <table class='data-table'>
+        <thead>
+          <tr>
+            <th>NO</th>
+            <th>DATE TRANSFER</th>
+            <th>TRANSACTION REF</th>
+            <th>REF NUMBER</th>
+            <th>ORDERING CUSTOMER</th>
+            <th>ORDERING CUSTOMER ACC NO</th>
+            <th>SENDER BIC</th>
+            <th>ORIGIN OF COUNTRY</th>
+            <th>DEBIT ACCOUNT</th>
+            <th>BENEFICIARY</th>
+            <th>GENDER</th>
+            <th>CREDIT ACCOUNT</th>
+            <th>DEBIT CCY</th>
+            <th>DEBIT AMOUNT</th>
+            <th>CHARGE CCY</th>
+            <th>CHARGES</th>
+            <th>CREDIT CCY</th>
+            <th>CREDIT AMOUNT</th>
+            <th>RATE BNCTL</th>
+            <th>REMARK</th>
+            <th>REMITTANCE INFORMATION</th>
+          </tr>
+        </thead>
+        <tbody>
+" & _Rows & "
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <div class='rm-ftr'>
+    <span>USD | Scroll horizontally to view all columns</span>
+    <span>BNCTL &mdash; Confidential</span>
+  </div>
+
+</div>
+</body>
+</html>"
+
+RETURN _HTML
+

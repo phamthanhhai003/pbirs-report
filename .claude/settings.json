@@ -2,20 +2,5 @@
   "attribution": {
     "commit": "",
     "pr": ""
-  },
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "statusMessage": "Generating preview...",
-            "timeout": 120,
-            "command": "grep -qE 'patch_measure\\.ps1|restore_measure\\.ps1' && cd /mnt/d/pbirs-report && powershell.exe -ExecutionPolicy Bypass -File scripts/eval_measures.ps1 && WIN_TEMP=$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\\r') && WSL_TEMP=$(wslpath \"$WIN_TEMP\") && python3 scripts/generate_preview.py \"$WSL_TEMP/pbirs_measures.json\" \"$WSL_TEMP/pbirs_preview.html\" && explorer.exe \"$(wslpath -w \"$WSL_TEMP/pbirs_preview.html\")\"; true"
-          }
-        ]
-      }
-    ]
   }
 }

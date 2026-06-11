@@ -1,0 +1,315 @@
+﻿MEASURE 'rpt_remittance_quarterly'[Quarterly_Remittance_Report] =
+
+-- ========================================
+-- QUARTERLY REPORT - TOTAL REMITTANCE 2025
+-- INCOMING (WITH FEES) - HTML CONTENT
+-- Style: BNCTL Banking Theme (Navy/Gold)
+-- ========================================
+
+-- ===== MONTHLY DATA =====
+VAR _Jan_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "January")
+VAR _Feb_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "February")
+VAR _Mar_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "March")
+VAR _Apr_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "April")
+VAR _May_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "May")
+VAR _Jun_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "June")
+VAR _Jul_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "July")
+VAR _Aug_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "August")
+VAR _Sep_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "September")
+VAR _Oct_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "October")
+VAR _Nov_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "November")
+VAR _Dec_SWIFT = CALCULATE(SUM(rpt_remittance_quarterly[SWIFT Number]), rpt_remittance_quarterly[Month] = "December")
+
+VAR _Jan_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "January")
+VAR _Feb_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "February")
+VAR _Mar_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "March")
+VAR _Apr_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "April")
+VAR _May_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "May")
+VAR _Jun_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "June")
+VAR _Jul_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "July")
+VAR _Aug_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "August")
+VAR _Sep_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "September")
+VAR _Oct_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "October")
+VAR _Nov_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "November")
+VAR _Dec_Value = CALCULATE(SUM(rpt_remittance_quarterly[Value (USD)]), rpt_remittance_quarterly[Month] = "December")
+
+VAR _Jan_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "January")
+VAR _Feb_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "February")
+VAR _Mar_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "March")
+VAR _Apr_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "April")
+VAR _May_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "May")
+VAR _Jun_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "June")
+VAR _Jul_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "July")
+VAR _Aug_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "August")
+VAR _Sep_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "September")
+VAR _Oct_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "October")
+VAR _Nov_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "November")
+VAR _Dec_Fees = CALCULATE(SUM(rpt_remittance_quarterly[Fees]), rpt_remittance_quarterly[Month] = "December")
+
+-- ===== QUARTERLY TOTALS =====
+VAR _Q1_SWIFT = _Jan_SWIFT + _Feb_SWIFT + _Mar_SWIFT
+VAR _Q2_SWIFT = _Apr_SWIFT + _May_SWIFT + _Jun_SWIFT
+VAR _Q3_SWIFT = _Jul_SWIFT + _Aug_SWIFT + _Sep_SWIFT
+VAR _Q4_SWIFT = _Oct_SWIFT + _Nov_SWIFT + _Dec_SWIFT
+
+VAR _Q1_Value = _Jan_Value + _Feb_Value + _Mar_Value
+VAR _Q2_Value = _Apr_Value + _May_Value + _Jun_Value
+VAR _Q3_Value = _Jul_Value + _Aug_Value + _Sep_Value
+VAR _Q4_Value = _Oct_Value + _Nov_Value + _Dec_Value
+
+VAR _Q1_Fees = _Jan_Fees + _Feb_Fees + _Mar_Fees
+VAR _Q2_Fees = _Apr_Fees + _May_Fees + _Jun_Fees
+VAR _Q3_Fees = _Jul_Fees + _Aug_Fees + _Sep_Fees
+VAR _Q4_Fees = _Oct_Fees + _Nov_Fees + _Dec_Fees
+
+-- ===== GRAND TOTAL =====
+VAR _Grand_SWIFT = _Q1_SWIFT + _Q2_SWIFT + _Q3_SWIFT + _Q4_SWIFT
+VAR _Grand_Value = _Q1_Value + _Q2_Value + _Q3_Value + _Q4_Value
+VAR _Grand_Fees = _Q1_Fees + _Q2_Fees + _Q3_Fees + _Q4_Fees
+
+-- ===== FORMAT HELPERS =====
+VAR _fmtSWIFT = "#,##0"
+VAR _fmtUSD = "$#,##0.00"
+VAR _fmtDash = "$ -"
+
+-- ===== HEADER WITH LOGO =====
+VAR ModernHeader =
+    "<div style='background-color: #003366; padding: 16px 20px; border-bottom: 4px solid #f0a500; display: flex; align-items: center; gap: 20px;'>" &
+        "<img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' alt='BNCTL Logo' style='height: 90px; width: auto; flex-shrink: 0;' />" &
+        "<div style='flex: 1;'>" &
+            "<div style='color: #ffffff; font-family: Segoe UI; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;'>" &
+                "BANCO NACIONAL DE COMERCIO DE TIMOR LESTE" &
+            "</div>" &
+            "<div style='color: #f0a500; font-family: Segoe UI; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;'>" &
+                "QUARTERLY REPORT &mdash; TOTAL REMITTANCE 2025 &mdash; INCOMING (WITH FEES)" &
+            "</div>" &
+            "<div style='color: #cbd5e1; font-family: Segoe UI; font-size: 11px;'>" &
+                "Inward SWIFT Transactions &mdash; Fiscal Year 2025" &
+            "</div>" &
+        "</div>" &
+    "</div>"
+
+-- ===== NOTE SECTION =====
+VAR NoteSection =
+    "<div style='background-color: #fffbe6; border-left: 4px solid #f0a500; padding: 12px 20px; margin: 0; font-family: Segoe UI; font-size: 13px; color: #7a6c00;'>" &
+        "<strong>Note:</strong> This report covers all inward SWIFT remittance transactions for the fiscal year 2025 including associated fees." &
+    "</div>"
+
+-- ===== SUMMARY KPI BAR =====
+VAR SummaryBar =
+    "<div style='display: flex; background-color: #f8f9fa; border-bottom: 2px solid #e0e0e0;'>" &
+        "<div style='flex: 1; padding: 18px 24px; border-right: 1px solid #e0e0e0;'>" &
+            "<div style='font-family: Segoe UI; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;'>Total SWIFT Transactions</div>" &
+            "<div style='font-family: Segoe UI; font-size: 26px; font-weight: 700; color: #003366;'>" & FORMAT(_Grand_SWIFT, _fmtSWIFT) & "</div>" &
+        "</div>" &
+        "<div style='flex: 1; padding: 18px 24px; border-right: 1px solid #e0e0e0;'>" &
+            "<div style='font-family: Segoe UI; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;'>Total Value (USD)</div>" &
+            "<div style='font-family: Segoe UI; font-size: 26px; font-weight: 700; color: #004680;'>" & FORMAT(_Grand_Value, _fmtUSD) & "</div>" &
+        "</div>" &
+        "<div style='flex: 1; padding: 18px 24px;'>" &
+            "<div style='font-family: Segoe UI; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;'>Total Fees (USD)</div>" &
+            "<div style='font-family: Segoe UI; font-size: 26px; font-weight: 700; color: #004680;'>" & FORMAT(_Grand_Fees, _fmtUSD) & "</div>" &
+        "</div>" &
+    "</div>"
+
+-- ===== Q1 TABLE =====
+VAR Q1_Section =
+    "<tr style='background-color: #003366; height: 40px;'>" &
+        "<td colspan='4' style='padding: 10px 20px; color: #f0a500; font-family: Segoe UI; font-size: 15px; font-weight: 700; letter-spacing: 1px;'>Q1 &mdash; 2025</td>" &
+    "</tr>" &
+    "<tr style='background-color: #004680; height: 32px;'>" &
+        "<td colspan='4' style='padding: 6px 20px; color: #ffffff; font-family: Segoe UI; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;'>INWARD</td>" &
+    "</tr>" &
+    "<tr style='background-color: #f2f2f2; height: 35px;'>" &
+        "<th style='padding: 8px 20px; text-align: left; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd;'>Month</th>" &
+        "<th style='padding: 8px 16px; text-align: center; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>SWIFT<br/><span style='font-weight: 400; font-size: 11px; color: #666;'>Number</span></th>" &
+        "<th style='padding: 8px 16px; text-align: right; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>Value (USD)</th>" &
+        "<th style='padding: 8px 16px; text-align: right; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>Fees</th>" &
+    "</tr>" &
+    "<tr style='background-color: #ffffff;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>January</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #333; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jan_SWIFT = 0, "&mdash;", FORMAT(_Jan_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #333; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jan_Value = 0, _fmtDash, FORMAT(_Jan_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #333; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jan_Fees = 0, _fmtDash, FORMAT(_Jan_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #fafafa;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>February</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Feb_SWIFT = 0, "&mdash;", FORMAT(_Feb_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Feb_Value = 0, _fmtDash, FORMAT(_Feb_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Feb_Fees = 0, _fmtDash, FORMAT(_Feb_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #ffffff;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>March</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Mar_SWIFT = 0, "&mdash;", FORMAT(_Mar_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Mar_Value = 0, _fmtDash, FORMAT(_Mar_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Mar_Fees = 0, _fmtDash, FORMAT(_Mar_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #e8f0fe;'>" &
+        "<td style='padding: 12px 20px; font-family: Segoe UI; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680;'>TOTAL</td>" &
+        "<td style='padding: 12px 16px; text-align: center; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & FORMAT(_Q1_SWIFT, _fmtSWIFT) & "</td>" &
+        "<td style='padding: 12px 16px; text-align: right; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & IF(_Q1_Value = 0, _fmtDash, FORMAT(_Q1_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 12px 16px; text-align: right; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & IF(_Q1_Fees = 0, _fmtDash, FORMAT(_Q1_Fees, _fmtUSD)) & "</td>" &
+    "</tr>"
+
+-- ===== SPACER =====
+VAR Spacer =
+    "<tr style='height: 12px; background-color: #ffffff;'><td colspan='4'></td></tr>"
+
+-- ===== Q2 TABLE =====
+VAR Q2_Section =
+    "<tr style='background-color: #003366; height: 40px;'>" &
+        "<td colspan='4' style='padding: 10px 20px; color: #f0a500; font-family: Segoe UI; font-size: 15px; font-weight: 700; letter-spacing: 1px;'>Q2 &mdash; 2025</td>" &
+    "</tr>" &
+    "<tr style='background-color: #004680; height: 32px;'>" &
+        "<td colspan='4' style='padding: 6px 20px; color: #ffffff; font-family: Segoe UI; font-size: 13px; font-weight: 600;'>INWARD</td>" &
+    "</tr>" &
+    "<tr style='background-color: #f2f2f2; height: 35px;'>" &
+        "<th style='padding: 8px 20px; text-align: left; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd;'>Month</th>" &
+        "<th style='padding: 8px 16px; text-align: center; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>SWIFT<br/><span style='font-weight: 400; font-size: 11px; color: #666;'>Number</span></th>" &
+        "<th style='padding: 8px 16px; text-align: right; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>Value (USD)</th>" &
+        "<th style='padding: 8px 16px; text-align: right; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>Fees</th>" &
+    "</tr>" &
+    "<tr style='background-color: #ffffff;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>April</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Apr_SWIFT = 0, "&mdash;", FORMAT(_Apr_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Apr_Value = 0, _fmtDash, FORMAT(_Apr_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Apr_Fees = 0, _fmtDash, FORMAT(_Apr_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #fafafa;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>May</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_May_SWIFT = 0, "&mdash;", FORMAT(_May_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_May_Value = 0, _fmtDash, FORMAT(_May_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_May_Fees = 0, _fmtDash, FORMAT(_May_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #ffffff;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>June</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jun_SWIFT = 0, "&mdash;", FORMAT(_Jun_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jun_Value = 0, _fmtDash, FORMAT(_Jun_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jun_Fees = 0, _fmtDash, FORMAT(_Jun_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #e8f0fe;'>" &
+        "<td style='padding: 12px 20px; font-family: Segoe UI; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680;'>TOTAL</td>" &
+        "<td style='padding: 12px 16px; text-align: center; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & FORMAT(_Q2_SWIFT, _fmtSWIFT) & "</td>" &
+        "<td style='padding: 12px 16px; text-align: right; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & IF(_Q2_Value = 0, _fmtDash, FORMAT(_Q2_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 12px 16px; text-align: right; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & IF(_Q2_Fees = 0, _fmtDash, FORMAT(_Q2_Fees, _fmtUSD)) & "</td>" &
+    "</tr>"
+
+-- ===== Q3 TABLE =====
+VAR Q3_Section =
+    "<tr style='background-color: #003366; height: 40px;'>" &
+        "<td colspan='4' style='padding: 10px 20px; color: #f0a500; font-family: Segoe UI; font-size: 15px; font-weight: 700; letter-spacing: 1px;'>Q3 &mdash; 2025</td>" &
+    "</tr>" &
+    "<tr style='background-color: #004680; height: 32px;'>" &
+        "<td colspan='4' style='padding: 6px 20px; color: #ffffff; font-family: Segoe UI; font-size: 13px; font-weight: 600;'>INWARD</td>" &
+    "</tr>" &
+    "<tr style='background-color: #f2f2f2; height: 35px;'>" &
+        "<th style='padding: 8px 20px; text-align: left; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd;'>Month</th>" &
+        "<th style='padding: 8px 16px; text-align: center; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>SWIFT<br/><span style='font-weight: 400; font-size: 11px; color: #666;'>Number</span></th>" &
+        "<th style='padding: 8px 16px; text-align: right; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>Value (USD)</th>" &
+        "<th style='padding: 8px 16px; text-align: right; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>Fees</th>" &
+    "</tr>" &
+    "<tr style='background-color: #ffffff;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>July</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jul_SWIFT = 0, "&mdash;", FORMAT(_Jul_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jul_Value = 0, _fmtDash, FORMAT(_Jul_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Jul_Fees = 0, _fmtDash, FORMAT(_Jul_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #fafafa;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>August</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Aug_SWIFT = 0, "&mdash;", FORMAT(_Aug_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Aug_Value = 0, _fmtDash, FORMAT(_Aug_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Aug_Fees = 0, _fmtDash, FORMAT(_Aug_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #ffffff;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>September</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Sep_SWIFT = 0, "&mdash;", FORMAT(_Sep_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Sep_Value = 0, _fmtDash, FORMAT(_Sep_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Sep_Fees = 0, _fmtDash, FORMAT(_Sep_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #e8f0fe;'>" &
+        "<td style='padding: 12px 20px; font-family: Segoe UI; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680;'>TOTAL</td>" &
+        "<td style='padding: 12px 16px; text-align: center; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & FORMAT(_Q3_SWIFT, _fmtSWIFT) & "</td>" &
+        "<td style='padding: 12px 16px; text-align: right; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & IF(_Q3_Value = 0, _fmtDash, FORMAT(_Q3_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 12px 16px; text-align: right; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & IF(_Q3_Fees = 0, _fmtDash, FORMAT(_Q3_Fees, _fmtUSD)) & "</td>" &
+    "</tr>"
+
+-- ===== Q4 TABLE =====
+VAR Q4_Section =
+    "<tr style='background-color: #003366; height: 40px;'>" &
+        "<td colspan='4' style='padding: 10px 20px; color: #f0a500; font-family: Segoe UI; font-size: 15px; font-weight: 700; letter-spacing: 1px;'>Q4 &mdash; 2025</td>" &
+    "</tr>" &
+    "<tr style='background-color: #004680; height: 32px;'>" &
+        "<td colspan='4' style='padding: 6px 20px; color: #ffffff; font-family: Segoe UI; font-size: 13px; font-weight: 600;'>INWARD</td>" &
+    "</tr>" &
+    "<tr style='background-color: #f2f2f2; height: 35px;'>" &
+        "<th style='padding: 8px 20px; text-align: left; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd;'>Month</th>" &
+        "<th style='padding: 8px 16px; text-align: center; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>SWIFT<br/><span style='font-weight: 400; font-size: 11px; color: #666;'>Number</span></th>" &
+        "<th style='padding: 8px 16px; text-align: right; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>Value (USD)</th>" &
+        "<th style='padding: 8px 16px; text-align: right; font-family: Segoe UI; font-size: 12px; color: #333; font-weight: 600; border-bottom: 2px solid #ddd; border-left: 1px solid #ddd;'>Fees</th>" &
+    "</tr>" &
+    "<tr style='background-color: #ffffff;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>October</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Oct_SWIFT = 0, "&mdash;", FORMAT(_Oct_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Oct_Value = 0, _fmtDash, FORMAT(_Oct_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Oct_Fees = 0, _fmtDash, FORMAT(_Oct_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #fafafa;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>November</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Nov_SWIFT = 0, "&mdash;", FORMAT(_Nov_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Nov_Value = 0, _fmtDash, FORMAT(_Nov_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Nov_Fees = 0, _fmtDash, FORMAT(_Nov_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #ffffff;'>" &
+        "<td style='padding: 10px 20px; font-family: Segoe UI; font-size: 13px; color: #333; border-bottom: 1px solid #eee;'>December</td>" &
+        "<td style='padding: 10px 16px; text-align: center; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Dec_SWIFT = 0, "&mdash;", FORMAT(_Dec_SWIFT, _fmtSWIFT)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Dec_Value = 0, _fmtDash, FORMAT(_Dec_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 10px 16px; text-align: right; font-family: Consolas; font-size: 13px; color: #999; border-bottom: 1px solid #eee; border-left: 1px solid #e8e8e8;'>" & IF(_Dec_Fees = 0, _fmtDash, FORMAT(_Dec_Fees, _fmtUSD)) & "</td>" &
+    "</tr>" &
+    "<tr style='background-color: #e8f0fe;'>" &
+        "<td style='padding: 12px 20px; font-family: Segoe UI; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680;'>TOTAL</td>" &
+        "<td style='padding: 12px 16px; text-align: center; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & FORMAT(_Q4_SWIFT, _fmtSWIFT) & "</td>" &
+        "<td style='padding: 12px 16px; text-align: right; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & IF(_Q4_Value = 0, _fmtDash, FORMAT(_Q4_Value, _fmtUSD)) & "</td>" &
+        "<td style='padding: 12px 16px; text-align: right; font-family: Consolas; font-size: 13px; font-weight: 700; color: #003366; border-top: 2px solid #004680; border-bottom: 2px solid #004680; border-left: 1px solid #c0d0e0;'>" & IF(_Q4_Fees = 0, _fmtDash, FORMAT(_Q4_Fees, _fmtUSD)) & "</td>" &
+    "</tr>"
+
+-- ===== GRAND TOTAL ROW =====
+VAR GrandTotalSection =
+    "<tr style='height: 8px; background-color: #ffffff;'><td colspan='4'></td></tr>" &
+    "<tr style='background-color: #003366; height: 48px;'>" &
+        "<td style='padding: 14px 20px; font-family: Segoe UI; font-size: 14px; font-weight: 700; color: #f0a500; letter-spacing: 1px;'>GRAND TOTAL &mdash; FY 2025</td>" &
+        "<td style='padding: 14px 16px; text-align: center; font-family: Consolas; font-size: 14px; font-weight: 700; color: #ffffff; border-left: 1px solid #004680;'>" & FORMAT(_Grand_SWIFT, _fmtSWIFT) & "</td>" &
+        "<td style='padding: 14px 16px; text-align: right; font-family: Consolas; font-size: 14px; font-weight: 700; color: #f0a500; border-left: 1px solid #004680;'>" & FORMAT(_Grand_Value, _fmtUSD) & "</td>" &
+        "<td style='padding: 14px 16px; text-align: right; font-family: Consolas; font-size: 14px; font-weight: 700; color: #f0a500; border-left: 1px solid #004680;'>" & FORMAT(_Grand_Fees, _fmtUSD) & "</td>" &
+    "</tr>"
+
+-- ===== FOOTER =====
+VAR FooterSection =
+    "<div style='background-color: #f8f9fa; padding: 12px 20px; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-between;'>" &
+        "<span style='font-family: Segoe UI; font-size: 11px; color: #999;'>QUARTERLY REPORT &mdash; TOTAL REMITTANCE 2025 &mdash; INCOMING (WITH FEES)</span>" &
+        "<span style='font-family: Segoe UI; font-size: 11px; color: #999;'>BNCTL &mdash; Confidential</span>" &
+    "</div>"
+
+-- ===== FINAL OUTPUT =====
+RETURN
+"<div style='font-family: Segoe UI, sans-serif; background-color: #ffffff;'>" &
+    ModernHeader &
+    NoteSection &
+    SummaryBar &
+    "<div style='overflow: auto; max-height: 850px; border: 1px solid #ccc; border-top: none;'>" &
+        "<table style='width: 100%; border-collapse: collapse;'>" &
+            "<tbody>" &
+                Q1_Section &
+                Spacer &
+                Q2_Section &
+                Spacer &
+                Q3_Section &
+                Spacer &
+                Q4_Section &
+                GrandTotalSection &
+            "</tbody>" &
+        "</table>" &
+    "</div>" &
+    FooterSection &
+"</div>"
+
+

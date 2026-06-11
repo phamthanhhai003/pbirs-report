@@ -1,13 +1,6 @@
 #!/bin/bash
 
-PYTHON="python"
-command -v "$PYTHON" >/dev/null 2>&1 || PYTHON="python3"
-command -v "$PYTHON" >/dev/null 2>&1 || PYTHON="python.exe"
-
-WIN_TEMP="$(powershell.exe -Command 'Write-Host $env:TEMP' 2>/dev/null | tr -d '\r')"
-WSL_TEMP="$(wslpath "$WIN_TEMP" 2>/dev/null || echo "/tmp")"
-
-# Step 1: Extract DAX từ live model
+# Extract DAX từ live model
 echo "Extracting DAX measures..."
 powershell.exe -ExecutionPolicy Bypass -File "scripts/extract_dax.ps1" -OutputDir "./source"
 if [ $? -ne 0 ]; then
@@ -15,23 +8,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Step 2: Skip eval nếu không có measure nào thay đổi
 CHANGED=$(git diff --name-only source/measures/ 2>/dev/null)
-if [ -z "$CHANGED" ]; then
-    echo "No measure changes — skip preview."
-    git add source/ 2>/dev/null
-    exit 0
-fi
-
-echo "Changed measures:"
-echo "$CHANGED"
-
-# Step 3: Eval chỉ khi có thay đổi
-echo "Evaluating measures..."
-powershell.exe -ExecutionPolicy Bypass -File "scripts/eval_measures.ps1"
-if [ $? -ne 0 ]; then
-    echo "ERROR: eval_measures.ps1 failed"
-    exit 1
+if [ -n "$CHANGED" ]; then
+    echo "Changed measures:"
+    echo "$CHANGED"
 fi
 
 git add source/ 2>/dev/null
