@@ -1,0 +1,873 @@
+﻿MEASURE 'final_bctl_report'[BCTL_HTML] =
+VAR SelectedYear  = SELECTEDVALUE( Calendar[Year] )
+VAR SelectedMonth = SELECTEDVALUE( Calendar[report_month] )
+VAR MaxDate      = MAX( final_bctl_report[load_date] )
+VAR MaxYear       = LEFT(MaxDate, 4)
+VAR ActiveYear    = IF( ISBLANK(SelectedYear),  MaxYear,  SelectedYear )
+VAR ActiveMonth   = IF( ISBLANK(SelectedMonth), LEFT(MaxDate, 7), SelectedMonth )
+VAR PeriodLabel   =
+    IF( NOT ISBLANK(SelectedMonth),
+        "For the Month of " & FORMAT( DATE( LEFT(ActiveMonth,4), RIGHT(ActiveMonth,2), 1 ), "MMMM YYYY" ),
+        "For the Year Ended " & ActiveYear )
+VAR tbl = FILTER( ALL(final_bctl_report),
+    IF( NOT ISBLANK(SelectedMonth),
+        LEFT([load_date], 7) = ActiveMonth,
+        LEFT([load_date], 4) = ActiveYear ) )
+VAR s1r1 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=1 ), [amount] )
+VAR s1r2 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=2 ), [amount] )
+VAR s1r3 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=3 ), [amount] )
+VAR s1r4 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=4 ), [amount] )
+VAR s1r5 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=5 ), [amount] )
+VAR s1r6 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=6 ), [amount] )
+VAR s1r7 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=7 ), [amount] )
+VAR s1r8 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=8 ), [amount] )
+VAR s1r9 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=9 ), [amount] )
+VAR s1r10 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=10 ), [amount] )
+VAR s1r11 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=11 ), [amount] )
+VAR s1r12 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=12 ), [amount] )
+VAR s1r13 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=13 ), [amount] )
+VAR s1r14 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=14 ), [amount] )
+VAR s1r15 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=15 ), [amount] )
+VAR s1r16 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=16 ), [amount] )
+VAR s1r17 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=17 ), [amount] )
+VAR s1r18 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=18 ), [amount] )
+VAR s1r19 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=19 ), [amount] )
+VAR s1r20 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=20 ), [amount] )
+VAR s1r21 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=21 ), [amount] )
+VAR s1r22 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=22 ), [amount] )
+VAR s1r23 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=23 ), [amount] )
+VAR s1r24 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=24 ), [amount] )
+VAR s1r25 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=25 ), [amount] )
+VAR s1r26 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=26 ), [amount] )
+VAR s1r27 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=27 ), [amount] )
+VAR s1r28 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=28 ), [amount] )
+VAR s1r29 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=29 ), [amount] )
+VAR s1r30 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=30 ), [amount] )
+VAR s1r31 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=31 ), [amount] )
+VAR s1r32 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=32 ), [amount] )
+VAR s1r33 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=33 ), [amount] )
+VAR s1r34 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=34 ), [amount] )
+VAR s1r35 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=35 ), [amount] )
+VAR s1r36 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=36 ), [amount] )
+VAR s1r37 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=37 ), [amount] )
+VAR s1r38 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=38 ), [amount] )
+VAR s1r39 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=39 ), [amount] )
+VAR s1r40 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=40 ), [amount] )
+VAR s1r41 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=41 ), [amount] )
+VAR s1r42 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=42 ), [amount] )
+VAR s1r43 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=43 ), [amount] )
+VAR s1r44 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=44 ), [amount] )
+VAR s1r45 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=45 ), [amount] )
+VAR s1r46 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=46 ), [amount] )
+VAR s1r47 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=47 ), [amount] )
+VAR s1r48 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=48 ), [amount] )
+VAR s1r49 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=49 ), [amount] )
+VAR s1r50 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=50 ), [amount] )
+VAR s1r51 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=51 ), [amount] )
+VAR s1r52 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=52 ), [amount] )
+VAR s1r53 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=53 ), [amount] )
+VAR s1r54 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=54 ), [amount] )
+VAR s1r55 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=55 ), [amount] )
+VAR s1r56 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=56 ), [amount] )
+VAR s1r57 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=57 ), [amount] )
+VAR s1r58 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=58 ), [amount] )
+VAR s1r59 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=59 ), [amount] )
+VAR s1r60 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=60 ), [amount] )
+VAR s1r61 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=61 ), [amount] )
+VAR s1r62 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=62 ), [amount] )
+VAR s1r63 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=63 ), [amount] )
+VAR s1r64 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=64 ), [amount] )
+VAR s1r65 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=65 ), [amount] )
+VAR s1r66 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=66 ), [amount] )
+VAR s1r67 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=67 ), [amount] )
+VAR s1r68 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=68 ), [amount] )
+VAR s1r69 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=69 ), [amount] )
+VAR s1r70 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=70 ), [amount] )
+VAR s1r71 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=71 ), [amount] )
+VAR s1r72 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=72 ), [amount] )
+VAR s1r73 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=73 ), [amount] )
+VAR s1r74 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=74 ), [amount] )
+VAR s1r75 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=75 ), [amount] )
+VAR s1r76 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=76 ), [amount] )
+VAR s1r77 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=77 ), [amount] )
+VAR s1r78 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=78 ), [amount] )
+VAR s1r79 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=79 ), [amount] )
+VAR s1r80 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=80 ), [amount] )
+VAR s1r81 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=81 ), [amount] )
+VAR s1r82 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=82 ), [amount] )
+VAR s1r83 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=83 ), [amount] )
+VAR s1r84 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=84 ), [amount] )
+VAR s1r85 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=85 ), [amount] )
+VAR s1r86 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=86 ), [amount] )
+VAR s1r87 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=87 ), [amount] )
+VAR s1r88 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=88 ), [amount] )
+VAR s1r89 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=89 ), [amount] )
+VAR s1r90 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=90 ), [amount] )
+VAR s1r91 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=91 ), [amount] )
+VAR s1r92 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=92 ), [amount] )
+VAR s1r93 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=93 ), [amount] )
+VAR s1r94 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=94 ), [amount] )
+VAR s1r95 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=95 ), [amount] )
+VAR s1r96 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=96 ), [amount] )
+VAR s1r97 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=97 ), [amount] )
+VAR s1r98 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=98 ), [amount] )
+VAR s1r99 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=99 ), [amount] )
+VAR s1r100 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=100 ), [amount] )
+VAR s1r101 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=101 ), [amount] )
+VAR s1r102 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=102 ), [amount] )
+VAR s1r103 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=103 ), [amount] )
+VAR s1r104 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=104 ), [amount] )
+VAR s1r105 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=105 ), [amount] )
+VAR s1r106 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=106 ), [amount] )
+VAR s1r107 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=107 ), [amount] )
+VAR s1r108 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=108 ), [amount] )
+VAR s1r109 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=109 ), [amount] )
+VAR s1r110 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=110 ), [amount] )
+VAR s1r111 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=111 ), [amount] )
+VAR s1r112 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=112 ), [amount] )
+VAR s1r113 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=113 ), [amount] )
+VAR s1r114 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=114 ), [amount] )
+VAR s1r115 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=115 ), [amount] )
+VAR s1r116 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=116 ), [amount] )
+VAR s1r117 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=117 ), [amount] )
+VAR s1r118 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=118 ), [amount] )
+VAR s1r119 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=119 ), [amount] )
+VAR s1r120 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=120 ), [amount] )
+VAR s1r121 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=121 ), [amount] )
+VAR s1r122 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=122 ), [amount] )
+VAR s1r123 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=123 ), [amount] )
+VAR s1r124 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=124 ), [amount] )
+VAR s1r125 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=125 ), [amount] )
+VAR s1r126 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=126 ), [amount] )
+VAR s1r127 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=1 && VALUE([order_id])=127 ), [amount] )
+VAR s2r1 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=1 ), [amount] )
+VAR s2r2 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=2 ), [amount] )
+VAR s2r3 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=3 ), [amount] )
+VAR s2r4 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=4 ), [amount] )
+VAR s2r5 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=5 ), [amount] )
+VAR s2r6 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=6 ), [amount] )
+VAR s2r7 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=7 ), [amount] )
+VAR s2r8 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=8 ), [amount] )
+VAR s2r9 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=9 ), [amount] )
+VAR s2r10 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=10 ), [amount] )
+VAR s2r11 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=11 ), [amount] )
+VAR s2r12 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=12 ), [amount] )
+VAR s2r13 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=13 ), [amount] )
+VAR s2r14 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=14 ), [amount] )
+VAR s2r15 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=15 ), [amount] )
+VAR s2r16 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=16 ), [amount] )
+VAR s2r17 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=17 ), [amount] )
+VAR s2r18 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=18 ), [amount] )
+VAR s2r19 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=19 ), [amount] )
+VAR s2r20 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=20 ), [amount] )
+VAR s2r21 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=21 ), [amount] )
+VAR s2r22 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=22 ), [amount] )
+VAR s2r23 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=23 ), [amount] )
+VAR s2r24 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=24 ), [amount] )
+VAR s2r25 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=25 ), [amount] )
+VAR s2r26 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=26 ), [amount] )
+VAR s2r27 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=27 ), [amount] )
+VAR s2r28 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=28 ), [amount] )
+VAR s2r29 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=29 ), [amount] )
+VAR s2r30 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=30 ), [amount] )
+VAR s2r31 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=31 ), [amount] )
+VAR s2r32 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=32 ), [amount] )
+VAR s2r33 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=33 ), [amount] )
+VAR s2r34 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=34 ), [amount] )
+VAR s2r36 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=36 ), [amount] )
+VAR s2r37 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=37 ), [amount] )
+VAR s2r38 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=38 ), [amount] )
+VAR s2r39 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=39 ), [amount] )
+VAR s2r40 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=40 ), [amount] )
+VAR s2r41 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=41 ), [amount] )
+VAR s2r42 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=42 ), [amount] )
+VAR s2r43 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=43 ), [amount] )
+VAR s2r44 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=44 ), [amount] )
+VAR s2r45 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=45 ), [amount] )
+VAR s2r46 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=46 ), [amount] )
+VAR s2r47 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=47 ), [amount] )
+VAR s2r48 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=48 ), [amount] )
+VAR s2r49 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=49 ), [amount] )
+VAR s2r50 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=50 ), [amount] )
+VAR s2r51 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=51 ), [amount] )
+VAR s2r52 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=52 ), [amount] )
+VAR s2r53 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=53 ), [amount] )
+VAR s2r54 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=54 ), [amount] )
+VAR s2r56 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=56 ), [amount] )
+VAR s2r57 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=57 ), [amount] )
+VAR s2r58 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=58 ), [amount] )
+VAR s2r59 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=59 ), [amount] )
+VAR s2r60 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=60 ), [amount] )
+VAR s2r61 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=61 ), [amount] )
+VAR s2r62 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=62 ), [amount] )
+VAR s2r63 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=63 ), [amount] )
+VAR s2r64 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=64 ), [amount] )
+VAR s2r65 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=65 ), [amount] )
+VAR s2r66 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=66 ), [amount] )
+VAR s2r68 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=68 ), [amount] )
+VAR s2r69 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=69 ), [amount] )
+VAR s2r70 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=70 ), [amount] )
+VAR s2r71 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=2 && VALUE([order_id])=71 ), [amount] )
+VAR s3r72 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=3 && VALUE([order_id])=72 ), [amount] )
+VAR s3r73 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=3 && VALUE([order_id])=73 ), [amount] )
+VAR s3r74 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=3 && VALUE([order_id])=74 ), [amount] )
+VAR s3r75 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=3 && VALUE([order_id])=75 ), [amount] )
+VAR s3r76 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=3 && VALUE([order_id])=76 ), [amount] )
+VAR s3r77 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=3 && VALUE([order_id])=77 ), [amount] )
+VAR s3r78 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=3 && VALUE([order_id])=78 ), [amount] )
+VAR s4r1 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=1 ), [amount] )
+VAR s4r2 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=2 ), [amount] )
+VAR s4r3 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=3 ), [amount] )
+VAR s4r4 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=4 ), [amount] )
+VAR s4r5 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=5 ), [amount] )
+VAR s4r6 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=6 ), [amount] )
+VAR s4r7 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=7 ), [amount] )
+VAR s4r8 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=8 ), [amount] )
+VAR s4r9 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=9 ), [amount] )
+VAR s4r10 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=10 ), [amount] )
+VAR s4r11 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=11 ), [amount] )
+VAR s4r12 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=12 ), [amount] )
+VAR s4r13 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=13 ), [amount] )
+VAR s4r14 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=14 ), [amount] )
+VAR s4r15 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=15 ), [amount] )
+VAR s4r16 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=16 ), [amount] )
+VAR s4r17 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=17 ), [amount] )
+VAR s4r18 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=18 ), [amount] )
+VAR s4r19 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=19 ), [amount] )
+VAR s4r20 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=20 ), [amount] )
+VAR s4r21 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=21 ), [amount] )
+VAR s4r22 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=22 ), [amount] )
+VAR s4r23 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=23 ), [amount] )
+VAR s4r24 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=24 ), [amount] )
+VAR s4r25 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=25 ), [amount] )
+VAR s4r26 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=26 ), [amount] )
+VAR s4r27 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=27 ), [amount] )
+VAR s4r28 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=28 ), [amount] )
+VAR s4r29 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=29 ), [amount] )
+VAR s4r30 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=30 ), [amount] )
+VAR s4r31 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=31 ), [amount] )
+VAR s4r32 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=32 ), [amount] )
+VAR s4r33 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=33 ), [amount] )
+VAR s4r34 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=34 ), [amount] )
+VAR s4r35 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=35 ), [amount] )
+VAR s4r36 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=36 ), [amount] )
+VAR s4r37 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=37 ), [amount] )
+VAR s4r38 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=38 ), [amount] )
+VAR s4r39 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=39 ), [amount] )
+VAR s4r40 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=40 ), [amount] )
+VAR s4r41 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=41 ), [amount] )
+VAR s4r42 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=42 ), [amount] )
+VAR s4r43 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=43 ), [amount] )
+VAR s4r44 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=44 ), [amount] )
+VAR s4r45 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=45 ), [amount] )
+VAR s4r46 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=46 ), [amount] )
+VAR s4r47 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=47 ), [amount] )
+VAR s4r48 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=48 ), [amount] )
+VAR s4r49 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=49 ), [amount] )
+VAR s4r50 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=50 ), [amount] )
+VAR s4r51 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=51 ), [amount] )
+VAR s4r52 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=52 ), [amount] )
+VAR s4r53 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=53 ), [amount] )
+VAR s4r54 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=54 ), [amount] )
+VAR s4r55 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=55 ), [amount] )
+VAR s4r56 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=56 ), [amount] )
+VAR s4r57 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=57 ), [amount] )
+VAR s4r58 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=58 ), [amount] )
+VAR s4r59 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=59 ), [amount] )
+VAR s4r60 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=60 ), [amount] )
+VAR s4r61 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=61 ), [amount] )
+VAR s4r62 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=62 ), [amount] )
+VAR s4r63 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=63 ), [amount] )
+VAR s4r64 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=4 && VALUE([order_id])=64 ), [amount] )
+VAR s5r1 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=1 ), [amount] )
+VAR s5r2 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=2 ), [amount] )
+VAR s5r3 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=3 ), [amount] )
+VAR s5r4 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=4 ), [amount] )
+VAR s5r5 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=5 ), [amount] )
+VAR s5r6 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=6 ), [amount] )
+VAR s5r7 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=7 ), [amount] )
+VAR s5r8 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=8 ), [amount] )
+VAR s5r9 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=9 ), [amount] )
+VAR s5r10 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=10 ), [amount] )
+VAR s5r11 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=11 ), [amount] )
+VAR s5r12 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=12 ), [amount] )
+VAR s5r13 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=13 ), [amount] )
+VAR s5r14 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=14 ), [amount] )
+VAR s5r15 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=15 ), [amount] )
+VAR s5r16 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=16 ), [amount] )
+VAR s5r17 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=17 ), [amount] )
+VAR s5r18 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=18 ), [amount] )
+VAR s5r19 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=19 ), [amount] )
+VAR s5r20 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=20 ), [amount] )
+VAR s5r21 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=21 ), [amount] )
+VAR s5r22 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=22 ), [amount] )
+VAR s5r23 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=23 ), [amount] )
+VAR s5r24 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=24 ), [amount] )
+VAR s5r25 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=25 ), [amount] )
+VAR s5r26 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=26 ), [amount] )
+VAR s5r27 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=27 ), [amount] )
+VAR s5r28 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=28 ), [amount] )
+VAR s5r29 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=29 ), [amount] )
+VAR s5r30 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=30 ), [amount] )
+VAR s5r31 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=31 ), [amount] )
+VAR s5r32 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=32 ), [amount] )
+VAR s5r33 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=33 ), [amount] )
+VAR s5r34 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=34 ), [amount] )
+VAR s5r35 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=35 ), [amount] )
+VAR s5r36 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=36 ), [amount] )
+VAR s5r37 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=37 ), [amount] )
+VAR s5r38 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=38 ), [amount] )
+VAR s5r39 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=39 ), [amount] )
+VAR s5r40 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=40 ), [amount] )
+VAR s5r41 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=41 ), [amount] )
+VAR s5r42 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=42 ), [amount] )
+VAR s5r43 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=43 ), [amount] )
+VAR s5r44 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=44 ), [amount] )
+VAR s5r45 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=45 ), [amount] )
+VAR s5r46 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=46 ), [amount] )
+VAR s5r47 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=47 ), [amount] )
+VAR s5r48 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=48 ), [amount] )
+VAR s5r49 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=49 ), [amount] )
+VAR s5r50 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=50 ), [amount] )
+VAR s5r51 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=51 ), [amount] )
+VAR s5r52 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=52 ), [amount] )
+VAR s5r53 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=53 ), [amount] )
+VAR s5r54 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=54 ), [amount] )
+VAR s5r55 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=55 ), [amount] )
+VAR s5r56 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=56 ), [amount] )
+VAR s5r57 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=57 ), [amount] )
+VAR s5r58 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=58 ), [amount] )
+VAR s5r59 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=59 ), [amount] )
+VAR s5r60 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=60 ), [amount] )
+VAR s5r61 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=61 ), [amount] )
+VAR s5r62 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=62 ), [amount] )
+VAR s5r63 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=63 ), [amount] )
+VAR s5r64 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=64 ), [amount] )
+VAR s5r65 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=65 ), [amount] )
+VAR s5r66 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=66 ), [amount] )
+VAR s5r67 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=67 ), [amount] )
+VAR s5r68 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=68 ), [amount] )
+VAR s5r69 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=69 ), [amount] )
+VAR s5r70 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=5 && VALUE([order_id])=70 ), [amount] )
+VAR s8r30 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=8 && VALUE([order_id])=30 ), [amount] )
+VAR s8r32 = AVERAGEX( FILTER( tbl, VALUE([bctl_section])=8 && VALUE([order_id])=32 ), [amount] )
+VAR Sty =
+    "<style>" &
+    ".bc{font-family:Segoe UI,Calibri,sans-serif;font-size:11px;color:#1e2d40;}" &
+    ".bc-t{width:100%;border-collapse:collapse;}" &
+    ".bc-t td{padding:3px 10px;border-bottom:1px solid #e8edf3;vertical-align:middle;}" &
+    ".bc-t tr:hover td{background:#f5f8ff;}" &
+    ".h-row td{background:#003366!important;color:#fff!important;font-weight:700;font-size:12px;text-transform:uppercase;border-bottom:3px solid #f0a500!important;padding:7px 10px!important;}" &
+    ".sub1 td{background:#e8f0fb!important;font-weight:700;color:#003366;border-bottom:1px solid #b8cce4!important;}" &
+    ".sub2 td{background:#f0f6ff!important;font-weight:600;color:#1a4a7a;}" &
+    ".tot td{background:#f0a500!important;font-weight:800;font-size:12px;color:#003366!important;border-top:2px solid #003366!important;}" &
+    ".net td{background:#003366!important;font-weight:800;color:#fff!important;border-bottom:3px solid #f0a500!important;}" &
+    ".cd{color:#9ca3af;font-size:9px;width:120px;}" &
+    ".cd-w{color:#f0a500!important;font-size:9px;width:120px;}" &
+    ".ar{text-align:right!important;font-family:Consolas,monospace;font-size:10px;white-space:nowrap;width:130px;}" &
+    ".i0{padding-left:10px!important;}" &
+    ".i1{padding-left:20px!important;}" &
+    ".i2{padding-left:32px!important;}" &
+    ".i3{padding-left:44px!important;color:#6b7280;}" &
+    ".i4{padding-left:56px!important;color:#9ca3af;}" &
+    ".sep{background:#f1f5f9!important;height:6px;}" &
+    ".nd td{color:#b0b7c3!important;}" &
+    "</style>"
+VAR Hdr =
+    "<div style='background:#003366;padding:16px 25px 12px;border-bottom:4px solid #f0a500;display:flex;align-items:center;gap:16px;'>" &
+    "<img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;width:auto;flex-shrink:0;' />" &
+    "<div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;'>CHART OF ACCOUNTS &mdash; BCTL CONSOLIDATED REPORT</div>" &
+    "<div style='color:#cbd5e1;font-size:12px;'>" & PeriodLabel & "</div>" &
+    "</div>" &
+    "</div>"
+VAR TH =
+    "<table class='bc-t'><thead><tr style='background:#f8fafc;'>" &
+    "<td style='font-size:10px;font-weight:700;color:#003366;padding:6px 10px;border-bottom:2px solid #003366;width:120px;'>CODE</td>" &
+    "<td style='font-size:10px;font-weight:700;color:#003366;padding:6px 10px;border-bottom:2px solid #003366;'>DESCRIPTION</td>" &
+    "<td style='text-align:right;font-size:10px;font-weight:700;color:#003366;padding:6px 10px;border-bottom:2px solid #003366;width:130px;'>AMOUNT (USD)</td>" &
+    "</tr></thead><tbody>"
+VAR TC  = "</tbody></table>"
+VAR SEP = "<tr class='sep'><td colspan='3'></td></tr>"
+VAR Sec1_1 =
+    "<tr class='sub1'><td class='cd'>1.0</td><td class='i1'>ASSETS:</td><td class='ar'>" & IF(ISBLANK(s1r1) || s1r1=0,"<span style='color:#d1d5db'>-</span>",IF(s1r1<0,"<span style='color:#dc2626'>(" & FORMAT(s1r1,"#,##0.00") & ")</span>",FORMAT(s1r1,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.01</td><td class='i1'>LIQUID FUNDS</td><td class='ar'>" & IF(ISBLANK(s1r2) || s1r2=0,"<span style='color:#d1d5db'>-</span>",IF(s1r2<0,"<span style='color:#dc2626'>(" & FORMAT(s1r2,"#,##0.00") & ")</span>",FORMAT(s1r2,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.1.1.1</td><td class='i4'>Cash in Vault</td><td class='ar'>" & IF(ISBLANK(s1r3) || s1r3=0,"<span style='color:#d1d5db'>-</span>",IF(s1r3<0,"<span style='color:#dc2626'>(" & FORMAT(s1r3,"#,##0.00") & ")</span>",FORMAT(s1r3,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.1.1.2</td><td class='i4'>Cash in ATM Vault</td><td class='ar'>" & IF(ISBLANK(s1r4) || s1r4=0,"<span style='color:#d1d5db'>-</span>",IF(s1r4<0,"<span style='color:#dc2626'>(" & FORMAT(s1r4,"#,##0.00") & ")</span>",FORMAT(s1r4,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.01.2</td><td class='i2'>Due from Central Bank</td><td class='ar'>" & IF(ISBLANK(s1r5) || s1r5=0,"<span style='color:#d1d5db'>-</span>",IF(s1r5<0,"<span style='color:#dc2626'>(" & FORMAT(s1r5,"#,##0.00") & ")</span>",FORMAT(s1r5,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.01.3</td><td class='i2'>Items in course of collect.</td><td class='ar'>" & IF(ISBLANK(s1r6) || s1r6=0,"<span style='color:#d1d5db'>-</span>",IF(s1r6<0,"<span style='color:#dc2626'>(" & FORMAT(s1r6,"#,##0.00") & ")</span>",FORMAT(s1r6,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.01.4</td><td class='i2'>Due from Com. Banks</td><td class='ar'>" & IF(ISBLANK(s1r7) || s1r7=0,"<span style='color:#d1d5db'>-</span>",IF(s1r7<0,"<span style='color:#dc2626'>(" & FORMAT(s1r7,"#,##0.00") & ")</span>",FORMAT(s1r7,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1</td><td class='i3'>Domestic Currency</td><td class='ar'>" & IF(ISBLANK(s1r8) || s1r8=0,"<span style='color:#d1d5db'>-</span>",IF(s1r8<0,"<span style='color:#dc2626'>(" & FORMAT(s1r8,"#,##0.00") & ")</span>",FORMAT(s1r8,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2</td><td class='i4'>Call Deposits</td><td class='ar'>" & IF(ISBLANK(s1r9) || s1r9=0,"<span style='color:#d1d5db'>-</span>",IF(s1r9<0,"<span style='color:#dc2626'>(" & FORMAT(s1r9,"#,##0.00") & ")</span>",FORMAT(s1r9,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.21</td><td class='i4'>LocalBankBRIDili</td><td class='ar'>" & IF(ISBLANK(s1r10) || s1r10=0,"<span style='color:#d1d5db'>-</span>",IF(s1r10<0,"<span style='color:#dc2626'>(" & FORMAT(s1r10,"#,##0.00") & ")</span>",FORMAT(s1r10,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.22</td><td class='i4'>LocalBanks:BNU</td><td class='ar'>" & IF(ISBLANK(s1r11) || s1r11=0,"<span style='color:#d1d5db'>-</span>",IF(s1r11<0,"<span style='color:#dc2626'>(" & FORMAT(s1r11,"#,##0.00") & ")</span>",FORMAT(s1r11,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.23</td><td class='i4'>LocalBanks:BRI</td><td class='ar'>" & IF(ISBLANK(s1r12) || s1r12=0,"<span style='color:#d1d5db'>-</span>",IF(s1r12<0,"<span style='color:#dc2626'>(" & FORMAT(s1r12,"#,##0.00") & ")</span>",FORMAT(s1r12,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.21</td><td class='i4'>LocalBanks:Mandiri</td><td class='ar'>" & IF(ISBLANK(s1r13) || s1r13=0,"<span style='color:#d1d5db'>-</span>",IF(s1r13<0,"<span style='color:#dc2626'>(" & FORMAT(s1r13,"#,##0.00") & ")</span>",FORMAT(s1r13,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.3</td><td class='i4'>OverseasUSDBRI</td><td class='ar'>" & IF(ISBLANK(s1r14) || s1r14=0,"<span style='color:#d1d5db'>-</span>",IF(s1r14<0,"<span style='color:#dc2626'>(" & FORMAT(s1r14,"#,##0.00") & ")</span>",FORMAT(s1r14,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.4</td><td class='i4'>OverseasUSDBCA</td><td class='ar'>" & IF(ISBLANK(s1r15) || s1r15=0,"<span style='color:#d1d5db'>-</span>",IF(s1r15<0,"<span style='color:#dc2626'>(" & FORMAT(s1r15,"#,##0.00") & ")</span>",FORMAT(s1r15,"#,##0.00"))) & "</td></tr>"
+VAR Sec1_2 =
+    "<tr><td class='cd'>1.01.4.1.2.5</td><td class='i4'>OverseasUSDBNINY</td><td class='ar'>" & IF(ISBLANK(s1r16) || s1r16=0,"<span style='color:#d1d5db'>-</span>",IF(s1r16<0,"<span style='color:#dc2626'>(" & FORMAT(s1r16,"#,##0.00") & ")</span>",FORMAT(s1r16,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.7</td><td class='i4'>OverseasUSDTurki</td><td class='ar'>" & IF(ISBLANK(s1r17) || s1r17=0,"<span style='color:#d1d5db'>-</span>",IF(s1r17<0,"<span style='color:#dc2626'>(" & FORMAT(s1r17,"#,##0.00") & ")</span>",FORMAT(s1r17,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.8</td><td class='i4'>OverseasBRINewYork</td><td class='ar'>" & IF(ISBLANK(s1r18) || s1r18=0,"<span style='color:#d1d5db'>-</span>",IF(s1r18<0,"<span style='color:#dc2626'>(" & FORMAT(s1r18,"#,##0.00") & ")</span>",FORMAT(s1r18,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.9</td><td class='i4'>OverseasUSDUK</td><td class='ar'>" & IF(ISBLANK(s1r19) || s1r19=0,"<span style='color:#d1d5db'>-</span>",IF(s1r19<0,"<span style='color:#dc2626'>(" & FORMAT(s1r19,"#,##0.00") & ")</span>",FORMAT(s1r19,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2</td><td class='i4'>OTHERS</td><td class='ar'>" & IF(ISBLANK(s1r20) || s1r20=0,"<span style='color:#d1d5db'>-</span>",IF(s1r20<0,"<span style='color:#dc2626'>(" & FORMAT(s1r20,"#,##0.00") & ")</span>",FORMAT(s1r20,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.3.20</td><td class='i4'>LocalBanks:MANDIRI</td><td class='ar'>" & IF(ISBLANK(s1r21) || s1r21=0,"<span style='color:#d1d5db'>-</span>",IF(s1r21<0,"<span style='color:#dc2626'>(" & FORMAT(s1r21,"#,##0.00") & ")</span>",FORMAT(s1r21,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.3.21</td><td class='i4'>LocalBanks:BNU</td><td class='ar'>" & IF(ISBLANK(s1r22) || s1r22=0,"<span style='color:#d1d5db'>-</span>",IF(s1r22<0,"<span style='color:#dc2626'>(" & FORMAT(s1r22,"#,##0.00") & ")</span>",FORMAT(s1r22,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.3.22</td><td class='i4'>LocalBanks:BRIDILI</td><td class='ar'>" & IF(ISBLANK(s1r23) || s1r23=0,"<span style='color:#d1d5db'>-</span>",IF(s1r23<0,"<span style='color:#dc2626'>(" & FORMAT(s1r23,"#,##0.00") & ")</span>",FORMAT(s1r23,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.3.24</td><td class='i4'>BNITimeDepNewYork</td><td class='ar'>" & IF(ISBLANK(s1r24) || s1r24=0,"<span style='color:#d1d5db'>-</span>",IF(s1r24<0,"<span style='color:#dc2626'>(" & FORMAT(s1r24,"#,##0.00") & ")</span>",FORMAT(s1r24,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.3.21</td><td class='i4'>BRITimeDepNewYork</td><td class='ar'>" & IF(ISBLANK(s1r25) || s1r25=0,"<span style='color:#d1d5db'>-</span>",IF(s1r25<0,"<span style='color:#dc2626'>(" & FORMAT(s1r25,"#,##0.00") & ")</span>",FORMAT(s1r25,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.3.25</td><td class='i4'>TDAktifTurkey</td><td class='ar'>" & IF(ISBLANK(s1r26) || s1r26=0,"<span style='color:#d1d5db'>-</span>",IF(s1r26<0,"<span style='color:#dc2626'>(" & FORMAT(s1r26,"#,##0.00") & ")</span>",FORMAT(s1r26,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.3.23</td><td class='i4'>TimeDepositBOCSingapore</td><td class='ar'>" & IF(ISBLANK(s1r27) || s1r27=0,"<span style='color:#d1d5db'>-</span>",IF(s1r27<0,"<span style='color:#dc2626'>(" & FORMAT(s1r27,"#,##0.00") & ")</span>",FORMAT(s1r27,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1.2.3</td><td class='i4'>Overseas</td><td class='ar'>" & IF(ISBLANK(s1r28) || s1r28=0,"<span style='color:#d1d5db'>-</span>",IF(s1r28<0,"<span style='color:#dc2626'>(" & FORMAT(s1r28,"#,##0.00") & ")</span>",FORMAT(s1r28,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.3</td><td class='i3'>Foreign Currency</td><td class='ar'>" & IF(ISBLANK(s1r29) || s1r29=0,"<span style='color:#d1d5db'>-</span>",IF(s1r29<0,"<span style='color:#dc2626'>(" & FORMAT(s1r29,"#,##0.00") & ")</span>",FORMAT(s1r29,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2.2</td><td class='i4'>OverseasIDRBRI</td><td class='ar'>" & IF(ISBLANK(s1r30) || s1r30=0,"<span style='color:#d1d5db'>-</span>",IF(s1r30<0,"<span style='color:#dc2626'>(" & FORMAT(s1r30,"#,##0.00") & ")</span>",FORMAT(s1r30,"#,##0.00"))) & "</td></tr>"
+VAR Sec1_3 =
+    "<tr><td class='cd'>1.01.4.2.3</td><td class='i4'>OtherOverseasBanks(TD)</td><td class='ar'>" & IF(ISBLANK(s1r31) || s1r31=0,"<span style='color:#d1d5db'>-</span>",IF(s1r31<0,"<span style='color:#dc2626'>(" & FORMAT(s1r31,"#,##0.00") & ")</span>",FORMAT(s1r31,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2.3</td><td class='i4'>TimeDepositBRIJakarta</td><td class='ar'>" & IF(ISBLANK(s1r32) || s1r32=0,"<span style='color:#d1d5db'>-</span>",IF(s1r32<0,"<span style='color:#dc2626'>(" & FORMAT(s1r32,"#,##0.00") & ")</span>",FORMAT(s1r32,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2.4</td><td class='i4'>OverseasIDRBCA</td><td class='ar'>" & IF(ISBLANK(s1r33) || s1r33=0,"<span style='color:#d1d5db'>-</span>",IF(s1r33<0,"<span style='color:#dc2626'>(" & FORMAT(s1r33,"#,##0.00") & ")</span>",FORMAT(s1r33,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2.5</td><td class='i4'>OverseasAUDBCA</td><td class='ar'>" & IF(ISBLANK(s1r34) || s1r34=0,"<span style='color:#d1d5db'>-</span>",IF(s1r34<0,"<span style='color:#dc2626'>(" & FORMAT(s1r34,"#,##0.00") & ")</span>",FORMAT(s1r34,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2.6</td><td class='i4'>BCPPortugal</td><td class='ar'>" & IF(ISBLANK(s1r35) || s1r35=0,"<span style='color:#d1d5db'>-</span>",IF(s1r35<0,"<span style='color:#dc2626'>(" & FORMAT(s1r35,"#,##0.00") & ")</span>",FORMAT(s1r35,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2.7</td><td class='i4'>BOCSingapore</td><td class='ar'>" & IF(ISBLANK(s1r36) || s1r36=0,"<span style='color:#d1d5db'>-</span>",IF(s1r36<0,"<span style='color:#dc2626'>(" & FORMAT(s1r36,"#,##0.00") & ")</span>",FORMAT(s1r36,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2.8</td><td class='i4'>SGDBOCSingapore</td><td class='ar'>" & IF(ISBLANK(s1r37) || s1r37=0,"<span style='color:#d1d5db'>-</span>",IF(s1r37<0,"<span style='color:#dc2626'>(" & FORMAT(s1r37,"#,##0.00") & ")</span>",FORMAT(s1r37,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2.9</td><td class='i4'>OverseasEuroTurky</td><td class='ar'>" & IF(ISBLANK(s1r38) || s1r38=0,"<span style='color:#d1d5db'>-</span>",IF(s1r38<0,"<span style='color:#dc2626'>(" & FORMAT(s1r38,"#,##0.00") & ")</span>",FORMAT(s1r38,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.3.1</td><td class='i4'>OverseasPoudsTurky</td><td class='ar'>" & IF(ISBLANK(s1r39) || s1r39=0,"<span style='color:#d1d5db'>-</span>",IF(s1r39<0,"<span style='color:#dc2626'>(" & FORMAT(s1r39,"#,##0.00") & ")</span>",FORMAT(s1r39,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.3.2</td><td class='i4'>OverseasIDRBNIJakarta</td><td class='ar'>" & IF(ISBLANK(s1r40) || s1r40=0,"<span style='color:#d1d5db'>-</span>",IF(s1r40<0,"<span style='color:#dc2626'>(" & FORMAT(s1r40,"#,##0.00") & ")</span>",FORMAT(s1r40,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.3.2</td><td class='i4'>OverseasGBPUK</td><td class='ar'>" & IF(ISBLANK(s1r41) || s1r41=0,"<span style='color:#d1d5db'>-</span>",IF(s1r41<0,"<span style='color:#dc2626'>(" & FORMAT(s1r41,"#,##0.00") & ")</span>",FORMAT(s1r41,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.3.3</td><td class='i4'>OverseasEUROUK</td><td class='ar'>" & IF(ISBLANK(s1r42) || s1r42=0,"<span style='color:#d1d5db'>-</span>",IF(s1r42<0,"<span style='color:#dc2626'>(" & FORMAT(s1r42,"#,##0.00") & ")</span>",FORMAT(s1r42,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.02</td><td class='i1'>INVESTMENT</td><td class='ar'>" & IF(ISBLANK(s1r43) || s1r43=0,"<span style='color:#d1d5db'>-</span>",IF(s1r43<0,"<span style='color:#dc2626'>(" & FORMAT(s1r43,"#,##0.00") & ")</span>",FORMAT(s1r43,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.02.1</td><td class='i2'>Securities</td><td class='ar'>" & IF(ISBLANK(s1r44) || s1r44=0,"<span style='color:#d1d5db'>-</span>",IF(s1r44<0,"<span style='color:#dc2626'>(" & FORMAT(s1r44,"#,##0.00") & ")</span>",FORMAT(s1r44,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.04</td><td class='i1'>LOAN, ADV. &amp; DISC.</td><td class='ar'>" & IF(ISBLANK(s1r45) || s1r45=0,"<span style='color:#d1d5db'>-</span>",IF(s1r45<0,"<span style='color:#dc2626'>(" & FORMAT(s1r45,"#,##0.00") & ")</span>",FORMAT(s1r45,"#,##0.00"))) & "</td></tr>"
+VAR Sec1_4 =
+    "<tr class='sub2'><td class='cd'>1.04.1</td><td class='i2'>CURRENT LOAN</td><td class='ar'>" & IF(ISBLANK(s1r46) || s1r46=0,"<span style='color:#d1d5db'>-</span>",IF(s1r46<0,"<span style='color:#dc2626'>(" & FORMAT(s1r46,"#,##0.00") & ")</span>",FORMAT(s1r46,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.10</td><td class='i4'>MarketVendorDailyL.</td><td class='ar'>" & IF(ISBLANK(s1r47) || s1r47=0,"<span style='color:#d1d5db'>-</span>",IF(s1r47<0,"<span style='color:#dc2626'>(" & FORMAT(s1r47,"#,##0.00") & ")</span>",FORMAT(s1r47,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.20</td><td class='i4'>SeasonalCropLoans</td><td class='ar'>" & IF(ISBLANK(s1r48) || s1r48=0,"<span style='color:#d1d5db'>-</span>",IF(s1r48<0,"<span style='color:#dc2626'>(" & FORMAT(s1r48,"#,##0.00") & ")</span>",FORMAT(s1r48,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.30</td><td class='i4'>OtherBusineesLoans</td><td class='ar'>" & IF(ISBLANK(s1r49) || s1r49=0,"<span style='color:#d1d5db'>-</span>",IF(s1r49<0,"<span style='color:#dc2626'>(" & FORMAT(s1r49,"#,##0.00") & ")</span>",FORMAT(s1r49,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.50</td><td class='i4'>ProjectLoan</td><td class='ar'>" & IF(ISBLANK(s1r50) || s1r50=0,"<span style='color:#d1d5db'>-</span>",IF(s1r50<0,"<span style='color:#dc2626'>(" & FORMAT(s1r50,"#,##0.00") & ")</span>",FORMAT(s1r50,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.60</td><td class='i4'>InvestmentLoans</td><td class='ar'>" & IF(ISBLANK(s1r51) || s1r51=0,"<span style='color:#d1d5db'>-</span>",IF(s1r51<0,"<span style='color:#dc2626'>(" & FORMAT(s1r51,"#,##0.00") & ")</span>",FORMAT(s1r51,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.80</td><td class='i4'>TransportLoan</td><td class='ar'>" & IF(ISBLANK(s1r52) || s1r52=0,"<span style='color:#d1d5db'>-</span>",IF(s1r52<0,"<span style='color:#dc2626'>(" & FORMAT(s1r52,"#,##0.00") & ")</span>",FORMAT(s1r52,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.85</td><td class='i4'>AgricultorLoan</td><td class='ar'>" & IF(ISBLANK(s1r53) || s1r53=0,"<span style='color:#d1d5db'>-</span>",IF(s1r53<0,"<span style='color:#dc2626'>(" & FORMAT(s1r53,"#,##0.00") & ")</span>",FORMAT(s1r53,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.70</td><td class='i4'>MicrofinanceGroupL.</td><td class='ar'>" & IF(ISBLANK(s1r54) || s1r54=0,"<span style='color:#d1d5db'>-</span>",IF(s1r54<0,"<span style='color:#dc2626'>(" & FORMAT(s1r54,"#,##0.00") & ")</span>",FORMAT(s1r54,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.20</td><td class='i4'>PayrollLoans</td><td class='ar'>" & IF(ISBLANK(s1r55) || s1r55=0,"<span style='color:#d1d5db'>-</span>",IF(s1r55<0,"<span style='color:#dc2626'>(" & FORMAT(s1r55,"#,##0.00") & ")</span>",FORMAT(s1r55,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.30</td><td class='i4'>LoanstoEmpl.&amp;Staff</td><td class='ar'>" & IF(ISBLANK(s1r56) || s1r56=0,"<span style='color:#d1d5db'>-</span>",IF(s1r56<0,"<span style='color:#dc2626'>(" & FORMAT(s1r56,"#,##0.00") & ")</span>",FORMAT(s1r56,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.35</td><td class='i4'>InternalStaffLoan</td><td class='ar'>" & IF(ISBLANK(s1r57) || s1r57=0,"<span style='color:#d1d5db'>-</span>",IF(s1r57<0,"<span style='color:#dc2626'>(" & FORMAT(s1r57,"#,##0.00") & ")</span>",FORMAT(s1r57,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.40</td><td class='i4'>AsuwainLoan</td><td class='ar'>" & IF(ISBLANK(s1r58) || s1r58=0,"<span style='color:#d1d5db'>-</span>",IF(s1r58<0,"<span style='color:#dc2626'>(" & FORMAT(s1r58,"#,##0.00") & ")</span>",FORMAT(s1r58,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.50</td><td class='i4'>BukaeLoan</td><td class='ar'>" & IF(ISBLANK(s1r59) || s1r59=0,"<span style='color:#d1d5db'>-</span>",IF(s1r59<0,"<span style='color:#dc2626'>(" & FORMAT(s1r59,"#,##0.00") & ")</span>",FORMAT(s1r59,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.60</td><td class='i4'>PensionLoan</td><td class='ar'>" & IF(ISBLANK(s1r60) || s1r60=0,"<span style='color:#d1d5db'>-</span>",IF(s1r60<0,"<span style='color:#dc2626'>(" & FORMAT(s1r60,"#,##0.00") & ")</span>",FORMAT(s1r60,"#,##0.00"))) & "</td></tr>"
+VAR Sec1_5 =
+    "<tr><td class='cd'>1.04.1.1.4.65</td><td class='i4'>FIARLoan</td><td class='ar'>" & IF(ISBLANK(s1r61) || s1r61=0,"<span style='color:#d1d5db'>-</span>",IF(s1r61<0,"<span style='color:#dc2626'>(" & FORMAT(s1r61,"#,##0.00") & ")</span>",FORMAT(s1r61,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>RBLLoanOrigination</td><td class='ar'>" & IF(ISBLANK(s1r62) || s1r62=0,"<span style='color:#d1d5db'>-</span>",IF(s1r62<0,"<span style='color:#dc2626'>(" & FORMAT(s1r62,"#,##0.00") & ")</span>",FORMAT(s1r62,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.03</td><td class='i1'>PAST DUE LOANS</td><td class='ar'>" & IF(ISBLANK(s1r63) || s1r63=0,"<span style='color:#d1d5db'>-</span>",IF(s1r63<0,"<span style='color:#dc2626'>(" & FORMAT(s1r63,"#,##0.00") & ")</span>",FORMAT(s1r63,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.3.10</td><td class='i4'>PastDueMark.Vend.D.L.</td><td class='ar'>" & IF(ISBLANK(s1r64) || s1r64=0,"<span style='color:#d1d5db'>-</span>",IF(s1r64<0,"<span style='color:#dc2626'>(" & FORMAT(s1r64,"#,##0.00") & ")</span>",FORMAT(s1r64,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.3.20</td><td class='i4'>PastDueSeas.C.Loans</td><td class='ar'>" & IF(ISBLANK(s1r65) || s1r65=0,"<span style='color:#d1d5db'>-</span>",IF(s1r65<0,"<span style='color:#dc2626'>(" & FORMAT(s1r65,"#,##0.00") & ")</span>",FORMAT(s1r65,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.3.30</td><td class='i4'>PastDueOtherBusi.L.</td><td class='ar'>" & IF(ISBLANK(s1r66) || s1r66=0,"<span style='color:#d1d5db'>-</span>",IF(s1r66<0,"<span style='color:#dc2626'>(" & FORMAT(s1r66,"#,##0.00") & ")</span>",FORMAT(s1r66,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.3.50</td><td class='i4'>PastDueProjectLoans</td><td class='ar'>" & IF(ISBLANK(s1r67) || s1r67=0,"<span style='color:#d1d5db'>-</span>",IF(s1r67<0,"<span style='color:#dc2626'>(" & FORMAT(s1r67,"#,##0.00") & ")</span>",FORMAT(s1r67,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>10.4.2.1.3.60</td><td class='i4'>PastDueInvestmentLoan</td><td class='ar'>" & IF(ISBLANK(s1r68) || s1r68=0,"<span style='color:#d1d5db'>-</span>",IF(s1r68<0,"<span style='color:#dc2626'>(" & FORMAT(s1r68,"#,##0.00") & ")</span>",FORMAT(s1r68,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>PastDueTransportLoan</td><td class='ar'>" & IF(ISBLANK(s1r69) || s1r69=0,"<span style='color:#d1d5db'>-</span>",IF(s1r69<0,"<span style='color:#dc2626'>(" & FORMAT(s1r69,"#,##0.00") & ")</span>",FORMAT(s1r69,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.37</td><td class='i4'>PastDueAgricultureLO</td><td class='ar'>" & IF(ISBLANK(s1r70) || s1r70=0,"<span style='color:#d1d5db'>-</span>",IF(s1r70<0,"<span style='color:#dc2626'>(" & FORMAT(s1r70,"#,##0.00") & ")</span>",FORMAT(s1r70,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.10</td><td class='i4'>PastDueMicrof.G.L.</td><td class='ar'>" & IF(ISBLANK(s1r71) || s1r71=0,"<span style='color:#d1d5db'>-</span>",IF(s1r71<0,"<span style='color:#dc2626'>(" & FORMAT(s1r71,"#,##0.00") & ")</span>",FORMAT(s1r71,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.20</td><td class='i4'>PastDuePayrollLoans</td><td class='ar'>" & IF(ISBLANK(s1r72) || s1r72=0,"<span style='color:#d1d5db'>-</span>",IF(s1r72<0,"<span style='color:#dc2626'>(" & FORMAT(s1r72,"#,##0.00") & ")</span>",FORMAT(s1r72,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.30</td><td class='i4'>PastDueL.toE.&amp;Staff</td><td class='ar'>" & IF(ISBLANK(s1r73) || s1r73=0,"<span style='color:#d1d5db'>-</span>",IF(s1r73<0,"<span style='color:#dc2626'>(" & FORMAT(s1r73,"#,##0.00") & ")</span>",FORMAT(s1r73,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.35</td><td class='i4'>PastDueL.InternalStaff</td><td class='ar'>" & IF(ISBLANK(s1r74) || s1r74=0,"<span style='color:#d1d5db'>-</span>",IF(s1r74<0,"<span style='color:#dc2626'>(" & FORMAT(s1r74,"#,##0.00") & ")</span>",FORMAT(s1r74,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.40</td><td class='i4'>PastDueAsuwainLoan</td><td class='ar'>" & IF(ISBLANK(s1r75) || s1r75=0,"<span style='color:#d1d5db'>-</span>",IF(s1r75<0,"<span style='color:#dc2626'>(" & FORMAT(s1r75,"#,##0.00") & ")</span>",FORMAT(s1r75,"#,##0.00"))) & "</td></tr>"
+VAR Sec1_6 =
+    "<tr><td class='cd'>1.04.2.1.4.35</td><td class='i4'>PastDueBukaeLoan</td><td class='ar'>" & IF(ISBLANK(s1r76) || s1r76=0,"<span style='color:#d1d5db'>-</span>",IF(s1r76<0,"<span style='color:#dc2626'>(" & FORMAT(s1r76,"#,##0.00") & ")</span>",FORMAT(s1r76,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.36</td><td class='i4'>PastDuePensionLoan</td><td class='ar'>" & IF(ISBLANK(s1r77) || s1r77=0,"<span style='color:#d1d5db'>-</span>",IF(s1r77<0,"<span style='color:#dc2626'>(" & FORMAT(s1r77,"#,##0.00") & ")</span>",FORMAT(s1r77,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>PastDueFiarLoan.Org</td><td class='ar'>" & IF(ISBLANK(s1r78) || s1r78=0,"<span style='color:#d1d5db'>-</span>",IF(s1r78<0,"<span style='color:#dc2626'>(" & FORMAT(s1r78,"#,##0.00") & ")</span>",FORMAT(s1r78,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>PastDueRBLLoanOrigination</td><td class='ar'>" & IF(ISBLANK(s1r79) || s1r79=0,"<span style='color:#d1d5db'>-</span>",IF(s1r79<0,"<span style='color:#dc2626'>(" & FORMAT(s1r79,"#,##0.00") & ")</span>",FORMAT(s1r79,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.04.3</td><td class='i2'>PROV. FOR L. LOSSES</td><td class='ar'>" & IF(ISBLANK(s1r80) || s1r80=0,"<span style='color:#d1d5db'>-</span>",IF(s1r80<0,"<span style='color:#dc2626'>(" & FORMAT(s1r80,"#,##0.00") & ")</span>",FORMAT(s1r80,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.3.1.3</td><td class='i4'>BusineesInterprises</td><td class='ar'>" & IF(ISBLANK(s1r81) || s1r81=0,"<span style='color:#d1d5db'>-</span>",IF(s1r81<0,"<span style='color:#dc2626'>(" & FORMAT(s1r81,"#,##0.00") & ")</span>",FORMAT(s1r81,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.3.1.4</td><td class='i4'>Others</td><td class='ar'>" & IF(ISBLANK(s1r82) || s1r82=0,"<span style='color:#d1d5db'>-</span>",IF(s1r82<0,"<span style='color:#dc2626'>(" & FORMAT(s1r82,"#,##0.00") & ")</span>",FORMAT(s1r82,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.3.1.5</td><td class='i4'>ECLDistribuition</td><td class='ar'>" & IF(ISBLANK(s1r83) || s1r83=0,"<span style='color:#d1d5db'>-</span>",IF(s1r83<0,"<span style='color:#dc2626'>(" & FORMAT(s1r83,"#,##0.00") & ")</span>",FORMAT(s1r83,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.05</td><td class='i1'>ACC. RECEIVABLE</td><td class='ar'>" & IF(ISBLANK(s1r84) || s1r84=0,"<span style='color:#d1d5db'>-</span>",IF(s1r84<0,"<span style='color:#dc2626'>(" & FORMAT(s1r84,"#,##0.00") & ")</span>",FORMAT(s1r84,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.05.1</td><td class='i2'>InterestAccrued</td><td class='ar'>" & IF(ISBLANK(s1r85) || s1r85=0,"<span style='color:#d1d5db'>-</span>",IF(s1r85<0,"<span style='color:#dc2626'>(" & FORMAT(s1r85,"#,##0.00") & ")</span>",FORMAT(s1r85,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.05.1.1</td><td class='i3'>DueFr.Banks&amp;OtherFin. Inst</td><td class='ar'>" & IF(ISBLANK(s1r86) || s1r86=0,"<span style='color:#d1d5db'>-</span>",IF(s1r86<0,"<span style='color:#dc2626'>(" & FORMAT(s1r86,"#,##0.00") & ")</span>",FORMAT(s1r86,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.05.1.3.1</td><td class='i4'>PerformingLoans</td><td class='ar'>" & IF(ISBLANK(s1r87) || s1r87=0,"<span style='color:#d1d5db'>-</span>",IF(s1r87<0,"<span style='color:#dc2626'>(" & FORMAT(s1r87,"#,##0.00") & ")</span>",FORMAT(s1r87,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.05.1.3.2</td><td class='i4'>Non-PerformingLoans</td><td class='ar'>" & IF(ISBLANK(s1r88) || s1r88=0,"<span style='color:#d1d5db'>-</span>",IF(s1r88<0,"<span style='color:#dc2626'>(" & FORMAT(s1r88,"#,##0.00") & ")</span>",FORMAT(s1r88,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.05.3</td><td class='i2'>OtherReceivable</td><td class='ar'>" & IF(ISBLANK(s1r89) || s1r89=0,"<span style='color:#d1d5db'>-</span>",IF(s1r89<0,"<span style='color:#dc2626'>(" & FORMAT(s1r89,"#,##0.00") & ")</span>",FORMAT(s1r89,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.06</td><td class='i1'>FIXED ASSETS</td><td class='ar'>" & IF(ISBLANK(s1r90) || s1r90=0,"<span style='color:#d1d5db'>-</span>",IF(s1r90<0,"<span style='color:#dc2626'>(" & FORMAT(s1r90,"#,##0.00") & ")</span>",FORMAT(s1r90,"#,##0.00"))) & "</td></tr>"
+VAR Sec1_7 =
+    "<tr><td class='cd'>1.06.2.1</td><td class='i3'>Offices/Buildings</td><td class='ar'>" & IF(ISBLANK(s1r91) || s1r91=0,"<span style='color:#d1d5db'>-</span>",IF(s1r91<0,"<span style='color:#dc2626'>(" & FORMAT(s1r91,"#,##0.00") & ")</span>",FORMAT(s1r91,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.2.2</td><td class='i3'>OfficeUnderCunstruction</td><td class='ar'>" & IF(ISBLANK(s1r92) || s1r92=0,"<span style='color:#d1d5db'>-</span>",IF(s1r92<0,"<span style='color:#dc2626'>(" & FORMAT(s1r92,"#,##0.00") & ")</span>",FORMAT(s1r92,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.2.3</td><td class='i3'>LeaseholdImprov.</td><td class='ar'>" & IF(ISBLANK(s1r93) || s1r93=0,"<span style='color:#d1d5db'>-</span>",IF(s1r93<0,"<span style='color:#dc2626'>(" & FORMAT(s1r93,"#,##0.00") & ")</span>",FORMAT(s1r93,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.06.3</td><td class='i2'>FurnetureandFixtures</td><td class='ar'>" & IF(ISBLANK(s1r94) || s1r94=0,"<span style='color:#d1d5db'>-</span>",IF(s1r94<0,"<span style='color:#dc2626'>(" & FORMAT(s1r94,"#,##0.00") & ")</span>",FORMAT(s1r94,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.06.4</td><td class='i2'>MachineryandEquip.</td><td class='ar'>" & IF(ISBLANK(s1r95) || s1r95=0,"<span style='color:#d1d5db'>-</span>",IF(s1r95<0,"<span style='color:#dc2626'>(" & FORMAT(s1r95,"#,##0.00") & ")</span>",FORMAT(s1r95,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.06.5</td><td class='i2'>Vehicles</td><td class='ar'>" & IF(ISBLANK(s1r96) || s1r96=0,"<span style='color:#d1d5db'>-</span>",IF(s1r96<0,"<span style='color:#dc2626'>(" & FORMAT(s1r96,"#,##0.00") & ")</span>",FORMAT(s1r96,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.06.6</td><td class='i2'>NonPhysicalAsset</td><td class='ar'>" & IF(ISBLANK(s1r97) || s1r97=0,"<span style='color:#d1d5db'>-</span>",IF(s1r97<0,"<span style='color:#dc2626'>(" & FORMAT(s1r97,"#,##0.00") & ")</span>",FORMAT(s1r97,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.06.9</td><td class='i2'>RESERVE FOR DEPREC.</td><td class='ar'>" & IF(ISBLANK(s1r98) || s1r98=0,"<span style='color:#d1d5db'>-</span>",IF(s1r98<0,"<span style='color:#dc2626'>(" & FORMAT(s1r98,"#,##0.00") & ")</span>",FORMAT(s1r98,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.3</td><td class='i3'>Accum.Depr.Fur.&amp;Fixt.</td><td class='ar'>" & IF(ISBLANK(s1r99) || s1r99=0,"<span style='color:#d1d5db'>-</span>",IF(s1r99<0,"<span style='color:#dc2626'>(" & FORMAT(s1r99,"#,##0.00") & ")</span>",FORMAT(s1r99,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.4</td><td class='i3'>Accum.Depr.Mech.&amp;Eq.</td><td class='ar'>" & IF(ISBLANK(s1r100) || s1r100=0,"<span style='color:#d1d5db'>-</span>",IF(s1r100<0,"<span style='color:#dc2626'>(" & FORMAT(s1r100,"#,##0.00") & ")</span>",FORMAT(s1r100,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.5</td><td class='i3'>Accum.Depr.Vehicles</td><td class='ar'>" & IF(ISBLANK(s1r101) || s1r101=0,"<span style='color:#d1d5db'>-</span>",IF(s1r101<0,"<span style='color:#dc2626'>(" & FORMAT(s1r101,"#,##0.00") & ")</span>",FORMAT(s1r101,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.6</td><td class='i3'>Accum.Depr.Non-PhysicalAssets</td><td class='ar'>" & IF(ISBLANK(s1r102) || s1r102=0,"<span style='color:#d1d5db'>-</span>",IF(s1r102<0,"<span style='color:#dc2626'>(" & FORMAT(s1r102,"#,##0.00") & ")</span>",FORMAT(s1r102,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.7</td><td class='i3'>Accum.Depr.Building</td><td class='ar'>" & IF(ISBLANK(s1r103) || s1r103=0,"<span style='color:#d1d5db'>-</span>",IF(s1r103<0,"<span style='color:#dc2626'>(" & FORMAT(s1r103,"#,##0.00") & ")</span>",FORMAT(s1r103,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.8</td><td class='i3'>Accum.Depr.Leasehold</td><td class='ar'>" & IF(ISBLANK(s1r104) || s1r104=0,"<span style='color:#d1d5db'>-</span>",IF(s1r104<0,"<span style='color:#dc2626'>(" & FORMAT(s1r104,"#,##0.00") & ")</span>",FORMAT(s1r104,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.09</td><td class='i1'>OTHER ASSETS</td><td class='ar'>" & IF(ISBLANK(s1r105) || s1r105=0,"<span style='color:#d1d5db'>-</span>",IF(s1r105<0,"<span style='color:#dc2626'>(" & FORMAT(s1r105,"#,##0.00") & ")</span>",FORMAT(s1r105,"#,##0.00"))) & "</td></tr>"
+VAR Sec1_8 =
+    "<tr class='sub2'><td class='cd'>1.09.1</td><td class='i2'>PrepaidExpenses</td><td class='ar'>" & IF(ISBLANK(s1r106) || s1r106=0,"<span style='color:#d1d5db'>-</span>",IF(s1r106<0,"<span style='color:#dc2626'>(" & FORMAT(s1r106,"#,##0.00") & ")</span>",FORMAT(s1r106,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.09.1</td><td class='i2'>InterBranchTransactions(NET)</td><td class='ar'>" & IF(ISBLANK(s1r107) || s1r107=0,"<span style='color:#d1d5db'>-</span>",IF(s1r107<0,"<span style='color:#dc2626'>(" & FORMAT(s1r107,"#,##0.00") & ")</span>",FORMAT(s1r107,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.09.3</td><td class='i2'>OfficeAccounts</td><td class='ar'>" & IF(ISBLANK(s1r108) || s1r108=0,"<span style='color:#d1d5db'>-</span>",IF(s1r108<0,"<span style='color:#dc2626'>(" & FORMAT(s1r108,"#,##0.00") & ")</span>",FORMAT(s1r108,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.3.1</td><td class='i3'>PettyCashFund</td><td class='ar'>" & IF(ISBLANK(s1r109) || s1r109=0,"<span style='color:#d1d5db'>-</span>",IF(s1r109<0,"<span style='color:#dc2626'>(" & FORMAT(s1r109,"#,##0.00") & ")</span>",FORMAT(s1r109,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.3.3</td><td class='i3'>Stationery&amp;OfficeSupp.</td><td class='ar'>" & IF(ISBLANK(s1r110) || s1r110=0,"<span style='color:#d1d5db'>-</span>",IF(s1r110<0,"<span style='color:#dc2626'>(" & FORMAT(s1r110,"#,##0.00") & ")</span>",FORMAT(s1r110,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.3.5</td><td class='i3'>Shortages</td><td class='ar'>" & IF(ISBLANK(s1r111) || s1r111=0,"<span style='color:#d1d5db'>-</span>",IF(s1r111<0,"<span style='color:#dc2626'>(" & FORMAT(s1r111,"#,##0.00") & ")</span>",FORMAT(s1r111,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.09.4</td><td class='i2'>AssetHeldInRes.ofDebt</td><td class='ar'>" & IF(ISBLANK(s1r112) || s1r112=0,"<span style='color:#d1d5db'>-</span>",IF(s1r112<0,"<span style='color:#dc2626'>(" & FORMAT(s1r112,"#,##0.00") & ")</span>",FORMAT(s1r112,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.4.2</td><td class='i3'>AssetsHeldInRes.ofDebt</td><td class='ar'>" & IF(ISBLANK(s1r113) || s1r113=0,"<span style='color:#d1d5db'>-</span>",IF(s1r113<0,"<span style='color:#dc2626'>(" & FORMAT(s1r113,"#,##0.00") & ")</span>",FORMAT(s1r113,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.4.3</td><td class='i3'>AllowanceforProbableLosses</td><td class='ar'>" & IF(ISBLANK(s1r114) || s1r114=0,"<span style='color:#d1d5db'>-</span>",IF(s1r114<0,"<span style='color:#dc2626'>(" & FORMAT(s1r114,"#,##0.00") & ")</span>",FORMAT(s1r114,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.09.5</td><td class='i2'>ItemsinSuspense</td><td class='ar'>" & IF(ISBLANK(s1r115) || s1r115=0,"<span style='color:#d1d5db'>-</span>",IF(s1r115<0,"<span style='color:#dc2626'>(" & FORMAT(s1r115,"#,##0.00") & ")</span>",FORMAT(s1r115,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.09.6</td><td class='i2'>MiscellaneousAssets</td><td class='ar'>" & IF(ISBLANK(s1r116) || s1r116=0,"<span style='color:#d1d5db'>-</span>",IF(s1r116<0,"<span style='color:#dc2626'>(" & FORMAT(s1r116,"#,##0.00") & ")</span>",FORMAT(s1r116,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.6.9.2.1</td><td class='i4'>Right Of Use Assets IFRS</td><td class='ar'>" & IF(ISBLANK(s1r117) || s1r117=0,"<span style='color:#d1d5db'>-</span>",IF(s1r117<0,"<span style='color:#dc2626'>(" & FORMAT(s1r117,"#,##0.00") & ")</span>",FORMAT(s1r117,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.6.9.2.2</td><td class='i4'>DifferedTax</td><td class='ar'>" & IF(ISBLANK(s1r118) || s1r118=0,"<span style='color:#d1d5db'>-</span>",IF(s1r118<0,"<span style='color:#dc2626'>(" & FORMAT(s1r118,"#,##0.00") & ")</span>",FORMAT(s1r118,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.6.9.2</td><td class='i4'>IntangibleAssets(AssetsinProgress)</td><td class='ar'>" & IF(ISBLANK(s1r119) || s1r119=0,"<span style='color:#d1d5db'>-</span>",IF(s1r119<0,"<span style='color:#dc2626'>(" & FORMAT(s1r119,"#,##0.00") & ")</span>",FORMAT(s1r119,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.6.9.4</td><td class='i4'>OtherAssets-DepsitPaymentEmp</td><td class='ar'>" & IF(ISBLANK(s1r120) || s1r120=0,"<span style='color:#d1d5db'>-</span>",IF(s1r120<0,"<span style='color:#dc2626'>(" & FORMAT(s1r120,"#,##0.00") & ")</span>",FORMAT(s1r120,"#,##0.00"))) & "</td></tr>"
+VAR Sec1_9 =
+    "<tr><td class='cd'>1.09.6.9.7</td><td class='i4'>DefferedCharges</td><td class='ar'>" & IF(ISBLANK(s1r121) || s1r121=0,"<span style='color:#d1d5db'>-</span>",IF(s1r121<0,"<span style='color:#dc2626'>(" & FORMAT(s1r121,"#,##0.00") & ")</span>",FORMAT(s1r121,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.6.9.9</td><td class='i4'>SundryDebits</td><td class='ar'>" & IF(ISBLANK(s1r122) || s1r122=0,"<span style='color:#d1d5db'>-</span>",IF(s1r122<0,"<span style='color:#dc2626'>(" & FORMAT(s1r122,"#,##0.00") & ")</span>",FORMAT(s1r122,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>TotalAssets:</td><td class='ar'>" & IF(ISBLANK(s1r123) || s1r123=0,"<span style='color:#d1d5db'>-</span>",IF(s1r123<0,"<span style='color:#dc2626'>(" & FORMAT(s1r123,"#,##0.00") & ")</span>",FORMAT(s1r123,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>SystemIntError</td><td class='ar'>" & IF(ISBLANK(s1r124) || s1r124=0,"<span style='color:#d1d5db'>-</span>",IF(s1r124<0,"<span style='color:#dc2626'>(" & FORMAT(s1r124,"#,##0.00") & ")</span>",FORMAT(s1r124,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>TotalAssetsinCRF</td><td class='ar'>" & IF(ISBLANK(s1r125) || s1r125=0,"<span style='color:#d1d5db'>-</span>",IF(s1r125<0,"<span style='color:#dc2626'>(" & FORMAT(s1r125,"#,##0.00") & ")</span>",FORMAT(s1r125,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>Diference</td><td class='ar'>" & IF(ISBLANK(s1r126) || s1r126=0,"<span style='color:#d1d5db'>-</span>",IF(s1r126<0,"<span style='color:#dc2626'>(" & FORMAT(s1r126,"#,##0.00") & ")</span>",FORMAT(s1r126,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>ErrorinSystem</td><td class='ar'>" & IF(ISBLANK(s1r127) || s1r127=0,"<span style='color:#d1d5db'>-</span>",IF(s1r127<0,"<span style='color:#dc2626'>(" & FORMAT(s1r127,"#,##0.00") & ")</span>",FORMAT(s1r127,"#,##0.00"))) & "</td></tr>"
+VAR Sec2_1 =
+    "<tr class='sub1'><td class='cd'>2.0</td><td class='i1'>LIABILITIES:</td><td class='ar'>" & IF(ISBLANK(s2r1) || s2r1=0,"<span style='color:#d1d5db'>-</span>",IF(s2r1<0,"<span style='color:#dc2626'>(" & FORMAT(s2r1,"#,##0.00") & ")</span>",FORMAT(s2r1,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>2.04</td><td class='i1'>DEPOSITS</td><td class='ar'>" & IF(ISBLANK(s2r2) || s2r2=0,"<span style='color:#d1d5db'>-</span>",IF(s2r2<0,"<span style='color:#dc2626'>(" & FORMAT(s2r2,"#,##0.00") & ")</span>",FORMAT(s2r2,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.1</td><td class='i3'>Demand Deposit</td><td class='ar'>" & IF(ISBLANK(s2r3) || s2r3=0,"<span style='color:#d1d5db'>-</span>",IF(s2r3<0,"<span style='color:#dc2626'>(" & FORMAT(s2r3,"#,##0.00") & ")</span>",FORMAT(s2r3,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.1.1</td><td class='i4'>Financial Institutions</td><td class='ar'>" & IF(ISBLANK(s2r4) || s2r4=0,"<span style='color:#d1d5db'>-</span>",IF(s2r4<0,"<span style='color:#dc2626'>(" & FORMAT(s2r4,"#,##0.00") & ")</span>",FORMAT(s2r4,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.1.2</td><td class='i4'>Government</td><td class='ar'>" & IF(ISBLANK(s2r5) || s2r5=0,"<span style='color:#d1d5db'>-</span>",IF(s2r5<0,"<span style='color:#dc2626'>(" & FORMAT(s2r5,"#,##0.00") & ")</span>",FORMAT(s2r5,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.1.3</td><td class='i4'>Business Enterprises</td><td class='ar'>" & IF(ISBLANK(s2r6) || s2r6=0,"<span style='color:#d1d5db'>-</span>",IF(s2r6<0,"<span style='color:#dc2626'>(" & FORMAT(s2r6,"#,##0.00") & ")</span>",FORMAT(s2r6,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.1.4</td><td class='i4'>Others</td><td class='ar'>" & IF(ISBLANK(s2r7) || s2r7=0,"<span style='color:#d1d5db'>-</span>",IF(s2r7<0,"<span style='color:#dc2626'>(" & FORMAT(s2r7,"#,##0.00") & ")</span>",FORMAT(s2r7,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.2</td><td class='i3'>Time Deposits</td><td class='ar'>" & IF(ISBLANK(s2r8) || s2r8=0,"<span style='color:#d1d5db'>-</span>",IF(s2r8<0,"<span style='color:#dc2626'>(" & FORMAT(s2r8,"#,##0.00") & ")</span>",FORMAT(s2r8,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.2.2</td><td class='i4'>Government</td><td class='ar'>" & IF(ISBLANK(s2r9) || s2r9=0,"<span style='color:#d1d5db'>-</span>",IF(s2r9<0,"<span style='color:#dc2626'>(" & FORMAT(s2r9,"#,##0.00") & ")</span>",FORMAT(s2r9,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.2</td><td class='i3'>Business Enterprises</td><td class='ar'>" & IF(ISBLANK(s2r10) || s2r10=0,"<span style='color:#d1d5db'>-</span>",IF(s2r10<0,"<span style='color:#dc2626'>(" & FORMAT(s2r10,"#,##0.00") & ")</span>",FORMAT(s2r10,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.2.4</td><td class='i4'>Others</td><td class='ar'>" & IF(ISBLANK(s2r11) || s2r11=0,"<span style='color:#d1d5db'>-</span>",IF(s2r11<0,"<span style='color:#dc2626'>(" & FORMAT(s2r11,"#,##0.00") & ")</span>",FORMAT(s2r11,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.3</td><td class='i3'>Other (Passbook Saving)</td><td class='ar'>" & IF(ISBLANK(s2r12) || s2r12=0,"<span style='color:#d1d5db'>-</span>",IF(s2r12<0,"<span style='color:#dc2626'>(" & FORMAT(s2r12,"#,##0.00") & ")</span>",FORMAT(s2r12,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.1</td><td class='i3'>Financial Institutions</td><td class='ar'>" & IF(ISBLANK(s2r13) || s2r13=0,"<span style='color:#d1d5db'>-</span>",IF(s2r13<0,"<span style='color:#dc2626'>(" & FORMAT(s2r13,"#,##0.00") & ")</span>",FORMAT(s2r13,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.2</td><td class='i3'>Government</td><td class='ar'>" & IF(ISBLANK(s2r14) || s2r14=0,"<span style='color:#d1d5db'>-</span>",IF(s2r14<0,"<span style='color:#dc2626'>(" & FORMAT(s2r14,"#,##0.00") & ")</span>",FORMAT(s2r14,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.3</td><td class='i3'>Business Enterprises</td><td class='ar'>" & IF(ISBLANK(s2r15) || s2r15=0,"<span style='color:#d1d5db'>-</span>",IF(s2r15<0,"<span style='color:#dc2626'>(" & FORMAT(s2r15,"#,##0.00") & ")</span>",FORMAT(s2r15,"#,##0.00"))) & "</td></tr>"
+VAR Sec2_2 =
+    "<tr><td class='cd'>2.04.1.4</td><td class='i3'>Others</td><td class='ar'>" & IF(ISBLANK(s2r16) || s2r16=0,"<span style='color:#d1d5db'>-</span>",IF(s2r16<0,"<span style='color:#dc2626'>(" & FORMAT(s2r16,"#,##0.00") & ")</span>",FORMAT(s2r16,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.1</td><td class='i4'>Passbook Saving</td><td class='ar'>" & IF(ISBLANK(s2r17) || s2r17=0,"<span style='color:#d1d5db'>-</span>",IF(s2r17<0,"<span style='color:#dc2626'>(" & FORMAT(s2r17,"#,##0.00") & ")</span>",FORMAT(s2r17,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.2</td><td class='i4'>Pledge Saving</td><td class='ar'>" & IF(ISBLANK(s2r18) || s2r18=0,"<span style='color:#d1d5db'>-</span>",IF(s2r18<0,"<span style='color:#dc2626'>(" & FORMAT(s2r18,"#,##0.00") & ")</span>",FORMAT(s2r18,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.5</td><td class='i4'>Saving Enderly</td><td class='ar'>" & IF(ISBLANK(s2r19) || s2r19=0,"<span style='color:#d1d5db'>-</span>",IF(s2r19<0,"<span style='color:#dc2626'>(" & FORMAT(s2r19,"#,##0.00") & ")</span>",FORMAT(s2r19,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.6</td><td class='i4'>Bolsa da Mae</td><td class='ar'>" & IF(ISBLANK(s2r20) || s2r20=0,"<span style='color:#d1d5db'>-</span>",IF(s2r20<0,"<span style='color:#dc2626'>(" & FORMAT(s2r20,"#,##0.00") & ")</span>",FORMAT(s2r20,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.7</td><td class='i4'>Deposito Asuwain</td><td class='ar'>" & IF(ISBLANK(s2r21) || s2r21=0,"<span style='color:#d1d5db'>-</span>",IF(s2r21<0,"<span style='color:#dc2626'>(" & FORMAT(s2r21,"#,##0.00") & ")</span>",FORMAT(s2r21,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.6</td><td class='i4'>Deposito Hau Nia Futuru</td><td class='ar'>" & IF(ISBLANK(s2r22) || s2r22=0,"<span style='color:#d1d5db'>-</span>",IF(s2r22<0,"<span style='color:#dc2626'>(" & FORMAT(s2r22,"#,##0.00") & ")</span>",FORMAT(s2r22,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.</td><td class='i4'>Deposito Poupansa Emigrante</td><td class='ar'>" & IF(ISBLANK(s2r23) || s2r23=0,"<span style='color:#d1d5db'>-</span>",IF(s2r23<0,"<span style='color:#dc2626'>(" & FORMAT(s2r23,"#,##0.00") & ")</span>",FORMAT(s2r23,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.8</td><td class='i4'>Depozitu Matenek</td><td class='ar'>" & IF(ISBLANK(s2r24) || s2r24=0,"<span style='color:#d1d5db'>-</span>",IF(s2r24<0,"<span style='color:#dc2626'>(" & FORMAT(s2r24,"#,##0.00") & ")</span>",FORMAT(s2r24,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.9</td><td class='i4'>Depozitu Pensionista</td><td class='ar'>" & IF(ISBLANK(s2r25) || s2r25=0,"<span style='color:#d1d5db'>-</span>",IF(s2r25<0,"<span style='color:#dc2626'>(" & FORMAT(s2r25,"#,##0.00") & ")</span>",FORMAT(s2r25,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.0</td><td class='i4'>BDM Jerasaun Foun</td><td class='ar'>" & IF(ISBLANK(s2r26) || s2r26=0,"<span style='color:#d1d5db'>-</span>",IF(s2r26<0,"<span style='color:#dc2626'>(" & FORMAT(s2r26,"#,##0.00") & ")</span>",FORMAT(s2r26,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.5.0</td><td class='i4'>Depozitu Fiar</td><td class='ar'>" & IF(ISBLANK(s2r27) || s2r27=0,"<span style='color:#d1d5db'>-</span>",IF(s2r27<0,"<span style='color:#dc2626'>(" & FORMAT(s2r27,"#,##0.00") & ")</span>",FORMAT(s2r27,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>2.06</td><td class='i1'>Other Sundry Current Liabilit.</td><td class='ar'>" & IF(ISBLANK(s2r28) || s2r28=0,"<span style='color:#d1d5db'>-</span>",IF(s2r28<0,"<span style='color:#dc2626'>(" & FORMAT(s2r28,"#,##0.00") & ")</span>",FORMAT(s2r28,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.06.6</td><td class='i2'>Item In Suspens</td><td class='ar'>" & IF(ISBLANK(s2r29) || s2r29=0,"<span style='color:#d1d5db'>-</span>",IF(s2r29<0,"<span style='color:#dc2626'>(" & FORMAT(s2r29,"#,##0.00") & ")</span>",FORMAT(s2r29,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.06.2</td><td class='i2'>ReserveFor Bonus &amp; Atribu BOD</td><td class='ar'>" & IF(ISBLANK(s2r30) || s2r30=0,"<span style='color:#d1d5db'>-</span>",IF(s2r30<0,"<span style='color:#dc2626'>(" & FORMAT(s2r30,"#,##0.00") & ")</span>",FORMAT(s2r30,"#,##0.00"))) & "</td></tr>"
+VAR Sec2_3 =
+    "<tr class='sub2'><td class='cd'>2.06.3</td><td class='i2'>Salary Payable</td><td class='ar'>" & IF(ISBLANK(s2r31) || s2r31=0,"<span style='color:#d1d5db'>-</span>",IF(s2r31<0,"<span style='color:#dc2626'>(" & FORMAT(s2r31,"#,##0.00") & ")</span>",FORMAT(s2r31,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.06.4</td><td class='i2'>Loan Suspense Migration</td><td class='ar'>" & IF(ISBLANK(s2r32) || s2r32=0,"<span style='color:#d1d5db'>-</span>",IF(s2r32<0,"<span style='color:#dc2626'>(" & FORMAT(s2r32,"#,##0.00") & ")</span>",FORMAT(s2r32,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.06.5</td><td class='i2'>Lease Liability IFRS</td><td class='ar'>" & IF(ISBLANK(s2r33) || s2r33=0,"<span style='color:#d1d5db'>-</span>",IF(s2r33<0,"<span style='color:#dc2626'>(" & FORMAT(s2r33,"#,##0.00") & ")</span>",FORMAT(s2r33,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.3.1</td><td class='i3'>Income Tax</td><td class='ar'>" & IF(ISBLANK(s2r34) || s2r34=0,"<span style='color:#d1d5db'>-</span>",IF(s2r34<0,"<span style='color:#dc2626'>(" & FORMAT(s2r34,"#,##0.00") & ")</span>",FORMAT(s2r34,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.3.2</td><td class='i3'>Other Taxes</td><td class='ar'>" & IF(ISBLANK(s2r36) || s2r36=0,"<span style='color:#d1d5db'>-</span>",IF(s2r36<0,"<span style='color:#dc2626'>(" & FORMAT(s2r36,"#,##0.00") & ")</span>",FORMAT(s2r36,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.4.2</td><td class='i3'>Collected Tax</td><td class='ar'>" & IF(ISBLANK(s2r37) || s2r37=0,"<span style='color:#d1d5db'>-</span>",IF(s2r37<0,"<span style='color:#dc2626'>(" & FORMAT(s2r37,"#,##0.00") & ")</span>",FORMAT(s2r37,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.06.5</td><td class='i2'>Interest Accrued</td><td class='ar'>" & IF(ISBLANK(s2r38) || s2r38=0,"<span style='color:#d1d5db'>-</span>",IF(s2r38<0,"<span style='color:#dc2626'>(" & FORMAT(s2r38,"#,##0.00") & ")</span>",FORMAT(s2r38,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.5.1.1</td><td class='i4'>Domestic Currency</td><td class='ar'>" & IF(ISBLANK(s2r39) || s2r39=0,"<span style='color:#d1d5db'>-</span>",IF(s2r39<0,"<span style='color:#dc2626'>(" & FORMAT(s2r39,"#,##0.00") & ")</span>",FORMAT(s2r39,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.5.2</td><td class='i3'>Others Interest Accrued</td><td class='ar'>" & IF(ISBLANK(s2r40) || s2r40=0,"<span style='color:#d1d5db'>-</span>",IF(s2r40<0,"<span style='color:#dc2626'>(" & FORMAT(s2r40,"#,##0.00") & ")</span>",FORMAT(s2r40,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.06.8</td><td class='i2'>RESTRICTED DEPOSIT</td><td class='ar'>" & IF(ISBLANK(s2r41) || s2r41=0,"<span style='color:#d1d5db'>-</span>",IF(s2r41<0,"<span style='color:#dc2626'>(" & FORMAT(s2r41,"#,##0.00") & ")</span>",FORMAT(s2r41,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.8.1</td><td class='i3'>Resident</td><td class='ar'>" & IF(ISBLANK(s2r42) || s2r42=0,"<span style='color:#d1d5db'>-</span>",IF(s2r42<0,"<span style='color:#dc2626'>(" & FORMAT(s2r42,"#,##0.00") & ")</span>",FORMAT(s2r42,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.8.2</td><td class='i3'>Non Resident L/C</td><td class='ar'>" & IF(ISBLANK(s2r43) || s2r43=0,"<span style='color:#d1d5db'>-</span>",IF(s2r43<0,"<span style='color:#dc2626'>(" & FORMAT(s2r43,"#,##0.00") & ")</span>",FORMAT(s2r43,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.06.9</td><td class='i2'>Unearned Interest</td><td class='ar'>" & IF(ISBLANK(s2r44) || s2r44=0,"<span style='color:#d1d5db'>-</span>",IF(s2r44<0,"<span style='color:#dc2626'>(" & FORMAT(s2r44,"#,##0.00") & ")</span>",FORMAT(s2r44,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.2.4</td><td class='i4'>Loan Fee Recheduling in Advance</td><td class='ar'>" & IF(ISBLANK(s2r45) || s2r45=0,"<span style='color:#d1d5db'>-</span>",IF(s2r45<0,"<span style='color:#dc2626'>(" & FORMAT(s2r45,"#,##0.00") & ")</span>",FORMAT(s2r45,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.5</td><td class='i3'>Loan Collec. Fee in Advance</td><td class='ar'>" & IF(ISBLANK(s2r46) || s2r46=0,"<span style='color:#d1d5db'>-</span>",IF(s2r46<0,"<span style='color:#dc2626'>(" & FORMAT(s2r46,"#,##0.00") & ")</span>",FORMAT(s2r46,"#,##0.00"))) & "</td></tr>"
+VAR Sec2_4 =
+    "<tr><td class='cd'>2.06.9.5.1</td><td class='i4'>Loan Fee In Adv Micro Fin Group</td><td class='ar'>" & IF(ISBLANK(s2r47) || s2r47=0,"<span style='color:#d1d5db'>-</span>",IF(s2r47<0,"<span style='color:#dc2626'>(" & FORMAT(s2r47,"#,##0.00") & ")</span>",FORMAT(s2r47,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.5.3</td><td class='i4'>Loan Fee In Adv Market Vendor</td><td class='ar'>" & IF(ISBLANK(s2r48) || s2r48=0,"<span style='color:#d1d5db'>-</span>",IF(s2r48<0,"<span style='color:#dc2626'>(" & FORMAT(s2r48,"#,##0.00") & ")</span>",FORMAT(s2r48,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.5.4</td><td class='i4'>Loan Fee In Adv Seasonal Crop</td><td class='ar'>" & IF(ISBLANK(s2r49) || s2r49=0,"<span style='color:#d1d5db'>-</span>",IF(s2r49<0,"<span style='color:#dc2626'>(" & FORMAT(s2r49,"#,##0.00") & ")</span>",FORMAT(s2r49,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.5.5</td><td class='i4'>Loan Fee In Adv Business Loan</td><td class='ar'>" & IF(ISBLANK(s2r50) || s2r50=0,"<span style='color:#d1d5db'>-</span>",IF(s2r50<0,"<span style='color:#dc2626'>(" & FORMAT(s2r50,"#,##0.00") & ")</span>",FORMAT(s2r50,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.5.6</td><td class='i4'>Loan Fee In Adv Payroll Loan</td><td class='ar'>" & IF(ISBLANK(s2r51) || s2r51=0,"<span style='color:#d1d5db'>-</span>",IF(s2r51<0,"<span style='color:#dc2626'>(" & FORMAT(s2r51,"#,##0.00") & ")</span>",FORMAT(s2r51,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.5.7</td><td class='i4'>Loan Fee In Adv Empl.and Staff Loan</td><td class='ar'>" & IF(ISBLANK(s2r52) || s2r52=0,"<span style='color:#d1d5db'>-</span>",IF(s2r52<0,"<span style='color:#dc2626'>(" & FORMAT(s2r52,"#,##0.00") & ")</span>",FORMAT(s2r52,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.5.8</td><td class='i4'>Loan Fee In Adv Internal Staff Loan</td><td class='ar'>" & IF(ISBLANK(s2r53) || s2r53=0,"<span style='color:#d1d5db'>-</span>",IF(s2r53<0,"<span style='color:#dc2626'>(" & FORMAT(s2r53,"#,##0.00") & ")</span>",FORMAT(s2r53,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.5.9</td><td class='i4'>Loan Fee In Adv Project Loan</td><td class='ar'>" & IF(ISBLANK(s2r54) || s2r54=0,"<span style='color:#d1d5db'>-</span>",IF(s2r54<0,"<span style='color:#dc2626'>(" & FORMAT(s2r54,"#,##0.00") & ")</span>",FORMAT(s2r54,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.0</td><td class='i4'>Loan fee In Adv Investment Loan</td><td class='ar'>" & IF(ISBLANK(s2r56) || s2r56=0,"<span style='color:#d1d5db'>-</span>",IF(s2r56<0,"<span style='color:#dc2626'>(" & FORMAT(s2r56,"#,##0.00") & ")</span>",FORMAT(s2r56,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.1</td><td class='i4'>Loan Fee in Adv Asuwa&#39;in Loan</td><td class='ar'>" & IF(ISBLANK(s2r57) || s2r57=0,"<span style='color:#d1d5db'>-</span>",IF(s2r57<0,"<span style='color:#dc2626'>(" & FORMAT(s2r57,"#,##0.00") & ")</span>",FORMAT(s2r57,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.2</td><td class='i4'>Loan Fee in Adv Bukae Loan</td><td class='ar'>" & IF(ISBLANK(s2r58) || s2r58=0,"<span style='color:#d1d5db'>-</span>",IF(s2r58<0,"<span style='color:#dc2626'>(" & FORMAT(s2r58,"#,##0.00") & ")</span>",FORMAT(s2r58,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.3</td><td class='i4'>Loan Fee in Adv Pension Loan</td><td class='ar'>" & IF(ISBLANK(s2r59) || s2r59=0,"<span style='color:#d1d5db'>-</span>",IF(s2r59<0,"<span style='color:#dc2626'>(" & FORMAT(s2r59,"#,##0.00") & ")</span>",FORMAT(s2r59,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.4</td><td class='i4'>Loan Fee in Adv Commercial Transport Lo</td><td class='ar'>" & IF(ISBLANK(s2r60) || s2r60=0,"<span style='color:#d1d5db'>-</span>",IF(s2r60<0,"<span style='color:#dc2626'>(" & FORMAT(s2r60,"#,##0.00") & ")</span>",FORMAT(s2r60,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.5</td><td class='i4'>Loan Fee in Adv LO Multiuzu</td><td class='ar'>" & IF(ISBLANK(s2r61) || s2r61=0,"<span style='color:#d1d5db'>-</span>",IF(s2r61<0,"<span style='color:#dc2626'>(" & FORMAT(s2r61,"#,##0.00") & ")</span>",FORMAT(s2r61,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.6</td><td class='i4'>Fee in Adv LO Asuwain Loan</td><td class='ar'>" & IF(ISBLANK(s2r62) || s2r62=0,"<span style='color:#d1d5db'>-</span>",IF(s2r62<0,"<span style='color:#dc2626'>(" & FORMAT(s2r62,"#,##0.00") & ")</span>",FORMAT(s2r62,"#,##0.00"))) & "</td></tr>"
+VAR Sec2_5 =
+    "<tr><td class='cd'>2.06.9.6.9</td><td class='i4'>Loan Fee in Adv LO FIAR</td><td class='ar'>" & IF(ISBLANK(s2r63) || s2r63=0,"<span style='color:#d1d5db'>-</span>",IF(s2r63<0,"<span style='color:#dc2626'>(" & FORMAT(s2r63,"#,##0.00") & ")</span>",FORMAT(s2r63,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.7.1</td><td class='i4'>Loan Fee in Adv Agricultor LO</td><td class='ar'>" & IF(ISBLANK(s2r64) || s2r64=0,"<span style='color:#d1d5db'>-</span>",IF(s2r64<0,"<span style='color:#dc2626'>(" & FORMAT(s2r64,"#,##0.00") & ")</span>",FORMAT(s2r64,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.7</td><td class='i4'>Loan Fee in Adv LO Bukae</td><td class='ar'>" & IF(ISBLANK(s2r65) || s2r65=0,"<span style='color:#d1d5db'>-</span>",IF(s2r65<0,"<span style='color:#dc2626'>(" & FORMAT(s2r65,"#,##0.00") & ")</span>",FORMAT(s2r65,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9.6.8</td><td class='i4'>Loan Fee in Adv LO Pension</td><td class='ar'>" & IF(ISBLANK(s2r66) || s2r66=0,"<span style='color:#d1d5db'>-</span>",IF(s2r66<0,"<span style='color:#dc2626'>(" & FORMAT(s2r66,"#,##0.00") & ")</span>",FORMAT(s2r66,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>2.08</td><td class='i1'>Other Liabilit/Due To Branch</td><td class='ar'>" & IF(ISBLANK(s2r68) || s2r68=0,"<span style='color:#d1d5db'>-</span>",IF(s2r68<0,"<span style='color:#dc2626'>(" & FORMAT(s2r68,"#,##0.00") & ")</span>",FORMAT(s2r68,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>2-08-1-1</td><td class='i3'>Inter Branch Transac (Net)</td><td class='ar'>" & IF(ISBLANK(s2r69) || s2r69=0,"<span style='color:#d1d5db'>-</span>",IF(s2r69<0,"<span style='color:#dc2626'>(" & FORMAT(s2r69,"#,##0.00") & ")</span>",FORMAT(s2r69,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2-08-1</td><td class='i2'>Others/Overages</td><td class='ar'>" & IF(ISBLANK(s2r70) || s2r70=0,"<span style='color:#d1d5db'>-</span>",IF(s2r70<0,"<span style='color:#dc2626'>(" & FORMAT(s2r70,"#,##0.00") & ")</span>",FORMAT(s2r70,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2-08-2</td><td class='i2'>Overages ATM</td><td class='ar'>" & IF(ISBLANK(s2r71) || s2r71=0,"<span style='color:#d1d5db'>-</span>",IF(s2r71<0,"<span style='color:#dc2626'>(" & FORMAT(s2r71,"#,##0.00") & ")</span>",FORMAT(s2r71,"#,##0.00"))) & "</td></tr>"
+VAR Sec3_1 =
+    "<tr class='sub1'><td class='cd'>3.0</td><td class='i1'>CAPITAL ACCOUNTS:</td><td class='ar'>" & IF(ISBLANK(s3r72) || s3r72=0,"<span style='color:#d1d5db'>-</span>",IF(s3r72<0,"<span style='color:#dc2626'>(" & FORMAT(s3r72,"#,##0.00") & ")</span>",FORMAT(s3r72,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>3.01</td><td class='i1'>Provisioning</td><td class='ar'>" & IF(ISBLANK(s3r73) || s3r73=0,"<span style='color:#d1d5db'>-</span>",IF(s3r73<0,"<span style='color:#dc2626'>(" & FORMAT(s3r73,"#,##0.00") & ")</span>",FORMAT(s3r73,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>3.02</td><td class='i1'>Capital Paid-Up &amp; Assigned</td><td class='ar'>" & IF(ISBLANK(s3r74) || s3r74=0,"<span style='color:#d1d5db'>-</span>",IF(s3r74<0,"<span style='color:#dc2626'>(" & FORMAT(s3r74,"#,##0.00") & ")</span>",FORMAT(s3r74,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>3-04-3-2</td><td class='i3'>Capital Reserve/Reserve Legais</td><td class='ar'>" & IF(ISBLANK(s3r75) || s3r75=0,"<span style='color:#d1d5db'>-</span>",IF(s3r75<0,"<span style='color:#dc2626'>(" & FORMAT(s3r75,"#,##0.00") & ")</span>",FORMAT(s3r75,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>3.06</td><td class='i1'>Profits / Losses</td><td class='ar'>" & IF(ISBLANK(s3r76) || s3r76=0,"<span style='color:#d1d5db'>-</span>",IF(s3r76<0,"<span style='color:#dc2626'>(" & FORMAT(s3r76,"#,##0.00") & ")</span>",FORMAT(s3r76,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>3.06.1</td><td class='i2'>Previeous Financial Year</td><td class='ar'>" & IF(ISBLANK(s3r77) || s3r77=0,"<span style='color:#d1d5db'>-</span>",IF(s3r77<0,"<span style='color:#dc2626'>(" & FORMAT(s3r77,"#,##0.00") & ")</span>",FORMAT(s3r77,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>3.06.2</td><td class='i2'>Current Financial Year</td><td class='ar'>" & IF(ISBLANK(s3r78) || s3r78=0,"<span style='color:#d1d5db'>-</span>",IF(s3r78<0,"<span style='color:#dc2626'>(" & FORMAT(s3r78,"#,##0.00") & ")</span>",FORMAT(s3r78,"#,##0.00"))) & "</td></tr>"
+VAR Sec4_1 =
+    "<tr class='sub1'><td class='cd'>4.0</td><td class='i1'>INCOME:</td><td class='ar'>" & IF(ISBLANK(s4r1) || s4r1=0,"<span style='color:#d1d5db'>-</span>",IF(s4r1<0,"<span style='color:#dc2626'>(" & FORMAT(s4r1,"#,##0.00") & ")</span>",FORMAT(s4r1,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>4.01</td><td class='i1'>INTEREST INCOME</td><td class='ar'>" & IF(ISBLANK(s4r2) || s4r2=0,"<span style='color:#d1d5db'>-</span>",IF(s4r2<0,"<span style='color:#dc2626'>(" & FORMAT(s4r2,"#,##0.00") & ")</span>",FORMAT(s4r2,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.01.1</td><td class='i2'>Interest on Due from Banks</td><td class='ar'>" & IF(ISBLANK(s4r3) || s4r3=0,"<span style='color:#d1d5db'>-</span>",IF(s4r3<0,"<span style='color:#dc2626'>(" & FORMAT(s4r3,"#,##0.00") & ")</span>",FORMAT(s4r3,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.01.2</td><td class='i2'>Interest on Overnight Placement</td><td class='ar'>" & IF(ISBLANK(s4r4) || s4r4=0,"<span style='color:#d1d5db'>-</span>",IF(s4r4<0,"<span style='color:#dc2626'>(" & FORMAT(s4r4,"#,##0.00") & ")</span>",FORMAT(s4r4,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.01.3</td><td class='i2'>Interest On Securities</td><td class='ar'>" & IF(ISBLANK(s4r5) || s4r5=0,"<span style='color:#d1d5db'>-</span>",IF(s4r5<0,"<span style='color:#dc2626'>(" & FORMAT(s4r5,"#,##0.00") & ")</span>",FORMAT(s4r5,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.01.4</td><td class='i2'>Interest &amp; Fees on Loans</td><td class='ar'>" & IF(ISBLANK(s4r6) || s4r6=0,"<span style='color:#d1d5db'>-</span>",IF(s4r6<0,"<span style='color:#dc2626'>(" & FORMAT(s4r6,"#,##0.00") & ")</span>",FORMAT(s4r6,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1</td><td class='i3'>Interest Income on Loans</td><td class='ar'>" & IF(ISBLANK(s4r7) || s4r7=0,"<span style='color:#d1d5db'>-</span>",IF(s4r7<0,"<span style='color:#dc2626'>(" & FORMAT(s4r7,"#,##0.00") & ")</span>",FORMAT(s4r7,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.3.10</td><td class='i4'>Market Vendor Daily Loans</td><td class='ar'>" & IF(ISBLANK(s4r8) || s4r8=0,"<span style='color:#d1d5db'>-</span>",IF(s4r8<0,"<span style='color:#dc2626'>(" & FORMAT(s4r8,"#,##0.00") & ")</span>",FORMAT(s4r8,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.3.20</td><td class='i4'>Seasonal Crop Loans</td><td class='ar'>" & IF(ISBLANK(s4r9) || s4r9=0,"<span style='color:#d1d5db'>-</span>",IF(s4r9<0,"<span style='color:#dc2626'>(" & FORMAT(s4r9,"#,##0.00") & ")</span>",FORMAT(s4r9,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.3.30</td><td class='i4'>Other Business Loan</td><td class='ar'>" & IF(ISBLANK(s4r10) || s4r10=0,"<span style='color:#d1d5db'>-</span>",IF(s4r10<0,"<span style='color:#dc2626'>(" & FORMAT(s4r10,"#,##0.00") & ")</span>",FORMAT(s4r10,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.10</td><td class='i4'>Microfinance Group Loans</td><td class='ar'>" & IF(ISBLANK(s4r11) || s4r11=0,"<span style='color:#d1d5db'>-</span>",IF(s4r11<0,"<span style='color:#dc2626'>(" & FORMAT(s4r11,"#,##0.00") & ")</span>",FORMAT(s4r11,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.20</td><td class='i4'>Payroll Loans</td><td class='ar'>" & IF(ISBLANK(s4r12) || s4r12=0,"<span style='color:#d1d5db'>-</span>",IF(s4r12<0,"<span style='color:#dc2626'>(" & FORMAT(s4r12,"#,##0.00") & ")</span>",FORMAT(s4r12,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.30</td><td class='i4'>Employee and Staff Loans</td><td class='ar'>" & IF(ISBLANK(s4r13) || s4r13=0,"<span style='color:#d1d5db'>-</span>",IF(s4r13<0,"<span style='color:#dc2626'>(" & FORMAT(s4r13,"#,##0.00") & ")</span>",FORMAT(s4r13,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.35</td><td class='i4'>Internal Staff Loans</td><td class='ar'>" & IF(ISBLANK(s4r14) || s4r14=0,"<span style='color:#d1d5db'>-</span>",IF(s4r14<0,"<span style='color:#dc2626'>(" & FORMAT(s4r14,"#,##0.00") & ")</span>",FORMAT(s4r14,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.40</td><td class='i4'>Asuwa&#39;in Loan</td><td class='ar'>" & IF(ISBLANK(s4r15) || s4r15=0,"<span style='color:#d1d5db'>-</span>",IF(s4r15<0,"<span style='color:#dc2626'>(" & FORMAT(s4r15,"#,##0.00") & ")</span>",FORMAT(s4r15,"#,##0.00"))) & "</td></tr>"
+VAR Sec4_2 =
+    "<tr><td class='cd'>4.01.4.1.4.70</td><td class='i4'>Bukae Loan</td><td class='ar'>" & IF(ISBLANK(s4r16) || s4r16=0,"<span style='color:#d1d5db'>-</span>",IF(s4r16<0,"<span style='color:#dc2626'>(" & FORMAT(s4r16,"#,##0.00") & ")</span>",FORMAT(s4r16,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.80</td><td class='i4'>Pension Loan</td><td class='ar'>" & IF(ISBLANK(s4r17) || s4r17=0,"<span style='color:#d1d5db'>-</span>",IF(s4r17<0,"<span style='color:#dc2626'>(" & FORMAT(s4r17,"#,##0.00") & ")</span>",FORMAT(s4r17,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.50</td><td class='i4'>Project Loan</td><td class='ar'>" & IF(ISBLANK(s4r18) || s4r18=0,"<span style='color:#d1d5db'>-</span>",IF(s4r18<0,"<span style='color:#dc2626'>(" & FORMAT(s4r18,"#,##0.00") & ")</span>",FORMAT(s4r18,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.60</td><td class='i4'>Investment Loan</td><td class='ar'>" & IF(ISBLANK(s4r19) || s4r19=0,"<span style='color:#d1d5db'>-</span>",IF(s4r19<0,"<span style='color:#dc2626'>(" & FORMAT(s4r19,"#,##0.00") & ")</span>",FORMAT(s4r19,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.85</td><td class='i4'>Transport Loan</td><td class='ar'>" & IF(ISBLANK(s4r20) || s4r20=0,"<span style='color:#d1d5db'>-</span>",IF(s4r20<0,"<span style='color:#dc2626'>(" & FORMAT(s4r20,"#,##0.00") & ")</span>",FORMAT(s4r20,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.86</td><td class='i4'>Payroll Loan LO</td><td class='ar'>" & IF(ISBLANK(s4r21) || s4r21=0,"<span style='color:#d1d5db'>-</span>",IF(s4r21<0,"<span style='color:#dc2626'>(" & FORMAT(s4r21,"#,##0.00") & ")</span>",FORMAT(s4r21,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.87</td><td class='i4'>Asu&#39;wain Loan LO</td><td class='ar'>" & IF(ISBLANK(s4r22) || s4r22=0,"<span style='color:#d1d5db'>-</span>",IF(s4r22<0,"<span style='color:#dc2626'>(" & FORMAT(s4r22,"#,##0.00") & ")</span>",FORMAT(s4r22,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.88</td><td class='i4'>Bukae Loan LO</td><td class='ar'>" & IF(ISBLANK(s4r23) || s4r23=0,"<span style='color:#d1d5db'>-</span>",IF(s4r23<0,"<span style='color:#dc2626'>(" & FORMAT(s4r23,"#,##0.00") & ")</span>",FORMAT(s4r23,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.89</td><td class='i4'>Pension Loan LO</td><td class='ar'>" & IF(ISBLANK(s4r24) || s4r24=0,"<span style='color:#d1d5db'>-</span>",IF(s4r24<0,"<span style='color:#dc2626'>(" & FORMAT(s4r24,"#,##0.00") & ")</span>",FORMAT(s4r24,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.4.90</td><td class='i4'>FIAR Loan</td><td class='ar'>" & IF(ISBLANK(s4r25) || s4r25=0,"<span style='color:#d1d5db'>-</span>",IF(s4r25<0,"<span style='color:#dc2626'>(" & FORMAT(s4r25,"#,##0.00") & ")</span>",FORMAT(s4r25,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.1.5.10</td><td class='i4'>Agricultor Loan</td><td class='ar'>" & IF(ISBLANK(s4r26) || s4r26=0,"<span style='color:#d1d5db'>-</span>",IF(s4r26<0,"<span style='color:#dc2626'>(" & FORMAT(s4r26,"#,##0.00") & ")</span>",FORMAT(s4r26,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>RBL Loan Origination</td><td class='ar'>" & IF(ISBLANK(s4r27) || s4r27=0,"<span style='color:#d1d5db'>-</span>",IF(s4r27<0,"<span style='color:#dc2626'>(" & FORMAT(s4r27,"#,##0.00") & ")</span>",FORMAT(s4r27,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3</td><td class='i3'>Loan Fee Income</td><td class='ar'>" & IF(ISBLANK(s4r28) || s4r28=0,"<span style='color:#d1d5db'>-</span>",IF(s4r28<0,"<span style='color:#dc2626'>(" & FORMAT(s4r28,"#,##0.00") & ")</span>",FORMAT(s4r28,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.1</td><td class='i4'>Loan Fee Income Microfin Group</td><td class='ar'>" & IF(ISBLANK(s4r29) || s4r29=0,"<span style='color:#d1d5db'>-</span>",IF(s4r29<0,"<span style='color:#dc2626'>(" & FORMAT(s4r29,"#,##0.00") & ")</span>",FORMAT(s4r29,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.3</td><td class='i4'>Loan Fee Income Market Vendor</td><td class='ar'>" & IF(ISBLANK(s4r30) || s4r30=0,"<span style='color:#d1d5db'>-</span>",IF(s4r30<0,"<span style='color:#dc2626'>(" & FORMAT(s4r30,"#,##0.00") & ")</span>",FORMAT(s4r30,"#,##0.00"))) & "</td></tr>"
+VAR Sec4_3 =
+    "<tr><td class='cd'>4.01.4.3.4</td><td class='i4'>Loan Fee Income Seasonal Crop Loan</td><td class='ar'>" & IF(ISBLANK(s4r31) || s4r31=0,"<span style='color:#d1d5db'>-</span>",IF(s4r31<0,"<span style='color:#dc2626'>(" & FORMAT(s4r31,"#,##0.00") & ")</span>",FORMAT(s4r31,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.5</td><td class='i4'>Loan Fee Income Business Loan</td><td class='ar'>" & IF(ISBLANK(s4r32) || s4r32=0,"<span style='color:#d1d5db'>-</span>",IF(s4r32<0,"<span style='color:#dc2626'>(" & FORMAT(s4r32,"#,##0.00") & ")</span>",FORMAT(s4r32,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.6</td><td class='i4'>Loan Fee Income Payroll</td><td class='ar'>" & IF(ISBLANK(s4r33) || s4r33=0,"<span style='color:#d1d5db'>-</span>",IF(s4r33<0,"<span style='color:#dc2626'>(" & FORMAT(s4r33,"#,##0.00") & ")</span>",FORMAT(s4r33,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.7</td><td class='i4'>Loan Fee Income Employee and Staff Loans</td><td class='ar'>" & IF(ISBLANK(s4r34) || s4r34=0,"<span style='color:#d1d5db'>-</span>",IF(s4r34<0,"<span style='color:#dc2626'>(" & FORMAT(s4r34,"#,##0.00") & ")</span>",FORMAT(s4r34,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.8</td><td class='i4'>Loan Fee Income Internal Staff Loans</td><td class='ar'>" & IF(ISBLANK(s4r35) || s4r35=0,"<span style='color:#d1d5db'>-</span>",IF(s4r35<0,"<span style='color:#dc2626'>(" & FORMAT(s4r35,"#,##0.00") & ")</span>",FORMAT(s4r35,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.9</td><td class='i4'>Loan Fee Income Asuwa&#39;in</td><td class='ar'>" & IF(ISBLANK(s4r36) || s4r36=0,"<span style='color:#d1d5db'>-</span>",IF(s4r36<0,"<span style='color:#dc2626'>(" & FORMAT(s4r36,"#,##0.00") & ")</span>",FORMAT(s4r36,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.10</td><td class='i4'>Loan Fee Income Bukae Loan</td><td class='ar'>" & IF(ISBLANK(s4r37) || s4r37=0,"<span style='color:#d1d5db'>-</span>",IF(s4r37<0,"<span style='color:#dc2626'>(" & FORMAT(s4r37,"#,##0.00") & ")</span>",FORMAT(s4r37,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.3.11</td><td class='i4'>Loan Fee Income Pension Loan</td><td class='ar'>" & IF(ISBLANK(s4r38) || s4r38=0,"<span style='color:#d1d5db'>-</span>",IF(s4r38<0,"<span style='color:#dc2626'>(" & FORMAT(s4r38,"#,##0.00") & ")</span>",FORMAT(s4r38,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.01.4.4-0</td><td class='i4'>Loan Fee Income Project Loan</td><td class='ar'>" & IF(ISBLANK(s4r39) || s4r39=0,"<span style='color:#d1d5db'>-</span>",IF(s4r39<0,"<span style='color:#dc2626'>(" & FORMAT(s4r39,"#,##0.00") & ")</span>",FORMAT(s4r39,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='h-row'><td class='cd-w'>1312</td><td class='i0'>Loan Fee Inc Morten Loan</td><td class='ar'></td></tr>" &
+    "<tr><td class='cd'>4-01-4-4-1</td><td class='i4'>Loan Fee Income Investment Loans</td><td class='ar'>" & IF(ISBLANK(s4r41) || s4r41=0,"<span style='color:#d1d5db'>-</span>",IF(s4r41<0,"<span style='color:#dc2626'>(" & FORMAT(s4r41,"#,##0.00") & ")</span>",FORMAT(s4r41,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4-01-4-4-2</td><td class='i4'>Loan Fee Income Transport Loans</td><td class='ar'>" & IF(ISBLANK(s4r42) || s4r42=0,"<span style='color:#d1d5db'>-</span>",IF(s4r42<0,"<span style='color:#dc2626'>(" & FORMAT(s4r42,"#,##0.00") & ")</span>",FORMAT(s4r42,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4-01-4-4-3</td><td class='i4'>Loan Fee Income Payroll Loans LO</td><td class='ar'>" & IF(ISBLANK(s4r43) || s4r43=0,"<span style='color:#d1d5db'>-</span>",IF(s4r43<0,"<span style='color:#dc2626'>(" & FORMAT(s4r43,"#,##0.00") & ")</span>",FORMAT(s4r43,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4-01-4-4-4</td><td class='i4'>Loan Fee Income Asuwain Loans LO</td><td class='ar'>" & IF(ISBLANK(s4r44) || s4r44=0,"<span style='color:#d1d5db'>-</span>",IF(s4r44<0,"<span style='color:#dc2626'>(" & FORMAT(s4r44,"#,##0.00") & ")</span>",FORMAT(s4r44,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4-01-4-4-5</td><td class='i4'>Loan Fee Income Bukae Loans LO</td><td class='ar'>" & IF(ISBLANK(s4r45) || s4r45=0,"<span style='color:#d1d5db'>-</span>",IF(s4r45<0,"<span style='color:#dc2626'>(" & FORMAT(s4r45,"#,##0.00") & ")</span>",FORMAT(s4r45,"#,##0.00"))) & "</td></tr>"
+VAR Sec4_4 =
+    "<tr><td class='cd'>4-01-4-4-6</td><td class='i4'>Loan Fee Income FIAR</td><td class='ar'>" & IF(ISBLANK(s4r46) || s4r46=0,"<span style='color:#d1d5db'>-</span>",IF(s4r46<0,"<span style='color:#dc2626'>(" & FORMAT(s4r46,"#,##0.00") & ")</span>",FORMAT(s4r46,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4-01-4-4-7</td><td class='i4'>Loan Fee Income Agricultor</td><td class='ar'>" & IF(ISBLANK(s4r47) || s4r47=0,"<span style='color:#d1d5db'>-</span>",IF(s4r47<0,"<span style='color:#dc2626'>(" & FORMAT(s4r47,"#,##0.00") & ")</span>",FORMAT(s4r47,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.01-5</td><td class='i2'>Loan Fee Inc Pension L.O</td><td class='ar'>" & IF(ISBLANK(s4r48) || s4r48=0,"<span style='color:#d1d5db'>-</span>",IF(s4r48<0,"<span style='color:#dc2626'>(" & FORMAT(s4r48,"#,##0.00") & ")</span>",FORMAT(s4r48,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>Loan Fee Income RBL</td><td class='ar'>" & IF(ISBLANK(s4r49) || s4r49=0,"<span style='color:#d1d5db'>-</span>",IF(s4r49<0,"<span style='color:#dc2626'>(" & FORMAT(s4r49,"#,##0.00") & ")</span>",FORMAT(s4r49,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>4.02</td><td class='i1'>NON INTEREST INCOME</td><td class='ar'>" & IF(ISBLANK(s4r50) || s4r50=0,"<span style='color:#d1d5db'>-</span>",IF(s4r50<0,"<span style='color:#dc2626'>(" & FORMAT(s4r50,"#,##0.00") & ")</span>",FORMAT(s4r50,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.0</td><td class='i2'>ATM Fee</td><td class='ar'>" & IF(ISBLANK(s4r51) || s4r51=0,"<span style='color:#d1d5db'>-</span>",IF(s4r51<0,"<span style='color:#dc2626'>(" & FORMAT(s4r51,"#,##0.00") & ")</span>",FORMAT(s4r51,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.1</td><td class='i2'>Foreign Transfer Fees</td><td class='ar'>" & IF(ISBLANK(s4r52) || s4r52=0,"<span style='color:#d1d5db'>-</span>",IF(s4r52<0,"<span style='color:#dc2626'>(" & FORMAT(s4r52,"#,##0.00") & ")</span>",FORMAT(s4r52,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.2</td><td class='i2'>Money Gram Fees</td><td class='ar'>" & IF(ISBLANK(s4r53) || s4r53=0,"<span style='color:#d1d5db'>-</span>",IF(s4r53<0,"<span style='color:#dc2626'>(" & FORMAT(s4r53,"#,##0.00") & ")</span>",FORMAT(s4r53,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.4</td><td class='i2'>Foreign Exchange Gains</td><td class='ar'>" & IF(ISBLANK(s4r54) || s4r54=0,"<span style='color:#d1d5db'>-</span>",IF(s4r54<0,"<span style='color:#dc2626'>(" & FORMAT(s4r54,"#,##0.00") & ")</span>",FORMAT(s4r54,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.5</td><td class='i2'>Commission Income &amp; Transaction Fees</td><td class='ar'>" & IF(ISBLANK(s4r55) || s4r55=0,"<span style='color:#d1d5db'>-</span>",IF(s4r55<0,"<span style='color:#dc2626'>(" & FORMAT(s4r55,"#,##0.00") & ")</span>",FORMAT(s4r55,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.6</td><td class='i2'>Other Non Interest Income</td><td class='ar'>" & IF(ISBLANK(s4r56) || s4r56=0,"<span style='color:#d1d5db'>-</span>",IF(s4r56<0,"<span style='color:#dc2626'>(" & FORMAT(s4r56,"#,##0.00") & ")</span>",FORMAT(s4r56,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.3</td><td class='i2'>Collection Loan Write Off</td><td class='ar'>" & IF(ISBLANK(s4r57) || s4r57=0,"<span style='color:#d1d5db'>-</span>",IF(s4r57<0,"<span style='color:#dc2626'>(" & FORMAT(s4r57,"#,##0.00") & ")</span>",FORMAT(s4r57,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.7</td><td class='i2'>Fee From Government</td><td class='ar'>" & IF(ISBLANK(s4r58) || s4r58=0,"<span style='color:#d1d5db'>-</span>",IF(s4r58<0,"<span style='color:#dc2626'>(" & FORMAT(s4r58,"#,##0.00") & ")</span>",FORMAT(s4r58,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.8</td><td class='i2'>Fee From Bank Guarante SI Fee</td><td class='ar'>" & IF(ISBLANK(s4r59) || s4r59=0,"<span style='color:#d1d5db'>-</span>",IF(s4r59<0,"<span style='color:#dc2626'>(" & FORMAT(s4r59,"#,##0.00") & ")</span>",FORMAT(s4r59,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.02.9</td><td class='i2'>Initial Fee Urgent Fee OTS Fee</td><td class='ar'>" & IF(ISBLANK(s4r60) || s4r60=0,"<span style='color:#d1d5db'>-</span>",IF(s4r60<0,"<span style='color:#dc2626'>(" & FORMAT(s4r60,"#,##0.00") & ")</span>",FORMAT(s4r60,"#,##0.00"))) & "</td></tr>"
+VAR Sec4_5 =
+    "<tr class='sub1'><td class='cd'>4.03</td><td class='i1'>EXTRAORDINARY INCOME</td><td class='ar'>" & IF(ISBLANK(s4r61) || s4r61=0,"<span style='color:#d1d5db'>-</span>",IF(s4r61<0,"<span style='color:#dc2626'>(" & FORMAT(s4r61,"#,##0.00") & ")</span>",FORMAT(s4r61,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.03.1</td><td class='i2'>Gains with disposal Of Fixed Asset</td><td class='ar'>" & IF(ISBLANK(s4r62) || s4r62=0,"<span style='color:#d1d5db'>-</span>",IF(s4r62<0,"<span style='color:#dc2626'>(" & FORMAT(s4r62,"#,##0.00") & ")</span>",FORMAT(s4r62,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>4.3.2</td><td class='i2'>Adjustment for Prior Periods</td><td class='ar'>" & IF(ISBLANK(s4r63) || s4r63=0,"<span style='color:#d1d5db'>-</span>",IF(s4r63<0,"<span style='color:#dc2626'>(" & FORMAT(s4r63,"#,##0.00") & ")</span>",FORMAT(s4r63,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>4.03.3.3</td><td class='i3'>Miscellaneous Income / Loss</td><td class='ar'>" & IF(ISBLANK(s4r64) || s4r64=0,"<span style='color:#d1d5db'>-</span>",IF(s4r64<0,"<span style='color:#dc2626'>(" & FORMAT(s4r64,"#,##0.00") & ")</span>",FORMAT(s4r64,"#,##0.00"))) & "</td></tr>"
+VAR Sec5_1 =
+    "<tr class='sub1'><td class='cd'>5.0</td><td class='i1'>EXPENSE:</td><td class='ar'>" & IF(ISBLANK(s5r1) || s5r1=0,"<span style='color:#d1d5db'>-</span>",IF(s5r1<0,"<span style='color:#dc2626'>(" & FORMAT(s5r1,"#,##0.00") & ")</span>",FORMAT(s5r1,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>5.01</td><td class='i1'>INTEREST EXPENSE</td><td class='ar'>" & IF(ISBLANK(s5r2) || s5r2=0,"<span style='color:#d1d5db'>-</span>",IF(s5r2<0,"<span style='color:#dc2626'>(" & FORMAT(s5r2,"#,##0.00") & ")</span>",FORMAT(s5r2,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.01.2</td><td class='i2'>Interest by Individual Deposits</td><td class='ar'>" & IF(ISBLANK(s5r3) || s5r3=0,"<span style='color:#d1d5db'>-</span>",IF(s5r3<0,"<span style='color:#dc2626'>(" & FORMAT(s5r3,"#,##0.00") & ")</span>",FORMAT(s5r3,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.01.2.1</td><td class='i3'>Saving Deposits</td><td class='ar'>" & IF(ISBLANK(s5r4) || s5r4=0,"<span style='color:#d1d5db'>-</span>",IF(s5r4<0,"<span style='color:#dc2626'>(" & FORMAT(s5r4,"#,##0.00") & ")</span>",FORMAT(s5r4,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.01.2.2</td><td class='i3'>Time Deposits</td><td class='ar'>" & IF(ISBLANK(s5r5) || s5r5=0,"<span style='color:#d1d5db'>-</span>",IF(s5r5<0,"<span style='color:#dc2626'>(" & FORMAT(s5r5,"#,##0.00") & ")</span>",FORMAT(s5r5,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.01.2.2</td><td class='i3'>Demand Deposits</td><td class='ar'>" & IF(ISBLANK(s5r6) || s5r6=0,"<span style='color:#d1d5db'>-</span>",IF(s5r6<0,"<span style='color:#dc2626'>(" & FORMAT(s5r6,"#,##0.00") & ")</span>",FORMAT(s5r6,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.01.3</td><td class='i2'>Interest on Legal Entities Deposits</td><td class='ar'>" & IF(ISBLANK(s5r7) || s5r7=0,"<span style='color:#d1d5db'>-</span>",IF(s5r7<0,"<span style='color:#dc2626'>(" & FORMAT(s5r7,"#,##0.00") & ")</span>",FORMAT(s5r7,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.01.3.1</td><td class='i3'>Saving Deposits</td><td class='ar'>" & IF(ISBLANK(s5r8) || s5r8=0,"<span style='color:#d1d5db'>-</span>",IF(s5r8<0,"<span style='color:#dc2626'>(" & FORMAT(s5r8,"#,##0.00") & ")</span>",FORMAT(s5r8,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.01.3.2</td><td class='i3'>Time Deposits</td><td class='ar'>" & IF(ISBLANK(s5r9) || s5r9=0,"<span style='color:#d1d5db'>-</span>",IF(s5r9<0,"<span style='color:#dc2626'>(" & FORMAT(s5r9,"#,##0.00") & ")</span>",FORMAT(s5r9,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.01.5</td><td class='i2'>INT. EXP. ON OTHER BORROWINGS</td><td class='ar'>" & IF(ISBLANK(s5r10) || s5r10=0,"<span style='color:#d1d5db'>-</span>",IF(s5r10<0,"<span style='color:#dc2626'>(" & FORMAT(s5r10,"#,##0.00") & ")</span>",FORMAT(s5r10,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>5.02</td><td class='i1'>NON INTEREST EXPENSE</td><td class='ar'>" & IF(ISBLANK(s5r11) || s5r11=0,"<span style='color:#d1d5db'>-</span>",IF(s5r11<0,"<span style='color:#dc2626'>(" & FORMAT(s5r11,"#,##0.00") & ")</span>",FORMAT(s5r11,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.02.3</td><td class='i2'>Foreign Exchanges Losses</td><td class='ar'>" & IF(ISBLANK(s5r12) || s5r12=0,"<span style='color:#d1d5db'>-</span>",IF(s5r12<0,"<span style='color:#dc2626'>(" & FORMAT(s5r12,"#,##0.00") & ")</span>",FORMAT(s5r12,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.02.4</td><td class='i2'>Commission Expense &amp; Transaction Fees</td><td class='ar'>" & IF(ISBLANK(s5r13) || s5r13=0,"<span style='color:#d1d5db'>-</span>",IF(s5r13<0,"<span style='color:#dc2626'>(" & FORMAT(s5r13,"#,##0.00") & ")</span>",FORMAT(s5r13,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.02.5</td><td class='i2'>Other Non Interest Expense</td><td class='ar'>" & IF(ISBLANK(s5r14) || s5r14=0,"<span style='color:#d1d5db'>-</span>",IF(s5r14<0,"<span style='color:#dc2626'>(" & FORMAT(s5r14,"#,##0.00") & ")</span>",FORMAT(s5r14,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>5.03</td><td class='i1'>OPERATING EXPENSE</td><td class='ar'>" & IF(ISBLANK(s5r15) || s5r15=0,"<span style='color:#d1d5db'>-</span>",IF(s5r15<0,"<span style='color:#dc2626'>(" & FORMAT(s5r15,"#,##0.00") & ")</span>",FORMAT(s5r15,"#,##0.00"))) & "</td></tr>"
+VAR Sec5_2 =
+    "<tr class='sub2'><td class='cd'>5.03.1</td><td class='i2'>Salaries &amp; Benefits</td><td class='ar'>" & IF(ISBLANK(s5r16) || s5r16=0,"<span style='color:#d1d5db'>-</span>",IF(s5r16<0,"<span style='color:#dc2626'>(" & FORMAT(s5r16,"#,##0.00") & ")</span>",FORMAT(s5r16,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.1.1</td><td class='i3'>Remunerations of Board of Director</td><td class='ar'>" & IF(ISBLANK(s5r17) || s5r17=0,"<span style='color:#d1d5db'>-</span>",IF(s5r17<0,"<span style='color:#dc2626'>(" & FORMAT(s5r17,"#,##0.00") & ")</span>",FORMAT(s5r17,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.1.2</td><td class='i3'>Directors Fees and Honoraria</td><td class='ar'>" & IF(ISBLANK(s5r18) || s5r18=0,"<span style='color:#d1d5db'>-</span>",IF(s5r18<0,"<span style='color:#dc2626'>(" & FORMAT(s5r18,"#,##0.00") & ")</span>",FORMAT(s5r18,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.1.1</td><td class='i3'>Salaries and Wages</td><td class='ar'>" & IF(ISBLANK(s5r19) || s5r19=0,"<span style='color:#d1d5db'>-</span>",IF(s5r19<0,"<span style='color:#dc2626'>(" & FORMAT(s5r19,"#,##0.00") & ")</span>",FORMAT(s5r19,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.1.3</td><td class='i3'>Fringe Benefits - Employee</td><td class='ar'>" & IF(ISBLANK(s5r20) || s5r20=0,"<span style='color:#d1d5db'>-</span>",IF(s5r20<0,"<span style='color:#dc2626'>(" & FORMAT(s5r20,"#,##0.00") & ")</span>",FORMAT(s5r20,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.1.5</td><td class='i3'>Contribution to Retirement</td><td class='ar'>" & IF(ISBLANK(s5r21) || s5r21=0,"<span style='color:#d1d5db'>-</span>",IF(s5r21<0,"<span style='color:#dc2626'>(" & FORMAT(s5r21,"#,##0.00") & ")</span>",FORMAT(s5r21,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.1.6</td><td class='i3'>Annual Leave</td><td class='ar'>" & IF(ISBLANK(s5r22) || s5r22=0,"<span style='color:#d1d5db'>-</span>",IF(s5r22<0,"<span style='color:#dc2626'>(" & FORMAT(s5r22,"#,##0.00") & ")</span>",FORMAT(s5r22,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.1.7</td><td class='i3'>Payment for Over time</td><td class='ar'>" & IF(ISBLANK(s5r23) || s5r23=0,"<span style='color:#d1d5db'>-</span>",IF(s5r23<0,"<span style='color:#dc2626'>(" & FORMAT(s5r23,"#,##0.00") & ")</span>",FORMAT(s5r23,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.2</td><td class='i2'>Other Administrative Expense</td><td class='ar'>" & IF(ISBLANK(s5r24) || s5r24=0,"<span style='color:#d1d5db'>-</span>",IF(s5r24<0,"<span style='color:#dc2626'>(" & FORMAT(s5r24,"#,##0.00") & ")</span>",FORMAT(s5r24,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.2.4.1.10</td><td class='i4'>Information Tech./Automation Expense</td><td class='ar'>" & IF(ISBLANK(s5r25) || s5r25=0,"<span style='color:#d1d5db'>-</span>",IF(s5r25<0,"<span style='color:#dc2626'>(" & FORMAT(s5r25,"#,##0.00") & ")</span>",FORMAT(s5r25,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.2.4.1.15</td><td class='i4'>Communication Expense</td><td class='ar'>" & IF(ISBLANK(s5r26) || s5r26=0,"<span style='color:#d1d5db'>-</span>",IF(s5r26<0,"<span style='color:#dc2626'>(" & FORMAT(s5r26,"#,##0.00") & ")</span>",FORMAT(s5r26,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.2.4.1.20</td><td class='i4'>Power, Light and Water</td><td class='ar'>" & IF(ISBLANK(s5r27) || s5r27=0,"<span style='color:#d1d5db'>-</span>",IF(s5r27<0,"<span style='color:#dc2626'>(" & FORMAT(s5r27,"#,##0.00") & ")</span>",FORMAT(s5r27,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.2.4.1.25</td><td class='i4'>Fuel and Lubricants</td><td class='ar'>" & IF(ISBLANK(s5r28) || s5r28=0,"<span style='color:#d1d5db'>-</span>",IF(s5r28<0,"<span style='color:#dc2626'>(" & FORMAT(s5r28,"#,##0.00") & ")</span>",FORMAT(s5r28,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.2.4.1.30</td><td class='i4'>Traveling Expenses</td><td class='ar'>" & IF(ISBLANK(s5r29) || s5r29=0,"<span style='color:#d1d5db'>-</span>",IF(s5r29<0,"<span style='color:#dc2626'>(" & FORMAT(s5r29,"#,##0.00") & ")</span>",FORMAT(s5r29,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.2.4.1.35</td><td class='i4'>Stationery and Office Supplies</td><td class='ar'>" & IF(ISBLANK(s5r30) || s5r30=0,"<span style='color:#d1d5db'>-</span>",IF(s5r30<0,"<span style='color:#dc2626'>(" & FORMAT(s5r30,"#,##0.00") & ")</span>",FORMAT(s5r30,"#,##0.00"))) & "</td></tr>"
+VAR Sec5_3 =
+    "<tr><td class='cd'>5.03.2.4.1.40</td><td class='i4'>Representation and Entertainment</td><td class='ar'>" & IF(ISBLANK(s5r31) || s5r31=0,"<span style='color:#d1d5db'>-</span>",IF(s5r31<0,"<span style='color:#dc2626'>(" & FORMAT(s5r31,"#,##0.00") & ")</span>",FORMAT(s5r31,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.2.4.1.45</td><td class='i4'>Repairs and Maintenance</td><td class='ar'>" & IF(ISBLANK(s5r32) || s5r32=0,"<span style='color:#d1d5db'>-</span>",IF(s5r32<0,"<span style='color:#dc2626'>(" & FORMAT(s5r32,"#,##0.00") & ")</span>",FORMAT(s5r32,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.3</td><td class='i2'>Advertising and Public Relation</td><td class='ar'>" & IF(ISBLANK(s5r33) || s5r33=0,"<span style='color:#d1d5db'>-</span>",IF(s5r33<0,"<span style='color:#dc2626'>(" & FORMAT(s5r33,"#,##0.00") & ")</span>",FORMAT(s5r33,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.4</td><td class='i2'>Audit, Legal &amp; Professional Fees</td><td class='ar'>" & IF(ISBLANK(s5r34) || s5r34=0,"<span style='color:#d1d5db'>-</span>",IF(s5r34<0,"<span style='color:#dc2626'>(" & FORMAT(s5r34,"#,##0.00") & ")</span>",FORMAT(s5r34,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.5</td><td class='i2'>Rents</td><td class='ar'>" & IF(ISBLANK(s5r35) || s5r35=0,"<span style='color:#d1d5db'>-</span>",IF(s5r35<0,"<span style='color:#dc2626'>(" & FORMAT(s5r35,"#,##0.00") & ")</span>",FORMAT(s5r35,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.5.1</td><td class='i3'>Car Rents</td><td class='ar'>" & IF(ISBLANK(s5r36) || s5r36=0,"<span style='color:#d1d5db'>-</span>",IF(s5r36<0,"<span style='color:#dc2626'>(" & FORMAT(s5r36,"#,##0.00") & ")</span>",FORMAT(s5r36,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.5</td><td class='i2'>Rents Paid</td><td class='ar'>" & IF(ISBLANK(s5r37) || s5r37=0,"<span style='color:#d1d5db'>-</span>",IF(s5r37<0,"<span style='color:#dc2626'>(" & FORMAT(s5r37,"#,##0.00") & ")</span>",FORMAT(s5r37,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.6</td><td class='i2'>Expense on Premises &amp; Fixed Assets</td><td class='ar'>" & IF(ISBLANK(s5r38) || s5r38=0,"<span style='color:#d1d5db'>-</span>",IF(s5r38<0,"<span style='color:#dc2626'>(" & FORMAT(s5r38,"#,##0.00") & ")</span>",FORMAT(s5r38,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.6.1</td><td class='i3'>Insurance</td><td class='ar'>" & IF(ISBLANK(s5r39) || s5r39=0,"<span style='color:#d1d5db'>-</span>",IF(s5r39<0,"<span style='color:#dc2626'>(" & FORMAT(s5r39,"#,##0.00") & ")</span>",FORMAT(s5r39,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.6.3</td><td class='i3'>Building Maintenance</td><td class='ar'>" & IF(ISBLANK(s5r40) || s5r40=0,"<span style='color:#d1d5db'>-</span>",IF(s5r40<0,"<span style='color:#dc2626'>(" & FORMAT(s5r40,"#,##0.00") & ")</span>",FORMAT(s5r40,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.7</td><td class='i2'>Depreciation &amp; Amortization</td><td class='ar'>" & IF(ISBLANK(s5r41) || s5r41=0,"<span style='color:#d1d5db'>-</span>",IF(s5r41<0,"<span style='color:#dc2626'>(" & FORMAT(s5r41,"#,##0.00") & ")</span>",FORMAT(s5r41,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.7.3</td><td class='i3'>Depr. Machinery &amp; Equipment</td><td class='ar'>" & IF(ISBLANK(s5r42) || s5r42=0,"<span style='color:#d1d5db'>-</span>",IF(s5r42<0,"<span style='color:#dc2626'>(" & FORMAT(s5r42,"#,##0.00") & ")</span>",FORMAT(s5r42,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.7.4</td><td class='i3'>Depr. Furniture, Fixture &amp; Equipment</td><td class='ar'>" & IF(ISBLANK(s5r43) || s5r43=0,"<span style='color:#d1d5db'>-</span>",IF(s5r43<0,"<span style='color:#dc2626'>(" & FORMAT(s5r43,"#,##0.00") & ")</span>",FORMAT(s5r43,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.7.5</td><td class='i3'>Depr. Vehicles</td><td class='ar'>" & IF(ISBLANK(s5r44) || s5r44=0,"<span style='color:#d1d5db'>-</span>",IF(s5r44<0,"<span style='color:#dc2626'>(" & FORMAT(s5r44,"#,##0.00") & ")</span>",FORMAT(s5r44,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.7.6</td><td class='i3'>Depr. Non Physical Assets</td><td class='ar'>" & IF(ISBLANK(s5r45) || s5r45=0,"<span style='color:#d1d5db'>-</span>",IF(s5r45<0,"<span style='color:#dc2626'>(" & FORMAT(s5r45,"#,##0.00") & ")</span>",FORMAT(s5r45,"#,##0.00"))) & "</td></tr>"
+VAR Sec5_4 =
+    "<tr><td class='cd'>5.03.7.7</td><td class='i3'>Amort. Leasehold Right &amp; Improvement</td><td class='ar'>" & IF(ISBLANK(s5r46) || s5r46=0,"<span style='color:#d1d5db'>-</span>",IF(s5r46<0,"<span style='color:#dc2626'>(" & FORMAT(s5r46,"#,##0.00") & ")</span>",FORMAT(s5r46,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.7.8</td><td class='i3'>Amort. Building</td><td class='ar'>" & IF(ISBLANK(s5r47) || s5r47=0,"<span style='color:#d1d5db'>-</span>",IF(s5r47<0,"<span style='color:#dc2626'>(" & FORMAT(s5r47,"#,##0.00") & ")</span>",FORMAT(s5r47,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'></td><td class='i3'>Amort. Deferred Charges</td><td class='ar'>" & IF(ISBLANK(s5r48) || s5r48=0,"<span style='color:#d1d5db'>-</span>",IF(s5r48<0,"<span style='color:#dc2626'>(" & FORMAT(s5r48,"#,##0.00") & ")</span>",FORMAT(s5r48,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.8</td><td class='i2'>Provision</td><td class='ar'>" & IF(ISBLANK(s5r49) || s5r49=0,"<span style='color:#d1d5db'>-</span>",IF(s5r49<0,"<span style='color:#dc2626'>(" & FORMAT(s5r49,"#,##0.00") & ")</span>",FORMAT(s5r49,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.8.1</td><td class='i3'>Provision for loans losses</td><td class='ar'>" & IF(ISBLANK(s5r50) || s5r50=0,"<span style='color:#d1d5db'>-</span>",IF(s5r50<0,"<span style='color:#dc2626'>(" & FORMAT(s5r50,"#,##0.00") & ")</span>",FORMAT(s5r50,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.03.9</td><td class='i2'>Other Operating Expense</td><td class='ar'>" & IF(ISBLANK(s5r51) || s5r51=0,"<span style='color:#d1d5db'>-</span>",IF(s5r51<0,"<span style='color:#dc2626'>(" & FORMAT(s5r51,"#,##0.00") & ")</span>",FORMAT(s5r51,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.05</td><td class='i4'>Security, Janitorial &amp; Messengerial</td><td class='ar'>" & IF(ISBLANK(s5r52) || s5r52=0,"<span style='color:#d1d5db'>-</span>",IF(s5r52<0,"<span style='color:#dc2626'>(" & FORMAT(s5r52,"#,##0.00") & ")</span>",FORMAT(s5r52,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.55</td><td class='i4'>Freight and Handling Expenses</td><td class='ar'>" & IF(ISBLANK(s5r53) || s5r53=0,"<span style='color:#d1d5db'>-</span>",IF(s5r53<0,"<span style='color:#dc2626'>(" & FORMAT(s5r53,"#,##0.00") & ")</span>",FORMAT(s5r53,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.60</td><td class='i4'>Taxes and Licenses</td><td class='ar'>" & IF(ISBLANK(s5r54) || s5r54=0,"<span style='color:#d1d5db'>-</span>",IF(s5r54<0,"<span style='color:#dc2626'>(" & FORMAT(s5r54,"#,##0.00") & ")</span>",FORMAT(s5r54,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.65</td><td class='i4'>Bad-Debts Written Off</td><td class='ar'>" & IF(ISBLANK(s5r55) || s5r55=0,"<span style='color:#d1d5db'>-</span>",IF(s5r55<0,"<span style='color:#dc2626'>(" & FORMAT(s5r55,"#,##0.00") & ")</span>",FORMAT(s5r55,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.66</td><td class='i4'>Health Expenses</td><td class='ar'>" & IF(ISBLANK(s5r56) || s5r56=0,"<span style='color:#d1d5db'>-</span>",IF(s5r56<0,"<span style='color:#dc2626'>(" & FORMAT(s5r56,"#,##0.00") & ")</span>",FORMAT(s5r56,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.67</td><td class='i4'>Miscellaneous Expenses/Transport</td><td class='ar'>" & IF(ISBLANK(s5r57) || s5r57=0,"<span style='color:#d1d5db'>-</span>",IF(s5r57<0,"<span style='color:#dc2626'>(" & FORMAT(s5r57,"#,##0.00") & ")</span>",FORMAT(s5r57,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.69</td><td class='i4'>Miscellaneous Expenses/Staff Uniform</td><td class='ar'>" & IF(ISBLANK(s5r58) || s5r58=0,"<span style='color:#d1d5db'>-</span>",IF(s5r58<0,"<span style='color:#dc2626'>(" & FORMAT(s5r58,"#,##0.00") & ")</span>",FORMAT(s5r58,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.70</td><td class='i4'>Miscellaneous Expenses/ Assets</td><td class='ar'>" & IF(ISBLANK(s5r59) || s5r59=0,"<span style='color:#d1d5db'>-</span>",IF(s5r59<0,"<span style='color:#dc2626'>(" & FORMAT(s5r59,"#,##0.00") & ")</span>",FORMAT(s5r59,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.84</td><td class='i4'>Miscellaneous Exp/Loan Ext</td><td class='ar'>" & IF(ISBLANK(s5r60) || s5r60=0,"<span style='color:#d1d5db'>-</span>",IF(s5r60<0,"<span style='color:#dc2626'>(" & FORMAT(s5r60,"#,##0.00") & ")</span>",FORMAT(s5r60,"#,##0.00"))) & "</td></tr>"
+VAR Sec5_5 =
+    "<tr><td class='cd'></td><td class='i3'>Public Serv. Payment Distrib Cos</td><td class='ar'>" & IF(ISBLANK(s5r61) || s5r61=0,"<span style='color:#d1d5db'>-</span>",IF(s5r61<0,"<span style='color:#dc2626'>(" & FORMAT(s5r61,"#,##0.00") & ")</span>",FORMAT(s5r61,"#,##0.00"))) & "</td></tr>" &
+    "<tr><td class='cd'>5.03.9.1.1.78</td><td class='i4'>Miscellaneous Expenses/Others</td><td class='ar'>" & IF(ISBLANK(s5r62) || s5r62=0,"<span style='color:#d1d5db'>-</span>",IF(s5r62<0,"<span style='color:#dc2626'>(" & FORMAT(s5r62,"#,##0.00") & ")</span>",FORMAT(s5r62,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>5.04</td><td class='i1'>EXTRAORDINARY EXPENSE</td><td class='ar'>" & IF(ISBLANK(s5r63) || s5r63=0,"<span style='color:#d1d5db'>-</span>",IF(s5r63<0,"<span style='color:#dc2626'>(" & FORMAT(s5r63,"#,##0.00") & ")</span>",FORMAT(s5r63,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.04.1</td><td class='i2'>Losses With disposal of Fixed Assets</td><td class='ar'>" & IF(ISBLANK(s5r64) || s5r64=0,"<span style='color:#d1d5db'>-</span>",IF(s5r64<0,"<span style='color:#dc2626'>(" & FORMAT(s5r64,"#,##0.00") & ")</span>",FORMAT(s5r64,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.04.2</td><td class='i2'>Adjustment for Prior Periods</td><td class='ar'>" & IF(ISBLANK(s5r65) || s5r65=0,"<span style='color:#d1d5db'>-</span>",IF(s5r65<0,"<span style='color:#dc2626'>(" & FORMAT(s5r65,"#,##0.00") & ")</span>",FORMAT(s5r65,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>5.04.3</td><td class='i2'>Other Extraordinary Expenses</td><td class='ar'>" & IF(ISBLANK(s5r66) || s5r66=0,"<span style='color:#d1d5db'>-</span>",IF(s5r66<0,"<span style='color:#dc2626'>(" & FORMAT(s5r66,"#,##0.00") & ")</span>",FORMAT(s5r66,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='tot'><td class='cd-w'></td><td class='i0'>TOTAL OPERATING EXPENSES</td><td class='ar'>" & IF(ISBLANK(s5r67) || s5r67=0,"<span style='color:#d1d5db'>-</span>",IF(s5r67<0,"<span style='color:#dc2626'>(" & FORMAT(s5r67,"#,##0.00") & ")</span>",FORMAT(s5r67,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='net'><td class='cd-w'></td><td class='i0'>NET INCOME (LOSS) BEFORE TAX</td><td class='ar'>" & IF(ISBLANK(s5r68) || s5r68=0,"<span style='color:#d1d5db'>-</span>",IF(s5r68<0,"<span style='color:#dc2626'>(" & FORMAT(s5r68,"#,##0.00") & ")</span>",FORMAT(s5r68,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>5.09</td><td class='i1'>PROVISION FOR INCOME TAX</td><td class='ar'>" & IF(ISBLANK(s5r69) || s5r69=0,"<span style='color:#d1d5db'>-</span>",IF(s5r69<0,"<span style='color:#dc2626'>(" & FORMAT(s5r69,"#,##0.00") & ")</span>",FORMAT(s5r69,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='net'><td class='cd-w'></td><td class='i0'>NET INCOME (LOSS) AFTER TAX</td><td class='ar'>" & IF(ISBLANK(s5r70) || s5r70=0,"<span style='color:#d1d5db'>-</span>",IF(s5r70<0,"<span style='color:#dc2626'>(" & FORMAT(s5r70,"#,##0.00") & ")</span>",FORMAT(s5r70,"#,##0.00"))) & "</td></tr>"
+VAR Sec7_1 =
+    "<tr class='h-row'><td class='cd-w'>7</td><td class='i0'>CONTINGENT ACCOUNTS</td><td class='ar'></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>7.1</td><td class='i1'>Acceptances Guarantees &amp; Letters of Credit</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub2 nd'><td class='cd'>7.1.1</td><td class='i2'>Guarantees Issued</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.1.1.1</td><td class='i3'>Commercial Paper</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.1.1.2</td><td class='i3'>Other</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.1.2</td><td class='i2'>Letters of Credit Issued</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.2</td><td class='i1'>Other Confirmed Paper</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.3</td><td class='i1'>Unused Lines of Credit</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>7.4</td><td class='i1'>Undisbursed Loan Funds</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.4.1</td><td class='i2'>Domestic Currency</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.4.2</td><td class='i2'>Foreign Currency</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>7.5</td><td class='i1'>Commitments</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub2 nd'><td class='cd'>7.5.1</td><td class='i2'>To Grant Loans</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.5.1.1</td><td class='i3'>Domestic Currency</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.5.1.2</td><td class='i3'>Foreign Currency</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>"
+VAR Sec7_2 =
+    "<tr class='nd'><td class='cd'>7.5.2</td><td class='i2'>To Buy Securities</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.5.3</td><td class='i2'>To Sell Securities</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.5.4</td><td class='i2'>To Lease</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.6</td><td class='i1'>Pending Litigation</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.7</td><td class='i1'>Assets Sold with Recourse</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>7.8</td><td class='i1'>Other</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>"
+VAR Sec8_1 =
+    "<tr class='h-row'><td class='cd-w'>8</td><td class='i0'>Memoranda Items</td><td class='ar'></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.1</td><td class='i1'>Authorized Capital</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.2</td><td class='i1'>Subscribed Capital</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.3</td><td class='i1'>Paid-Up/Assigned Capital</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.3.1</td><td class='i2'>Domestic Currency</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.3.2</td><td class='i2'>Foreign Currency</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.4</td><td class='i1'>Past Due Loan</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.4.1</td><td class='i2'>90 Days</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.4.2</td><td class='i2'>90 - 180 Days</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.4.3</td><td class='i2'>180 - 270 Days</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.4.4</td><td class='i2'>Write-Offs</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.5</td><td class='i1'>Interest Capitalized During the Month</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.6</td><td class='i1'>Charged off Assets During the Month</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.6.1</td><td class='i2'>Loans</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.6.2</td><td class='i2'>Other</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>"
+VAR Sec8_2 =
+    "<tr class='nd'><td class='cd'>8.7</td><td class='i1'>Bad Loans Recovered During the Month</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.8</td><td class='i1'>Syndicated Loans</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.8.1</td><td class='i2'>Lead Institution</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.8.2</td><td class='i2'>Participating Institution</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.9</td><td class='i1'>Loan Participation</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub2 nd'><td class='cd'>8.9.1</td><td class='i2'>Acquired by the Institution</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.9.1.1</td><td class='i3'>With Recourse</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.9.1.2</td><td class='i3'>Without Recourse</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub2 nd'><td class='cd'>8.9.2</td><td class='i2'>Conveyed to Others</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.9.2.1</td><td class='i3'>With Recourse</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.9.2.2</td><td class='i3'>Without Recourse</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.10</td><td class='i1'>Credit Card Receivables</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.10.1</td><td class='i2'>Domestic Currency</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.10.2</td><td class='i2'>Foreign Currency</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1'><td class='cd'>8.11</td><td class='i1'>Loan to Staff</td><td class='ar'>" & IF(ISBLANK(s8r30) || s8r30=0,"<span style='color:#d1d5db'>-</span>",IF(s8r30<0,"<span style='color:#dc2626'>(" & FORMAT(s8r30,"#,##0.00") & ")</span>",FORMAT(s8r30,"#,##0.00"))) & "</td></tr>"
+VAR Sec8_3 =
+    "<tr class='nd'><td class='cd'>8.11.1</td><td class='i2'>Mortgage Loans</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr><td class='cd'>8.11.2</td><td class='i2'>Other Loans</td><td class='ar'>" & IF(ISBLANK(s8r32) || s8r32=0,"<span style='color:#d1d5db'>-</span>",IF(s8r32<0,"<span style='color:#dc2626'>(" & FORMAT(s8r32,"#,##0.00") & ")</span>",FORMAT(s8r32,"#,##0.00"))) & "</td></tr>" &
+    "<tr class='nd'><td class='cd'>8.12</td><td class='i1'>Total Credit Facilities</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.13</td><td class='i1'>Investment in Shares</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.13.1</td><td class='i2'>Quoted</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.13.2</td><td class='i2'>Unquoted</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.14</td><td class='i1'>Own Securities Assigned as Collateral</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.14.1</td><td class='i2'>Ordinarily Eligible as Liquid Securities</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.14.2</td><td class='i2'>Other</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.15</td><td class='i1'>Unused Portion of L/C in Favor Own Institution</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.16</td><td class='i1'>Assets Held in Trust</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.17</td><td class='i1'>Funding to Connected Parties</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.17.1</td><td class='i2'>Placements</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.17.2</td><td class='i2'>Investments</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.17.3</td><td class='i2'>Credits</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>"
+VAR Sec8_4 =
+    "<tr class='nd'><td class='cd'>8.17.4</td><td class='i2'>Accounts Receivables</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.17.5</td><td class='i2'>Other</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='sub1 nd'><td class='cd'>8.18</td><td class='i1'>Funding from Connected Parties</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.18.1</td><td class='i2'>Capital</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.18.2</td><td class='i2'>Deposits</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.18.3</td><td class='i2'>Accounts Payable</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>" &
+    "<tr class='nd'><td class='cd'>8.18.4</td><td class='i2'>Other</td><td class='ar'><span style='color:#b0b7c3;font-style:italic;font-size:9px;'>pending</span></td></tr>"
+VAR Ftr =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-size:10px;color:#9ca3af;'>USD &nbsp;|&nbsp; ( ) = negative &nbsp;|&nbsp; <span style='color:#b0b7c3;font-style:italic;'>pending</span> = awaiting manual data</span>" &
+    "<span style='font-size:10px;color:#9ca3af;'>BNCTL &mdash; Confidential</span>" &
+    "</div>"
+RETURN
+    "<div class='bc'>" & Sty & Hdr &
+    "<div style='overflow-x:auto;'>" & TH &
+    Sec1_1 &
+    Sec1_2 &
+    Sec1_3 &
+    Sec1_4 &
+    Sec1_5 &
+    Sec1_6 &
+    Sec1_7 &
+    Sec1_8 &
+    Sec1_9 & SEP &
+    Sec2_1 &
+    Sec2_2 &
+    Sec2_3 &
+    Sec2_4 &
+    Sec2_5 & SEP &
+    Sec3_1 & SEP &
+    Sec4_1 &
+    Sec4_2 &
+    Sec4_3 &
+    Sec4_4 &
+    Sec4_5 & SEP &
+    Sec5_1 &
+    Sec5_2 &
+    Sec5_3 &
+    Sec5_4 &
+    Sec5_5 & SEP &
+    Sec7_1 &
+    Sec7_2 & SEP &
+    Sec8_1 &
+    Sec8_2 &
+    Sec8_3 &
+    Sec8_4 &
+    TC & "</div>" &
+    Ftr & "</div>"

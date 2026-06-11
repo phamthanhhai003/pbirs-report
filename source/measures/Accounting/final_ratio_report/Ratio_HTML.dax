@@ -1,0 +1,385 @@
+﻿MEASURE 'final_ratio_report'[Ratio_HTML] =
+VAR SelectedYear  = SELECTEDVALUE( Calendar[Year] )
+VAR SelectedMonth = SELECTEDVALUE( Calendar[report_month] )
+VAR MaxDate      = MAX( final_ratio_report[load_date] )
+VAR MaxYear       = LEFT(MaxDate, 4)
+VAR ActiveYear    = IF( ISBLANK(SelectedYear),  MaxYear,  SelectedYear )
+VAR ActiveMonth   = IF( ISBLANK(SelectedMonth), LEFT(MaxDate, 7), SelectedMonth )
+VAR PeriodLabel   =
+    IF(
+        NOT ISBLANK(SelectedMonth),
+        "For the Month of " & FORMAT( DATE( LEFT(ActiveMonth,4), RIGHT(ActiveMonth,2), 1 ), "MMMM YYYY" ),
+        "For the Year Ended " & ActiveYear
+    )
+VAR tbl =
+    FILTER( ALL(final_ratio_report),
+        IF(
+            NOT ISBLANK(SelectedMonth),
+            LEFT([load_date], 7) = ActiveMonth,
+            LEFT([load_date], 4) = ActiveYear
+        )
+    )
+VAR r01_num = SUMX( FILTER( tbl, [ratio_id] = "r01" ), [numerator] )
+VAR r01_den = SUMX( FILTER( tbl, [ratio_id] = "r01" ), [denominator] )
+VAR r01_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r01" ), [ratio_pct] )
+VAR r02_num = SUMX( FILTER( tbl, [ratio_id] = "r02" ), [numerator] )
+VAR r02_den = SUMX( FILTER( tbl, [ratio_id] = "r02" ), [denominator] )
+VAR r02_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r02" ), [ratio_pct] )
+VAR r03_num = SUMX( FILTER( tbl, [ratio_id] = "r03" ), [numerator] )
+VAR r03_den = SUMX( FILTER( tbl, [ratio_id] = "r03" ), [denominator] )
+VAR r03_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r03" ), [ratio_pct] )
+VAR r04_num = SUMX( FILTER( tbl, [ratio_id] = "r04" ), [numerator] )
+VAR r04_den = SUMX( FILTER( tbl, [ratio_id] = "r04" ), [denominator] )
+VAR r04_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r04" ), [ratio_pct] )
+VAR r05_num = SUMX( FILTER( tbl, [ratio_id] = "r05" ), [numerator] )
+VAR r05_den = SUMX( FILTER( tbl, [ratio_id] = "r05" ), [denominator] )
+VAR r05_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r05" ), [ratio_pct] )
+VAR r06_num = SUMX( FILTER( tbl, [ratio_id] = "r06" ), [numerator] )
+VAR r06_den = SUMX( FILTER( tbl, [ratio_id] = "r06" ), [denominator] )
+VAR r06_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r06" ), [ratio_pct] )
+VAR r07_num = SUMX( FILTER( tbl, [ratio_id] = "r07" ), [numerator] )
+VAR r07_den = SUMX( FILTER( tbl, [ratio_id] = "r07" ), [denominator] )
+VAR r07_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r07" ), [ratio_pct] )
+VAR r08_num = SUMX( FILTER( tbl, [ratio_id] = "r08" ), [numerator] )
+VAR r08_den = SUMX( FILTER( tbl, [ratio_id] = "r08" ), [denominator] )
+VAR r08_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r08" ), [ratio_pct] )
+VAR r09_num = SUMX( FILTER( tbl, [ratio_id] = "r09" ), [numerator] )
+VAR r09_den = SUMX( FILTER( tbl, [ratio_id] = "r09" ), [denominator] )
+VAR r09_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r09" ), [ratio_pct] )
+VAR r10_num = SUMX( FILTER( tbl, [ratio_id] = "r10" ), [numerator] )
+VAR r10_den = SUMX( FILTER( tbl, [ratio_id] = "r10" ), [denominator] )
+VAR r10_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r10" ), [ratio_pct] )
+VAR r11_num = SUMX( FILTER( tbl, [ratio_id] = "r11" ), [numerator] )
+VAR r11_den = SUMX( FILTER( tbl, [ratio_id] = "r11" ), [denominator] )
+VAR r11_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r11" ), [ratio_pct] )
+VAR r12_num = SUMX( FILTER( tbl, [ratio_id] = "r12" ), [numerator] )
+VAR r12_den = SUMX( FILTER( tbl, [ratio_id] = "r12" ), [denominator] )
+VAR r12_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r12" ), [ratio_pct] )
+VAR r13_num = SUMX( FILTER( tbl, [ratio_id] = "r13" ), [numerator] )
+VAR r13_den = SUMX( FILTER( tbl, [ratio_id] = "r13" ), [denominator] )
+VAR r13_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r13" ), [ratio_pct] )
+VAR r14_num = SUMX( FILTER( tbl, [ratio_id] = "r14" ), [numerator] )
+VAR r14_den = SUMX( FILTER( tbl, [ratio_id] = "r14" ), [denominator] )
+VAR r14_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r14" ), [ratio_pct] )
+VAR r15_num = SUMX( FILTER( tbl, [ratio_id] = "r15" ), [numerator] )
+VAR r15_den = SUMX( FILTER( tbl, [ratio_id] = "r15" ), [denominator] )
+VAR r15_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r15" ), [ratio_pct] )
+VAR r16_num = SUMX( FILTER( tbl, [ratio_id] = "r16" ), [numerator] )
+VAR r16_den = SUMX( FILTER( tbl, [ratio_id] = "r16" ), [denominator] )
+VAR r16_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r16" ), [ratio_pct] )
+VAR r17_num = SUMX( FILTER( tbl, [ratio_id] = "r17" ), [numerator] )
+VAR r17_den = SUMX( FILTER( tbl, [ratio_id] = "r17" ), [denominator] )
+VAR r17_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r17" ), [ratio_pct] )
+VAR r18_num = SUMX( FILTER( tbl, [ratio_id] = "r18" ), [numerator] )
+VAR r18_den = SUMX( FILTER( tbl, [ratio_id] = "r18" ), [denominator] )
+VAR r18_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r18" ), [ratio_pct] )
+VAR r19_num = SUMX( FILTER( tbl, [ratio_id] = "r19" ), [numerator] )
+VAR r19_den = SUMX( FILTER( tbl, [ratio_id] = "r19" ), [denominator] )
+VAR r19_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r19" ), [ratio_pct] )
+VAR r20_num = SUMX( FILTER( tbl, [ratio_id] = "r20" ), [numerator] )
+VAR r20_den = SUMX( FILTER( tbl, [ratio_id] = "r20" ), [denominator] )
+VAR r20_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r20" ), [ratio_pct] )
+VAR r21_num = SUMX( FILTER( tbl, [ratio_id] = "r21" ), [numerator] )
+VAR r21_den = SUMX( FILTER( tbl, [ratio_id] = "r21" ), [denominator] )
+VAR r21_pct = AVERAGEX( FILTER( tbl, [ratio_id] = "r21" ), [ratio_pct] )
+VAR N = "#,##0.00"
+VAR P = "0.00"
+VAR StyleBlock =
+    "<style>" &
+    "body,div,td,th{box-sizing:border-box;}" &
+    ".rw{font-family:Segoe UI,Calibri,sans-serif;font-size:11px;color:#1e2d40;background:#f4f6f9;}" &
+    ".two-col{display:table;width:100%;border-spacing:12px;padding:12px;}" &
+    ".col-left{display:table-cell;width:50%;vertical-align:top;}" &
+    ".col-right{display:table-cell;width:50%;vertical-align:top;}" &
+    ".sec-title{font-weight:700;font-size:12px;color:#003366;border-bottom:2px solid #003366;padding:6px 0 4px 0;margin-bottom:8px;}" &
+    ".sec-sub{font-size:10px;color:#6b7280;font-style:italic;margin-bottom:10px;}" &
+    ".ratio-block{background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:10px 12px;margin-bottom:8px;}" &
+    ".ratio-label{font-size:10px;font-weight:700;color:#6b7280;margin-bottom:2px;}" &
+    ".ratio-name{font-size:12px;font-weight:700;color:#003366;margin-bottom:6px;}" &
+    ".formula-row{display:flex;align-items:center;gap:6px;margin-bottom:2px;}" &
+    ".eq-label{font-size:11px;font-weight:600;color:#003366;white-space:nowrap;min-width:70px;}" &
+    ".fraction{display:inline-block;text-align:center;vertical-align:middle;margin:0 4px;}" &
+    ".frac-num{border-bottom:1.5px solid #374151;padding:0 6px 2px 6px;font-family:Consolas,monospace;font-size:11px;color:#374151;display:block;}" &
+    ".frac-den{padding:2px 6px 0 6px;font-family:Consolas,monospace;font-size:11px;color:#374151;display:block;}" &
+    ".x100{font-size:11px;color:#6b7280;white-space:nowrap;}" &
+    ".eq-sign{font-size:13px;font-weight:700;color:#003366;}" &
+    ".result{font-family:Consolas,monospace;font-size:16px;font-weight:800;color:#003366;background:#f0f6ff;border:1px solid #b8cce4;border-radius:4px;padding:2px 10px;white-space:nowrap;}" &
+    ".camel-title{font-size:10px;font-weight:700;color:#f0a500;text-transform:uppercase;letter-spacing:1px;background:#003366;padding:4px 8px;border-radius:3px;display:inline-block;margin-bottom:4px;}" &
+    ".divider{border:none;border-top:1px dashed #e2e8f0;margin:8px 0;}" &
+    "</style>"
+VAR ModernHeader =
+    "<div style='background:#003366;padding:20px 25px 16px 25px;border-bottom:4px solid #f0a500;display:flex;align-items:center;gap:20px;'>" &
+    "<img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;width:auto;flex-shrink:0;' />" &
+    "<div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-family:Segoe UI,sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;'>RASIO-RASIO KEUANGAN &mdash; FINANCIAL RATIOS</div>" &
+    "<div style='color:#cbd5e1;font-family:Segoe UI,sans-serif;font-size:12px;'>" & PeriodLabel & "</div>" &
+    "</div>" &
+    "</div>" 
+VAR RatioBlock_QR =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>a.</div>" &
+    "<div class='ratio-name'>Quick Ratio (QR)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>QR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Cash Assets</span><span class='frac-den'>Total Deposit</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r01_num, N) & "</span><span class='frac-den'>" & FORMAT(r01_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r01_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_BK =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>b.</div>" &
+    "<div class='ratio-name'>Banking Ratio (BK)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>BK =</span>" &
+    "<span class='fraction'><span class='frac-num'>Total Loans</span><span class='frac-den'>Total Deposit</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r02_num, N) & "</span><span class='frac-den'>" & FORMAT(r02_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r02_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_ALR =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>c.</div>" &
+    "<div class='ratio-name'>Assets to Loan Ratio (ALR)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>ALR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Total Loans</span><span class='frac-den'>Total Assets</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r03_num, N) & "</span><span class='frac-den'>" & FORMAT(r03_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r03_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_CR =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>d.</div>" &
+    "<div class='ratio-name'>Cash Ratio (CR)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>CR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Liquid Assets</span><span class='frac-den'>Short Term Borrowing</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r04_num, N) & "</span><span class='frac-den'>" & FORMAT(r04_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r04_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_LDR =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>e.</div>" &
+    "<div class='ratio-name'>Loan to Deposit Ratio (LDR)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>LDR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Total Loans</span><span class='frac-den'>Total Deposit + Restrict Deposit</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r05_num, N) & "</span><span class='frac-den'>" & FORMAT(r05_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r05_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_PR =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>a.</div>" &
+    "<div class='ratio-name'>Primary Ratio (PR)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>PR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Equity Capital</span><span class='frac-den'>Total Assets</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r06_num, N) & "</span><span class='frac-den'>" & FORMAT(r06_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r06_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_RAR =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>b.</div>" &
+    "<div class='ratio-name'>Risk Assets Ratio (RAR)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>RAR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Equity Capital</span><span class='frac-den'>(Total Assets - Cash - Securities)</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r07_num, N) & "</span><span class='frac-den'>" & FORMAT(r07_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r07_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_CR2 =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>c.</div>" &
+    "<div class='ratio-name'>Capital Ratio (CR)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>CR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Equity Capital + Reserve for Loan Losses</span><span class='frac-den'>Total Loans</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r08_num, N) & "</span><span class='frac-den'>" & FORMAT(r08_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r08_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_CAR =
+    "<div class='ratio-block'>" &
+    "<div class='camel-title'>1. Aspek Capital (Permodalan)</div>" &
+    "<div class='ratio-name' style='margin-top:6px;'>CAR = Capital Adequacy Ratio</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>CAR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Capital Equity</span><span class='frac-den'>ATMR</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r09_num, N) & "</span><span class='frac-den'>" & FORMAT(r09_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r09_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_NPL_AQ =
+    "<div class='ratio-block'>" &
+    "<div class='camel-title'>2. Aspek Asset Quality</div>" &
+    "<div class='ratio-name' style='margin-top:6px;'>NPL = Non-Performing Loan Ratio</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>NPL =</span>" &
+    "<span class='fraction'><span class='frac-num'>Kredit Bermasalah (PD)</span><span class='frac-den'>Total Loans</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r10_num, N) & "</span><span class='frac-den'>" & FORMAT(r10_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r10_pct, "0.00") & "%</span>" &
+    "</div>" &
+    "<hr class='divider'/>" &
+    "<div class='ratio-name'>AQ = Asset Quality</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>AQ =</span>" &
+    "<span class='fraction'><span class='frac-num'>APYD</span><span class='frac-den'>Aktiva Produktif</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r11_num, N) & "</span><span class='frac-den'>" & FORMAT(r11_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r11_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_Mgmt =
+    "<div class='ratio-block'>" &
+    "<div class='camel-title'>3. Aspek Management</div>" &
+    "<div class='ratio-name' style='margin-top:6px;'>NPM = Net Profit Margin</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>NPM =</span>" &
+    "<span class='fraction'><span class='frac-num'>Net Income (After Tax)</span><span class='frac-den'>Operating Income</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r12_num, N) & "</span><span class='frac-den'>" & FORMAT(r12_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r12_pct, "0.00") & "%</span>" &
+    "</div>" &
+    "<hr class='divider'/>" &
+    "<div class='ratio-name'>NIM = Net Interest Margin</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>NIM =</span>" &
+    "<span class='fraction'><span class='frac-num'>Pendapatan Bunga Bersih</span><span class='frac-den'>Aktiva Produktif (CB+CL)</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r13_num, N) & "</span><span class='frac-den'>" & FORMAT(r13_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r13_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_Earning =
+    "<div class='ratio-block'>" &
+    "<div class='camel-title'>4. Aspek Earning (Rentabilitas)</div>" &
+    "<div class='ratio-name' style='margin-top:6px;'>ROA = Return on Assets</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>ROA =</span>" &
+    "<span class='fraction'><span class='frac-num'>Net Income Before Tax</span><span class='frac-den'>Total Assets</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r14_num, N) & "</span><span class='frac-den'>" & FORMAT(r14_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r14_pct, "0.00") & "%</span>" &
+    "</div>" &
+    "<hr class='divider'/>" &
+    "<div class='ratio-name'>BOPO (CIR) = Cost-to-Income Ratio</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>BOPO =</span>" &
+    "<span class='fraction'><span class='frac-num'>Total Operating Expense</span><span class='frac-den'>Total Operating Income</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r15_num, N) & "</span><span class='frac-den'>" & FORMAT(r15_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r15_pct, "0.00") & "%</span>" &
+    "</div>" &
+    "<hr class='divider'/>" &
+    "<div class='ratio-name'>ROE = Return on Equity</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>ROE =</span>" &
+    "<span class='fraction'><span class='frac-num'>Net Income (After Tax)</span><span class='frac-den'>Total Equity</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r16_num, N) & "</span><span class='frac-den'>" & FORMAT(r16_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r16_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_Sensitivity =
+    "<div class='ratio-block'>" &
+    "<div class='camel-title'>5. Aspek Earning &amp; 6. Sensitivitas</div>" &
+    "<div class='ratio-name' style='margin-top:6px;'>LDR (CAMEL)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>LDR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Total Loans</span><span class='frac-den'>Total Deposit + Restrict Deposit</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r17_num, N) & "</span><span class='frac-den'>" & FORMAT(r17_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r17_pct, "0.00") & "%</span>" &
+    "</div>" &
+    "<hr class='divider'/>" &
+    "<div class='ratio-name'>Interbank Net Obligation</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'> =</span>" &
+    "<span class='fraction'><span class='frac-num'>Kewajiban Bersih Antar Bank</span><span class='frac-den'>Aktiva Lancar</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r18_num, N) & "</span><span class='frac-den'>" & FORMAT(r18_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r18_pct, "0.00") & "%</span>" &
+    "</div>" &
+    "<hr class='divider'/>" &
+    "<div class='ratio-name'>IER = Interest Expense Ratio</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>IER =</span>" &
+    "<span class='fraction'><span class='frac-num'>Interest Expenses</span><span class='frac-den'>Deposit (DD TD, HNF)</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r19_num, N) & "</span><span class='frac-den'>" & FORMAT(r19_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r19_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR RatioBlock_AT =
+    "<div class='ratio-block'>" &
+    "<div class='ratio-label'>4.</div>" &
+    "<div class='ratio-name'>Asset Turnover</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>AT =</span>" &
+    "<span class='fraction'><span class='frac-num'>Total Revenue</span><span class='frac-den'>Average Total Assets</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r20_num, N) & "</span><span class='frac-den'>" & FORMAT(r20_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r20_pct, "0.00") & "%</span>" &
+    "</div>" &
+    "<hr class='divider'/>" &
+    "<div class='ratio-name'>Variant LDR (VLDR)</div>" &
+    "<div class='formula-row'>" &
+    "<span class='eq-label'>VLDR =</span>" &
+    "<span class='fraction'><span class='frac-num'>Total Loans</span><span class='frac-den'>Deposit - Restrict Deposit</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='fraction'><span class='frac-num'>" & FORMAT(r21_num, N) & "</span><span class='frac-den'>" & FORMAT(r21_den, N) & "</span></span>" &
+    "<span class='x100'>x 100% =</span>" &
+    "<span class='result'>" & FORMAT(r21_pct, "0.00") & "%</span>" &
+    "</div></div>"
+VAR FooterHTML =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-family:Segoe UI;font-size:10px;color:#9ca3af;'>Rasio dihitung sesuai standar yang berlaku (CAMEL)</span>" &
+    "<span style='font-family:Segoe UI;font-size:10px;color:#9ca3af;'>BNCTL &mdash; Confidential</span>" &
+    "</div>"
+RETURN
+    "<div class='rw'>" &
+    StyleBlock &
+    ModernHeader &
+    "<div class='two-col'>" &
+    "<div class='col-left'>" &
+    "<div class='sec-title'>1. Rasio Likuiditas</div>" &
+    "<div class='sec-sub'>Untuk mengukur kemampuan bank dalam memenuhi kewajiban jangka pendek.</div>" &
+    RatioBlock_QR & RatioBlock_BK & RatioBlock_ALR & RatioBlock_CR & RatioBlock_LDR &
+    "<div class='sec-title' style='margin-top:14px;'>2. Rasio Solvabilitas</div>" &
+    "<div class='sec-sub'>Untuk mengukur kemampuan bank mencari sumber dana untuk membiayai kegiatan bank.</div>" &
+    RatioBlock_PR & RatioBlock_RAR & RatioBlock_CR2 &
+    "<div class='sec-title' style='margin-top:14px;'>3. Rasio Rentabilitas</div>" &
+    "<div class='sec-sub'>Untuk mengukur tingkat efisiensi usaha dan profitabilitas yang dicapai oleh bank.</div>" &
+    RatioBlock_AT &
+    "</div>" &
+    "<div class='col-right'>" &
+    "<div class='sec-title'>CAMEL&apos;S Analysis</div>" &
+    "<div class='sec-sub'>Capital &mdash; Asset Quality &mdash; Management &mdash; Earning &mdash; Liquidity &mdash; Sensitivity</div>" &
+    RatioBlock_CAR & RatioBlock_NPL_AQ & RatioBlock_Mgmt & RatioBlock_Earning & RatioBlock_Sensitivity &
+    "</div>" &
+    "</div>" &
+    FooterHTML &
+    "</div>"

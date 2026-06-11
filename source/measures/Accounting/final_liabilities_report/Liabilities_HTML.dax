@@ -1,0 +1,216 @@
+﻿MEASURE 'final_liabilities_report'[Liabilities_HTML] =
+VAR MaxDate        = CALCULATE( MAX( final_liabilities_report[load_date] ), ALL(final_liabilities_report) )
+VAR SelReportMonth = SELECTEDVALUE( Calendar[report_month] )
+VAR SelYear        = SELECTEDVALUE( Calendar[Year] )
+VAR SelMonthNum    = SELECTEDVALUE( Calendar[MonthNum] )
+VAR ActiveMonth    =
+    IF( NOT ISBLANK(SelReportMonth), SelReportMonth,
+    IF( NOT ISBLANK(SelYear) && NOT ISBLANK(SelMonthNum),
+        SelYear & "-" & FORMAT(SelMonthNum,"00"),
+    IF( NOT ISBLANK(SelYear),
+        MAXX( FILTER(ALL(final_liabilities_report), LEFT([load_date], 4)=SelYear),
+              LEFT([load_date], 7) ),
+        LEFT(MaxDate, 7) )))
+VAR PeriodLabel    = FORMAT( DATE(VALUE(LEFT(ActiveMonth,4)),VALUE(RIGHT(ActiveMonth,2)),1), "MMMM YYYY" )
+
+VAR tbl = FILTER(
+    ALL( final_liabilities_report ),
+    LEFT( final_liabilities_report[load_date], 7 ) = ActiveMonth
+)
+
+VAR BranchRaw =
+    ADDCOLUMNS(
+        DISTINCT(SELECTCOLUMNS( tbl,
+            "bk", final_liabilities_report[branch_name],
+            "bc", final_liabilities_report[branch_code]
+        )),
+        "sk", IF( [bc] = "", IF( [bk] = "UPGRADE", "000", "ZZZ_" & [bk] ), [bc] )
+    )
+
+VAR DisplayMap = DATATABLE( "dm_k", STRING, "dm_l", STRING, {
+    { "UPGRADE",  "Head Office" }, { "CUSSE",    "Oe-Cusse"  },
+    { "GLENO",    "Gleno"       }, { "DILI",     "Dili"      },
+    { "MALIANA",  "Maliana"     }, { "AILEU",    "Aileu"     },
+    { "BAUCAU",   "Baucau"      }, { "SAME",     "Same"      },
+    { "AINARO",   "Ainaro"      }, { "SUAI",     "Suai"      },
+    { "VIQUEQUE", "Viqueque"    }, { "LOSPALOS", "Lospalos"  },
+    { "LIQUICA",  "Liquica"     }, { "MANATUTO", "Manatuto"  },
+    { "ATAURO",   "Atauro"      }
+} )
+
+VAR Sty =
+    "<style>" &
+    "body,td,th{font-family:Segoe UI,Calibri,sans-serif;font-size:9.5px;color:#1e2d40}" &
+    ".sc{overflow-x:auto;overflow-y:auto;max-height:820px;border:1px solid #ccc}" &
+    ".t{border-collapse:collapse;white-space:nowrap}" &
+    ".t td,.t th{padding:3px 7px;border:1px solid #e0e4ea;vertical-align:middle}" &
+    ".t tr:hover td{background:#f5f8ff!important}" &
+    ".sec td{background:#cffafe!important;color:#0c4a6e!important;font-weight:700;font-size:10px;text-transform:uppercase;border-bottom:2px solid #22d3ee!important}" &
+    ".s1 td{background:#ecfeff!important;color:#0c4a6e!important;font-weight:700}" &
+    ".s2 td{background:#ffffff!important;color:#374151!important;font-weight:400}" &
+    ".tot td{background:#a5f3fc!important;color:#0c4a6e!important;font-weight:700;border-top:2px solid #22d3ee!important}" &
+    ".fix{position:sticky;left:0;z-index:10;background:#ffffff;min-width:180px;max-width:180px;border-right:2px solid #b0bac9!important}" &
+    ".fixc{position:sticky;left:180px;z-index:10;background:#ffffff;min-width:80px;max-width:80px;border-right:2px solid #b0bac9!important;font-size:9px;color:#9ca3af}" &
+    ".sec .fix,.sec .fixc{background:#cffafe!important}" &
+    ".s1 .fix,.s1 .fixc{background:#ecfeff!important}" &
+    ".tot .fix,.tot .fixc{background:#a5f3fc!important}" &
+    ".fixhdr{position:sticky;left:0;z-index:40;background:#004680!important;color:#fff!important;min-width:180px;max-width:180px;border-right:2px solid #b0bac9!important}" &
+    ".fixc-hdr{position:sticky;left:180px;z-index:40;background:#004680!important;color:#fff!important;min-width:80px;max-width:80px;border-right:2px solid #b0bac9!important}" &
+    ".am{text-align:right!important;font-family:Consolas,monospace;font-size:9px;min-width:90px}" &
+    ".hdr-br{background:#004680!important;color:#fff!important;font-weight:700;font-size:9.5px;text-align:center!important;border-color:#003366!important}" &
+    ".hdr-sub{background:#1a4a7a!important;color:#d1d5db!important;font-size:8.5px;text-align:center!important;border-bottom:2px solid #f0a500!important}" &
+    ".hdr-cons{background:#003366!important;color:#f0a500!important;font-weight:700;font-size:9.5px;text-align:center!important;border-left:2px solid #f0a500!important}" &
+    ".hdr-cons-sub{background:#003366!important;color:#f0a500!important;font-size:8.5px;text-align:center!important;border-left:2px solid #f0a500!important;border-bottom:2px solid #f0a500!important}" &
+    ".sh{position:sticky;top:0;z-index:30}" &
+    ".sh2{position:sticky;top:27px;z-index:30}" &
+    ".zero{color:#d1d5db}" &
+    "</style>"
+
+VAR Logo = "https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png"
+
+VAR Hdr =
+    "<div style='background:#003366;padding:16px 20px;border-bottom:4px solid #f0a500;display:flex;align-items:center;gap:20px;'>" &
+    "<img src='" & Logo & "' alt='BNCTL Logo' style='height:90px;width:auto;flex-shrink:0;' />" &
+    "<div style='flex:1;'>" &
+    "<div style='color:#fff;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;'>CONSOLIDATED STATEMENT OF LIABILITIES AND CAPITAL</div>" &
+    "<div style='color:#cbd5e1;font-size:11px;'>" & PeriodLabel & "</div>" &
+    "</div>" &
+    "</div>"
+
+VAR BranchHeaderCols =
+    CONCATENATEX(
+        BranchRaw,
+        VAR vBk = [bk]
+        VAR vBc = [bc]
+        VAR vBl = COALESCE( MAXX( FILTER(DisplayMap, [dm_k] = vBk), [dm_l] ), vBk )
+        RETURN
+            "<th class='hdr-br sh' colspan='2' style='border-left:2px solid #003366'>" &
+            vBl &
+            IF( vBc <> "", " <span style='font-size:8px;font-weight:400;opacity:0.75'>(" & vBc & ")</span>", "") &
+            "</th>",
+        "", [sk], ASC
+    )
+
+VAR BranchSubCols =
+    CONCATENATEX(
+        BranchRaw,
+        "<th class='hdr-sub sh2' style='border-left:2px solid #003366'>Accts</th>" &
+        "<th class='hdr-sub sh2'>Amounts</th>",
+        "", [sk], ASC
+    )
+
+VAR TH =
+    "<table class='t'><thead>" &
+    "<tr class='sh'>" &
+    "<th class='fixhdr sh' style='text-align:left;padding:4px 7px'>Account Title</th>" &
+    "<th class='fixc-hdr sh' style='text-align:left;padding:4px 7px'>Code</th>" &
+    BranchHeaderCols &
+    "<th class='hdr-cons sh' colspan='2'>CONSOLIDATED</th>" &
+    "</tr>" &
+    "<tr class='sh2'>" &
+    "<th class='fixhdr sh2' style='padding:2px 7px'></th>" &
+    "<th class='fixc-hdr sh2' style='padding:2px 7px'></th>" &
+    BranchSubCols &
+    "<th class='hdr-cons-sub sh2'>Accts</th>" &
+    "<th class='hdr-cons-sub sh2'>Amounts</th>" &
+    "</tr>" &
+    "</thead><tbody>"
+
+VAR RowData = CONCATENATEX(
+    FILTER(
+        ADDCOLUMNS(
+            SUMMARIZE( tbl, final_liabilities_report[order_id], final_liabilities_report[code], final_liabilities_report[description] ),
+            "vOid",  final_liabilities_report[order_id],
+            "vCode", final_liabilities_report[code],
+            "vDesc", final_liabilities_report[description]
+        ),
+        VALUE([vOid]) >= 1
+    ),
+
+    VAR vOid  = [vOid]
+    VAR vCode = [vCode]
+    VAR vDesc = [vDesc]
+
+    VAR nDots  = LEN(vCode) - LEN(SUBSTITUTE(vCode, ".", ""))
+    VAR isTot  = CONTAINSSTRING(vDesc, "Total") || CONTAINSSTRING(vDesc, "TOTAL")
+    VAR rowCls = IF(isTot, "tot",
+                IF(nDots <= 1, "sec",
+                IF(nDots = 2,  "s1",
+                IF(nDots = 3,  "s2", ""))))
+    VAR indent = IF(nDots <= 1, "i0", IF(nDots = 2, "i1", IF(nDots = 3, "i2", "i3")))
+
+    VAR BranchCells = CONCATENATEX(
+        BranchRaw,
+        VAR vBr  = [bk]
+        VAR vAcc = SUMX(
+            FILTER( tbl, VALUE([order_id]) = VALUE(vOid) && [branch_name] = vBr ),
+            IFERROR( VALUE([total_accounts]), 0 )
+        )
+        VAR vAm  = SUMX(
+            FILTER( tbl, VALUE([order_id]) = VALUE(vOid) && [branch_name] = vBr ),
+            IFERROR( VALUE([amount]), 0 )
+        )
+        VAR fAcc = IF(
+            vAcc = 0, "<span class='zero'>-</span>",
+            FORMAT(vAcc, "#,##0")
+        )
+        VAR fAm  = IF(
+            vAm = 0, "<span class='zero'>-</span>",
+            IF( vAm < 0,
+                "<span style='color:#dc2626'>" & FORMAT(vAm,"#,##0.00") & "</span>",
+                FORMAT(vAm,"#,##0.00")
+            )
+        )
+        RETURN
+            "<td class='am' style='border-left:2px solid #dde3ea'>" & fAcc & "</td>" &
+            "<td class='am'>" & fAm & "</td>",
+        "", [sk], ASC
+    )
+
+    VAR vConsAcc = SUMX(
+        FILTER( tbl, VALUE([order_id]) = VALUE(vOid) ),
+        IFERROR( VALUE([total_accounts]), 0 )
+    )
+    VAR vConsAm = SUMX(
+        FILTER( tbl, VALUE([order_id]) = VALUE(vOid) ),
+        IFERROR( VALUE([amount]), 0 )
+    )
+    VAR fConsAcc = IF(
+        vConsAcc = 0, "<span class='zero'>-</span>",
+        FORMAT(vConsAcc, "#,##0")
+    )
+    VAR fConsAm = IF(
+        vConsAm = 0, "<span class='zero'>-</span>",
+        IF( vConsAm < 0,
+            "<span style='color:#dc2626'>" & FORMAT(vConsAm,"#,##0.00") & "</span>",
+            FORMAT(vConsAm,"#,##0.00")
+        )
+    )
+
+    RETURN
+        "<tr class='" & rowCls & "'>" &
+        "<td class='fix " & indent & "'>" & vDesc & "</td>" &
+        "<td class='fixc'>" & vCode & "</td>" &
+        BranchCells &
+        "<td class='am' style='border-left:2px solid #f0a500;font-weight:700'>" & fConsAcc & "</td>" &
+        "<td class='am' style='font-weight:700'>" & fConsAm & "</td>" &
+        "</tr>",
+
+    "", [vOid], ASC
+)
+
+VAR Ftr =
+    "<div style='background:#f8fafc;border-top:2px solid #f0a500;padding:6px 14px;" &
+    "display:flex;justify-content:space-between;align-items:center'>" &
+    "<span style='font-size:10px;color:#9ca3af'>USD &nbsp;|&nbsp; Scroll horizontally to view all branches &nbsp;|&nbsp; BNCTL - Confidential</span>" &
+    "</div>"
+
+RETURN
+    IF( COUNTROWS(tbl) = 0,
+        "<div style='padding:20px;font-family:Calibri;color:#dc2626'>&#9888; No liabilities data for " & PeriodLabel & "</div>",
+        "<div class='as'>" & Sty & Hdr &
+        "<div class='sc'>" &
+            TH & RowData & "</tbody></table>" &
+        "</div>" & Ftr & "</div>"
+    )

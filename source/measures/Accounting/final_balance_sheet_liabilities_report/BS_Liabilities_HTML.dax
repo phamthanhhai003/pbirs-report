@@ -1,0 +1,213 @@
+﻿MEASURE 'final_balance_sheet_liabilities_report'[BS_Liabilities_HTML] =
+VAR SelectedYear  = SELECTEDVALUE( Calendar[Year] )
+VAR SelectedMonth = SELECTEDVALUE( Calendar[report_month] )
+VAR MaxMonth      = MAX( final_balance_sheet_liabilities_report[report_month] )
+VAR MaxYear       = LEFT( MaxMonth, 4 )
+VAR ActiveYear    = IF( ISBLANK(SelectedYear),  MaxYear,  SelectedYear )
+VAR ActiveMonth   = IF( ISBLANK(SelectedMonth), MaxMonth, SelectedMonth )
+VAR PeriodLabel   =
+    IF(
+        NOT ISBLANK(SelectedMonth),
+        "For the Month of " & FORMAT( DATE( LEFT(ActiveMonth,4), RIGHT(ActiveMonth,2), 1 ), "MMMM YYYY" ),
+        "For the Year Ended " & ActiveYear
+    )
+VAR tbl =
+    FILTER( ALL(final_balance_sheet_liabilities_report),
+        IF(
+            NOT ISBLANK(SelectedMonth),
+            [report_month] = ActiveMonth,
+            LEFT( [report_month], 4 ) = ActiveYear
+        )
+    )
+VAR v21    = SUMX( FILTER( tbl, [code] = "2.1"    ), [amount] )
+VAR v211   = SUMX( FILTER( tbl, [code] = "2.1.1"  ), [amount] )
+VAR v212   = SUMX( FILTER( tbl, [code] = "2.1.2"  ), [amount] )
+VAR v213   = SUMX( FILTER( tbl, [code] = "2.1.3"  ), [amount] )
+VAR v22    = SUMX( FILTER( tbl, [code] = "2.2"    ), [amount] )
+VAR v221   = SUMX( FILTER( tbl, [code] = "2.2.1"  ), [amount] )
+VAR v222   = SUMX( FILTER( tbl, [code] = "2.2.2"  ), [amount] )
+VAR v223   = SUMX( FILTER( tbl, [code] = "2.2.3"  ), [amount] )
+VAR v23    = SUMX( FILTER( tbl, [code] = "2.3"    ), [amount] )
+VAR v231   = SUMX( FILTER( tbl, [code] = "2.3.1"  ), [amount] )
+VAR v232   = SUMX( FILTER( tbl, [code] = "2.3.2"  ), [amount] )
+VAR v24    = SUMX( FILTER( tbl, [code] = "2.4"    ), [amount] )
+VAR v241   = SUMX( FILTER( tbl, [code] = "2.4.1"  ), [amount] )
+VAR v242   = SUMX( FILTER( tbl, [code] = "2.4.2"  ), [amount] )
+VAR v243   = SUMX( FILTER( tbl, [code] = "2.4.3"  ), [amount] )
+VAR v244   = SUMX( FILTER( tbl, [code] = "2.4.4"  ), [amount] )
+VAR v26    = SUMX( FILTER( tbl, [code] = "2.6"    ), [amount] )
+VAR v261   = SUMX( FILTER( tbl, [code] = "2.6.1"  ), [amount] )
+VAR v262   = SUMX( FILTER( tbl, [code] = "2.6.2"  ), [amount] )
+VAR v263   = SUMX( FILTER( tbl, [code] = "2.6.3"  ), [amount] )
+VAR v264   = SUMX( FILTER( tbl, [code] = "2.6.4"  ), [amount] )
+VAR v265   = SUMX( FILTER( tbl, [code] = "2.6.5"  ), [amount] )
+VAR v266   = SUMX( FILTER( tbl, [code] = "2.6.6"  ), [amount] )
+VAR v267   = SUMX( FILTER( tbl, [code] = "2.6.7"  ), [amount] )
+VAR v268   = SUMX( FILTER( tbl, [code] = "2.6.8"  ), [amount] )
+VAR v269   = SUMX( FILTER( tbl, [code] = "2.6.9"  ), [amount] )
+VAR v2610  = SUMX( FILTER( tbl, [code] = "2.6.10" ), [amount] )
+VAR v28    = SUMX( FILTER( tbl, [code] = "2.8"    ), [amount] )
+VAR v281   = SUMX( FILTER( tbl, [code] = "2.8.1"  ), [amount] )
+VAR v282   = SUMX( FILTER( tbl, [code] = "2.8.2"  ), [amount] )
+VAR v31    = SUMX( FILTER( tbl, [code] = "3.1"    ), [amount] )
+VAR v311   = SUMX( FILTER( tbl, [code] = "3.1.1"  ), [amount] )
+VAR v312   = SUMX( FILTER( tbl, [code] = "3.1.2"  ), [amount] )
+VAR v313   = SUMX( FILTER( tbl, [code] = "3.1.3"  ), [amount] )
+VAR v314   = SUMX( FILTER( tbl, [code] = "3.1.4"  ), [amount] )
+VAR v32    = SUMX( FILTER( tbl, [code] = "3.2"    ), [amount] )
+VAR v321   = SUMX( FILTER( tbl, [code] = "3.2.1"  ), [amount] )
+VAR v322   = SUMX( FILTER( tbl, [code] = "3.2.2"  ), [amount] )
+VAR v323   = SUMX( FILTER( tbl, [code] = "3.2.3"  ), [amount] )
+VAR v33    = SUMX( FILTER( tbl, [code] = "3.3"    ), [amount] )
+VAR v34    = SUMX( FILTER( tbl, [code] = "3.4"    ), [amount] )
+VAR v35    = SUMX( FILTER( tbl, [code] = "3.5"    ), [amount] )
+VAR v36    = SUMX( FILTER( tbl, [code] = "3.6"    ), [amount] )
+VAR v361   = SUMX( FILTER( tbl, [code] = "3.6.1"  ), [amount] )
+VAR v362   = SUMX( FILTER( tbl, [code] = "3.6.2"  ), [amount] )
+VAR vTotLiab = SUMX( FILTER( tbl, [code] = "TOTAL_LIAB" ), [amount] )
+VAR vTotCap  = SUMX( FILTER( tbl, [code] = "TOTAL_CAP"  ), [amount] )
+VAR vTotAll  = SUMX( FILTER( tbl, [code] = "TOTAL_ALL"  ), [amount] )
+VAR fv21   = IF(v21   = 0, "<span style='color:#d1d5db'>-</span>", IF(v21   < 0, "<span style='color:#dc2626'>(" & FORMAT(v21,  "#,##0") & ")</span>", FORMAT(v21,  "#,##0")))
+VAR fv211  = IF(v211  = 0, "<span style='color:#d1d5db'>-</span>", IF(v211  < 0, "<span style='color:#dc2626'>(" & FORMAT(v211, "#,##0") & ")</span>", FORMAT(v211, "#,##0")))
+VAR fv212  = IF(v212  = 0, "<span style='color:#d1d5db'>-</span>", IF(v212  < 0, "<span style='color:#dc2626'>(" & FORMAT(v212, "#,##0") & ")</span>", FORMAT(v212, "#,##0")))
+VAR fv213  = IF(v213  = 0, "<span style='color:#d1d5db'>-</span>", IF(v213  < 0, "<span style='color:#dc2626'>(" & FORMAT(v213, "#,##0") & ")</span>", FORMAT(v213, "#,##0")))
+VAR fv22   = IF(v22   = 0, "<span style='color:#d1d5db'>-</span>", IF(v22   < 0, "<span style='color:#dc2626'>(" & FORMAT(v22,  "#,##0") & ")</span>", FORMAT(v22,  "#,##0")))
+VAR fv221  = IF(v221  = 0, "<span style='color:#d1d5db'>-</span>", IF(v221  < 0, "<span style='color:#dc2626'>(" & FORMAT(v221, "#,##0") & ")</span>", FORMAT(v221, "#,##0")))
+VAR fv222  = IF(v222  = 0, "<span style='color:#d1d5db'>-</span>", IF(v222  < 0, "<span style='color:#dc2626'>(" & FORMAT(v222, "#,##0") & ")</span>", FORMAT(v222, "#,##0")))
+VAR fv223  = IF(v223  = 0, "<span style='color:#d1d5db'>-</span>", IF(v223  < 0, "<span style='color:#dc2626'>(" & FORMAT(v223, "#,##0") & ")</span>", FORMAT(v223, "#,##0")))
+VAR fv23   = IF(v23   = 0, "<span style='color:#d1d5db'>-</span>", IF(v23   < 0, "<span style='color:#dc2626'>(" & FORMAT(v23,  "#,##0") & ")</span>", FORMAT(v23,  "#,##0")))
+VAR fv231  = IF(v231  = 0, "<span style='color:#d1d5db'>-</span>", IF(v231  < 0, "<span style='color:#dc2626'>(" & FORMAT(v231, "#,##0") & ")</span>", FORMAT(v231, "#,##0")))
+VAR fv232  = IF(v232  = 0, "<span style='color:#d1d5db'>-</span>", IF(v232  < 0, "<span style='color:#dc2626'>(" & FORMAT(v232, "#,##0") & ")</span>", FORMAT(v232, "#,##0")))
+VAR fv24   = IF(v24   = 0, "<span style='color:#d1d5db'>-</span>", IF(v24   < 0, "<span style='color:#dc2626'>(" & FORMAT(v24,  "#,##0") & ")</span>", FORMAT(v24,  "#,##0")))
+VAR fv241  = IF(v241  = 0, "<span style='color:#d1d5db'>-</span>", IF(v241  < 0, "<span style='color:#dc2626'>(" & FORMAT(v241, "#,##0") & ")</span>", FORMAT(v241, "#,##0")))
+VAR fv242  = IF(v242  = 0, "<span style='color:#d1d5db'>-</span>", IF(v242  < 0, "<span style='color:#dc2626'>(" & FORMAT(v242, "#,##0") & ")</span>", FORMAT(v242, "#,##0")))
+VAR fv243  = IF(v243  = 0, "<span style='color:#d1d5db'>-</span>", IF(v243  < 0, "<span style='color:#dc2626'>(" & FORMAT(v243, "#,##0") & ")</span>", FORMAT(v243, "#,##0")))
+VAR fv244  = IF(v244  = 0, "<span style='color:#d1d5db'>-</span>", IF(v244  < 0, "<span style='color:#dc2626'>(" & FORMAT(v244, "#,##0") & ")</span>", FORMAT(v244, "#,##0")))
+VAR fv26   = IF(v26   = 0, "<span style='color:#d1d5db'>-</span>", IF(v26   < 0, "<span style='color:#dc2626'>(" & FORMAT(v26,  "#,##0") & ")</span>", FORMAT(v26,  "#,##0")))
+VAR fv261  = IF(v261  = 0, "<span style='color:#d1d5db'>-</span>", IF(v261  < 0, "<span style='color:#dc2626'>(" & FORMAT(v261, "#,##0") & ")</span>", FORMAT(v261, "#,##0")))
+VAR fv262  = IF(v262  = 0, "<span style='color:#d1d5db'>-</span>", IF(v262  < 0, "<span style='color:#dc2626'>(" & FORMAT(v262, "#,##0") & ")</span>", FORMAT(v262, "#,##0")))
+VAR fv263  = IF(v263  = 0, "<span style='color:#d1d5db'>-</span>", IF(v263  < 0, "<span style='color:#dc2626'>(" & FORMAT(v263, "#,##0") & ")</span>", FORMAT(v263, "#,##0")))
+VAR fv264  = IF(v264  = 0, "<span style='color:#d1d5db'>-</span>", IF(v264  < 0, "<span style='color:#dc2626'>(" & FORMAT(v264, "#,##0") & ")</span>", FORMAT(v264, "#,##0")))
+VAR fv265  = IF(v265  = 0, "<span style='color:#d1d5db'>-</span>", IF(v265  < 0, "<span style='color:#dc2626'>(" & FORMAT(v265, "#,##0") & ")</span>", FORMAT(v265, "#,##0")))
+VAR fv266  = IF(v266  = 0, "<span style='color:#d1d5db'>-</span>", IF(v266  < 0, "<span style='color:#dc2626'>(" & FORMAT(v266, "#,##0") & ")</span>", FORMAT(v266, "#,##0")))
+VAR fv267  = IF(v267  = 0, "<span style='color:#d1d5db'>-</span>", IF(v267  < 0, "<span style='color:#dc2626'>(" & FORMAT(v267, "#,##0") & ")</span>", FORMAT(v267, "#,##0")))
+VAR fv268  = IF(v268  = 0, "<span style='color:#d1d5db'>-</span>", IF(v268  < 0, "<span style='color:#dc2626'>(" & FORMAT(v268, "#,##0") & ")</span>", FORMAT(v268, "#,##0")))
+VAR fv269  = IF(v269  = 0, "<span style='color:#d1d5db'>-</span>", IF(v269  < 0, "<span style='color:#dc2626'>(" & FORMAT(v269, "#,##0") & ")</span>", FORMAT(v269, "#,##0")))
+VAR fv2610 = IF(v2610 = 0, "<span style='color:#d1d5db'>-</span>", IF(v2610 < 0, "<span style='color:#dc2626'>(" & FORMAT(v2610,"#,##0") & ")</span>", FORMAT(v2610,"#,##0")))
+VAR fv28   = IF(v28   = 0, "<span style='color:#d1d5db'>-</span>", IF(v28   < 0, "<span style='color:#dc2626'>(" & FORMAT(v28,  "#,##0") & ")</span>", FORMAT(v28,  "#,##0")))
+VAR fv281  = IF(v281  = 0, "<span style='color:#d1d5db'>-</span>", IF(v281  < 0, "<span style='color:#dc2626'>(" & FORMAT(v281, "#,##0") & ")</span>", FORMAT(v281, "#,##0")))
+VAR fv282  = IF(v282  = 0, "<span style='color:#d1d5db'>-</span>", IF(v282  < 0, "<span style='color:#dc2626'>(" & FORMAT(v282, "#,##0") & ")</span>", FORMAT(v282, "#,##0")))
+VAR fv31   = IF(v31   = 0, "<span style='color:#d1d5db'>-</span>", IF(v31   < 0, "<span style='color:#dc2626'>(" & FORMAT(v31,  "#,##0") & ")</span>", FORMAT(v31,  "#,##0")))
+VAR fv311  = IF(v311  = 0, "<span style='color:#d1d5db'>-</span>", IF(v311  < 0, "<span style='color:#dc2626'>(" & FORMAT(v311, "#,##0") & ")</span>", FORMAT(v311, "#,##0")))
+VAR fv312  = IF(v312  = 0, "<span style='color:#d1d5db'>-</span>", IF(v312  < 0, "<span style='color:#dc2626'>(" & FORMAT(v312, "#,##0") & ")</span>", FORMAT(v312, "#,##0")))
+VAR fv313  = IF(v313  = 0, "<span style='color:#d1d5db'>-</span>", IF(v313  < 0, "<span style='color:#dc2626'>(" & FORMAT(v313, "#,##0") & ")</span>", FORMAT(v313, "#,##0")))
+VAR fv314  = IF(v314  = 0, "<span style='color:#d1d5db'>-</span>", IF(v314  < 0, "<span style='color:#dc2626'>(" & FORMAT(v314, "#,##0") & ")</span>", FORMAT(v314, "#,##0")))
+VAR fv32   = IF(v32   = 0, "<span style='color:#d1d5db'>-</span>", IF(v32   < 0, "<span style='color:#dc2626'>(" & FORMAT(v32,  "#,##0") & ")</span>", FORMAT(v32,  "#,##0")))
+VAR fv321  = IF(v321  = 0, "<span style='color:#d1d5db'>-</span>", IF(v321  < 0, "<span style='color:#dc2626'>(" & FORMAT(v321, "#,##0") & ")</span>", FORMAT(v321, "#,##0")))
+VAR fv322  = IF(v322  = 0, "<span style='color:#d1d5db'>-</span>", IF(v322  < 0, "<span style='color:#dc2626'>(" & FORMAT(v322, "#,##0") & ")</span>", FORMAT(v322, "#,##0")))
+VAR fv323  = IF(v323  = 0, "<span style='color:#d1d5db'>-</span>", IF(v323  < 0, "<span style='color:#dc2626'>(" & FORMAT(v323, "#,##0") & ")</span>", FORMAT(v323, "#,##0")))
+VAR fv33   = IF(v33   = 0, "<span style='color:#d1d5db'>-</span>", IF(v33   < 0, "<span style='color:#dc2626'>(" & FORMAT(v33,  "#,##0") & ")</span>", FORMAT(v33,  "#,##0")))
+VAR fv34   = IF(v34   = 0, "<span style='color:#d1d5db'>-</span>", IF(v34   < 0, "<span style='color:#dc2626'>(" & FORMAT(v34,  "#,##0") & ")</span>", FORMAT(v34,  "#,##0")))
+VAR fv35   = IF(v35   = 0, "<span style='color:#d1d5db'>-</span>", IF(v35   < 0, "<span style='color:#dc2626'>(" & FORMAT(v35,  "#,##0") & ")</span>", FORMAT(v35,  "#,##0")))
+VAR fv36   = IF(v36   = 0, "<span style='color:#d1d5db'>-</span>", IF(v36   < 0, "<span style='color:#dc2626'>(" & FORMAT(v36,  "#,##0") & ")</span>", FORMAT(v36,  "#,##0")))
+VAR fv361  = IF(v361  = 0, "<span style='color:#d1d5db'>-</span>", IF(v361  < 0, "<span style='color:#dc2626'>(" & FORMAT(v361, "#,##0") & ")</span>", FORMAT(v361, "#,##0")))
+VAR fv362  = IF(v362  = 0, "<span style='color:#d1d5db'>-</span>", IF(v362  < 0, "<span style='color:#dc2626'>(" & FORMAT(v362, "#,##0") & ")</span>", FORMAT(v362, "#,##0")))
+VAR fvTotLiab = FORMAT(vTotLiab, "#,##0")
+VAR fvTotCap  = FORMAT(vTotCap,  "#,##0")
+VAR fvTotAll  = FORMAT(vTotAll,  "#,##0")
+VAR StyleBlock =
+    "<style>" &
+    ".bst{width:100%;border-collapse:collapse;font-family:Segoe UI,Calibri,sans-serif;font-size:11.5px;}" &
+    ".bst td{padding:4px 10px;border-bottom:1px solid #e8edf3;vertical-align:middle;}" &
+    ".bst tr:hover td{background:#f0f6ff;}" &
+    ".sh{background:#003366!important;}" &
+    ".sh td{color:#fff!important;font-weight:700;font-size:12px;text-transform:uppercase;border-bottom:2px solid #f0a500!important;padding:7px 10px!important;}" &
+    ".sbh{background:#e8f0fb!important;}" &
+    ".sbh td{font-weight:700;color:#003366;border-bottom:1px solid #b8cce4!important;}" &
+    ".i0{padding-left:10px!important;}" &
+    ".i1{padding-left:24px!important;color:#374151;}" &
+    ".ar{text-align:right!important;font-family:Consolas,monospace;font-size:11px;white-space:nowrap;}" &
+    ".ar-w{text-align:right!important;font-family:Consolas,monospace;font-size:11px;font-weight:700;color:#fff!important;}" &
+    ".ar-b{text-align:right!important;font-family:Consolas,monospace;font-size:11px;font-weight:700;color:#003366;}" &
+    ".cd{color:#9ca3af;font-size:10px;width:70px;}" &
+    ".cd-g{color:#f0a500!important;font-size:10px;width:70px;}" &
+    "</style>"
+VAR ModernHeader =
+    "<div style='background:#003366;padding:20px 25px 14px;border-bottom:4px solid #f0a500;display:flex;align-items:center;gap:16px;'>" &
+    "<img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:120px;width:auto;flex-shrink:0;' />" &
+    "<div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-family:Segoe UI,sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;'>BALANCE SHEET &mdash; LIABILITIES &amp; CAPITAL ACCOUNTS</div>" &
+    "<div style='color:#cbd5e1;font-family:Segoe UI,sans-serif;font-size:12px;'>" & PeriodLabel & "</div>" &
+    "</div>" &
+    "</div>"
+VAR TableHTML =
+    "<table class='bst'>" &
+    "<thead><tr style='background:#f8fafc;'>" &
+    "<td style='width:75px;font-size:10px;font-weight:700;color:#003366;padding:6px 10px;border-bottom:2px solid #003366;'>CODE</td>" &
+    "<td style='font-size:10px;font-weight:700;color:#003366;padding:6px 10px;border-bottom:2px solid #003366;'>DESCRIPTION</td>" &
+    "<td style='text-align:right;font-size:10px;font-weight:700;color:#003366;padding:6px 10px;width:160px;border-bottom:2px solid #003366;'>AMOUNT (USD)</td>" &
+    "</tr></thead><tbody>" &
+    "<tr class='sh'><td class='cd-g'>2</td><td class='i0'>L I A B I L I T I E S</td><td class='ar-w'></td></tr>" &
+    "<tr class='sbh'><td class='cd'>2.1</td><td class='i0'>DUE TO CENTRAL BANK</td><td class='ar-b'>" & fv21 & "</td></tr>" &
+    "<tr><td class='cd'>2.1.1</td><td class='i1'>Loans and Advances</td><td class='ar'>" & fv211 & "</td></tr>" &
+    "<tr><td class='cd'>2.1.2</td><td class='i1'>Discounts</td><td class='ar'>" & fv212 & "</td></tr>" &
+    "<tr><td class='cd'>2.1.3</td><td class='i1'>Others</td><td class='ar'>" & fv213 & "</td></tr>" &
+    "<tr class='sbh'><td class='cd'>2.2</td><td class='i0'>DUE TO COMMERCIAL BANKS</td><td class='ar-b'>" & fv22 & "</td></tr>" &
+    "<tr><td class='cd'>2.2.1</td><td class='i1'>Local Banks</td><td class='ar'>" & fv221 & "</td></tr>" &
+    "<tr><td class='cd'>2.2.2</td><td class='i1'>Foreign Banks</td><td class='ar'>" & fv222 & "</td></tr>" &
+    "<tr><td class='cd'>2.2.3</td><td class='i1'>Head Office / Parent Bank</td><td class='ar'>" & fv223 & "</td></tr>" &
+    "<tr class='sbh'><td class='cd'>2.3</td><td class='i0'>SECURITIES SOLD UNDER REPO AGREEMENT</td><td class='ar-b'>" & fv23 & "</td></tr>" &
+    "<tr><td class='cd'>2.3.1</td><td class='i1'>To Central Bank</td><td class='ar'>" & fv231 & "</td></tr>" &
+    "<tr><td class='cd'>2.3.2</td><td class='i1'>To Other Country-Party</td><td class='ar'>" & fv232 & "</td></tr>" &
+    "<tr class='sbh'><td class='cd'>2.4</td><td class='i0'>DEPOSITS</td><td class='ar-b'>" & fv24 & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1</td><td class='i1'>Resident Domestic Currency</td><td class='ar'>" & fv241 & "</td></tr>" &
+    "<tr><td class='cd'>2.4.2</td><td class='i1'>Non-Resident Domestic Currency</td><td class='ar'>" & fv242 & "</td></tr>" &
+    "<tr><td class='cd'>2.4.3</td><td class='i1'>Resident Foreign Currency</td><td class='ar'>" & fv243 & "</td></tr>" &
+    "<tr><td class='cd'>2.4.4</td><td class='i1'>Non-Resident Foreign Currency</td><td class='ar'>" & fv244 & "</td></tr>" &
+    "<tr class='sbh'><td class='cd'>2.6</td><td class='i0'>OTHER SUNDRY CURRENT LIABILITIES</td><td class='ar-b'>" & fv26 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.1</td><td class='i1'>Cheques &amp; Other Items in Course of PMT</td><td class='ar'>" & fv261 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.2</td><td class='i1'>Staff Expenses</td><td class='ar'>" & fv262 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.3</td><td class='i1'>Provision for Taxation</td><td class='ar'>" & fv263 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.4</td><td class='i1'>Accounts Payable</td><td class='ar'>" & fv264 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.5</td><td class='i1'>Interest Accrued</td><td class='ar'>" & fv265 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.6</td><td class='i1'>Items in Suspense</td><td class='ar'>" & fv266 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.7</td><td class='i1'>Dividends Payable</td><td class='ar'>" & fv267 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.8</td><td class='i1'>Restricted Deposits</td><td class='ar'>" & fv268 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.9</td><td class='i1'>Unearned Interest</td><td class='ar'>" & fv269 & "</td></tr>" &
+    "<tr><td class='cd'>2.6.10</td><td class='i1'>Sundry Liabilities</td><td class='ar'>" & fv2610 & "</td></tr>" &
+    "<tr class='sbh'><td class='cd'>2.8</td><td class='i0'>OTHER LIABILITIES</td><td class='ar-b'>" & fv28 & "</td></tr>" &
+    "<tr><td class='cd'>2.8.1</td><td class='i1'>Inter Branch Transaction (Net)</td><td class='ar'>" & fv281 & "</td></tr>" &
+    "<tr><td class='cd'>2.8.2</td><td class='i1'>Other</td><td class='ar'>" & fv282 & "</td></tr>" &
+    "<tr style='background:#003366;'><td style='color:#f0a500;font-size:10px;padding:8px 10px;'></td><td style='padding-left:10px;font-size:12px;font-weight:700;color:#fff;border-top:3px solid #f0a500;border-bottom:2px solid #f0a500;'>TOTAL LIABILITIES</td><td style='text-align:right;font-family:Consolas,monospace;font-size:12px;font-weight:700;color:#fff;border-top:3px solid #f0a500;border-bottom:2px solid #f0a500;'>" & fvTotLiab & "</td></tr>" &
+    "<tr style='height:8px;background:#f1f5f9;'><td colspan='3'></td></tr>" &
+    "<tr class='sh'><td class='cd-g'>3</td><td class='i0'>C A P I T A L &nbsp; A C C O U N T S</td><td class='ar-w'></td></tr>" &
+    "<tr class='sbh'><td class='cd'>3.1</td><td class='i0'>PROVISIONING</td><td class='ar-b'>" & fv31 & "</td></tr>" &
+    "<tr><td class='cd'>3.1.1</td><td class='i1'>Provision on Loans</td><td class='ar'>" & fv311 & "</td></tr>" &
+    "<tr><td class='cd'>3.1.2</td><td class='i1'>Provision on Securities</td><td class='ar'>" & fv312 & "</td></tr>" &
+    "<tr><td class='cd'>3.1.3</td><td class='i1'>Provision on Exchange Rate</td><td class='ar'>" & fv313 & "</td></tr>" &
+    "<tr><td class='cd'>3.1.4</td><td class='i1'>Other Provision</td><td class='ar'>" & fv314 & "</td></tr>" &
+    "<tr class='sbh'><td class='cd'>3.2</td><td class='i0'>CAPITAL PAID UP AND ASSIGNED</td><td class='ar-b'>" & fv32 & "</td></tr>" &
+    "<tr><td class='cd'>3.2.1</td><td class='i1'>Ordinary Shares</td><td class='ar'>" & fv321 & "</td></tr>" &
+    "<tr><td class='cd'>3.2.2</td><td class='i1'>Preference Shares</td><td class='ar'>" & fv322 & "</td></tr>" &
+    "<tr><td class='cd'>3.2.3</td><td class='i1'>Other</td><td class='ar'>" & fv323 & "</td></tr>" &
+    "<tr><td class='cd'>3.3</td><td class='i0' style='font-weight:600;'>Share Premium</td><td class='ar'>" & fv33 & "</td></tr>" &
+    "<tr><td class='cd'>3.4</td><td class='i0' style='font-weight:600;'>Reserves</td><td class='ar'>" & fv34 & "</td></tr>" &
+    "<tr><td class='cd'>3.5</td><td class='i0' style='font-weight:600;'>Retained Earnings / (Accumulated Deficit)</td><td class='ar'>" & fv35 & "</td></tr>" &
+    "<tr class='sbh'><td class='cd'>3.6</td><td class='i0'>UNAPPROPRIATED PROFITS / (LOSSES)</td><td class='ar-b'>" & fv36 & "</td></tr>" &
+    "<tr><td class='cd'>3.6.1</td><td class='i1'>Previous Financial Year</td><td class='ar'>" & fv361 & "</td></tr>" &
+    "<tr><td class='cd'>3.6.2</td><td class='i1'>Current Financial Year</td><td class='ar'>" & fv362 & "</td></tr>" &
+    "<tr style='background:#1a4a7a;'><td style='padding:8px 10px;'></td><td style='padding-left:10px;font-size:12px;font-weight:700;color:#fff;'>TOTAL CAPITAL</td><td style='text-align:right;font-family:Consolas,monospace;font-size:12px;font-weight:700;color:#fff;'>" & fvTotCap & "</td></tr>" &
+    "<tr style='height:6px;'><td colspan='3'></td></tr>" &
+    "<tr style='background:#f0a500;'><td style='padding:9px 10px;'></td><td style='padding-left:10px;font-size:13px;font-weight:800;color:#003366;border-top:3px solid #003366;'>TOTAL LIABILITIES &amp; CAPITAL</td><td style='text-align:right;font-family:Consolas,monospace;font-size:13px;font-weight:800;color:#003366;border-top:3px solid #003366;padding:9px 10px;'>" & fvTotAll & "</td></tr>" &
+    "</tbody></table>"
+VAR FooterHTML =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-family:Segoe UI;font-size:10px;color:#9ca3af;'>All amounts in USD &nbsp;|&nbsp; ( ) denotes negative values</span>" &
+    "<span style='font-family:Segoe UI;font-size:10px;color:#9ca3af;'>BNCTL &mdash; Confidential</span>" &
+    "</div>"
+RETURN
+    "<div style='font-family:Segoe UI,Calibri,sans-serif;color:#1e2d40;background:#fff;'>" &
+    StyleBlock & ModernHeader &
+    "<div style='overflow-x:auto;'>" & TableHTML & "</div>" &
+    FooterHTML & "</div>"

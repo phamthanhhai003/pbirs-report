@@ -1,0 +1,273 @@
+﻿MEASURE 'final_po_soc_report'[PO_SOC_HTML] =
+VAR SelectedYear  = SELECTEDVALUE( Calendar[Year] )
+VAR SelectedMonth = SELECTEDVALUE( Calendar[report_month] )
+VAR MaxDate      = MAX( final_po_soc_report[load_date] )
+VAR MaxYear       = LEFT(MaxDate, 4)
+VAR ActiveYear    = IF( ISBLANK(SelectedYear),  MaxYear,  SelectedYear )
+VAR ActiveMonth   = IF( ISBLANK(SelectedMonth), LEFT(MaxDate, 7), SelectedMonth )
+VAR PeriodLabel   =
+    IF(
+        NOT ISBLANK(SelectedMonth),
+        "For the Month of " & FORMAT( DATE( LEFT(ActiveMonth,4), RIGHT(ActiveMonth,2), 1 ), "MMMM YYYY" ),
+        "For the Year Ended " & ActiveYear
+    )
+VAR tbl =
+    FILTER( ALL(final_po_soc_report),
+        IF(
+            NOT ISBLANK(SelectedMonth),
+            LEFT([load_date], 7) = ActiveMonth,
+            LEFT([load_date], 4) = ActiveYear
+        )
+    )
+VAR r9   = SUMX( FILTER(tbl,VALUE([order_id])=9),   [amount] )
+VAR r10  = SUMX( FILTER(tbl,VALUE([order_id])=10),  [amount] )
+VAR r11  = SUMX( FILTER(tbl,VALUE([order_id])=11),  [amount] )
+VAR r12  = SUMX( FILTER(tbl,VALUE([order_id])=12),  [amount] )
+VAR r13  = SUMX( FILTER(tbl,VALUE([order_id])=13),  [amount] )
+VAR r14  = SUMX( FILTER(tbl,VALUE([order_id])=14),  [amount] )
+VAR r15  = SUMX( FILTER(tbl,VALUE([order_id])=15),  [amount] )
+VAR r16  = SUMX( FILTER(tbl,VALUE([order_id])=16),  [amount] )
+VAR r18  = SUMX( FILTER(tbl,VALUE([order_id])=18),  [amount] )
+VAR r19  = SUMX( FILTER(tbl,VALUE([order_id])=19),  [amount] )
+VAR r20  = SUMX( FILTER(tbl,VALUE([order_id])=20),  [amount] )
+VAR r21  = SUMX( FILTER(tbl,VALUE([order_id])=21),  [amount] )
+VAR r22  = SUMX( FILTER(tbl,VALUE([order_id])=22),  [amount] )
+VAR r23  = SUMX( FILTER(tbl,VALUE([order_id])=23),  [amount] )
+VAR r24  = SUMX( FILTER(tbl,VALUE([order_id])=24),  [amount] )
+VAR r25  = SUMX( FILTER(tbl,VALUE([order_id])=25),  [amount] )
+VAR r26  = SUMX( FILTER(tbl,VALUE([order_id])=26),  [amount] )
+VAR r27  = SUMX( FILTER(tbl,VALUE([order_id])=27),  [amount] )
+VAR r28  = SUMX( FILTER(tbl,VALUE([order_id])=28),  [amount] )
+VAR r29  = SUMX( FILTER(tbl,VALUE([order_id])=29),  [amount] )
+VAR r30  = SUMX( FILTER(tbl,VALUE([order_id])=30),  [amount] )
+VAR r32  = SUMX( FILTER(tbl,VALUE([order_id])=32),  [amount] )
+VAR r33  = SUMX( FILTER(tbl,VALUE([order_id])=33),  [amount] )
+VAR r34  = SUMX( FILTER(tbl,VALUE([order_id])=34),  [amount] )
+VAR r35  = SUMX( FILTER(tbl,VALUE([order_id])=35),  [amount] )
+VAR r37  = SUMX( FILTER(tbl,VALUE([order_id])=37),  [amount] )
+VAR r39  = SUMX( FILTER(tbl,VALUE([order_id])=39),  [amount] )
+VAR r40  = SUMX( FILTER(tbl,VALUE([order_id])=40),  [amount] )
+VAR r41  = SUMX( FILTER(tbl,VALUE([order_id])=41),  [amount] )
+VAR r46  = SUMX( FILTER(tbl,VALUE([order_id])=46),  [amount] )
+VAR r48  = SUMX( FILTER(tbl,VALUE([order_id])=48),  [amount] )
+VAR r50  = SUMX( FILTER(tbl,VALUE([order_id])=50),  [amount] )
+VAR r54  = SUMX( FILTER(tbl,VALUE([order_id])=54),  [amount] )
+VAR r55  = SUMX( FILTER(tbl,VALUE([order_id])=55),  [amount] )
+VAR r56  = SUMX( FILTER(tbl,VALUE([order_id])=56),  [amount] )
+VAR r57  = SUMX( FILTER(tbl,VALUE([order_id])=57),  [amount] )
+VAR r58  = SUMX( FILTER(tbl,VALUE([order_id])=58),  [amount] )
+VAR r59  = SUMX( FILTER(tbl,VALUE([order_id])=59),  [amount] )
+VAR r60  = SUMX( FILTER(tbl,VALUE([order_id])=60),  [amount] )
+VAR r61  = SUMX( FILTER(tbl,VALUE([order_id])=61),  [amount] )
+VAR r62  = SUMX( FILTER(tbl,VALUE([order_id])=62),  [amount] )
+VAR r63  = SUMX( FILTER(tbl,VALUE([order_id])=63),  [amount] )
+VAR r64  = SUMX( FILTER(tbl,VALUE([order_id])=64),  [amount] )
+VAR r65  = SUMX( FILTER(tbl,VALUE([order_id])=65),  [amount] )
+VAR r66  = SUMX( FILTER(tbl,VALUE([order_id])=66),  [amount] )
+VAR r67  = SUMX( FILTER(tbl,VALUE([order_id])=67),  [amount] )
+VAR r68  = SUMX( FILTER(tbl,VALUE([order_id])=68),  [amount] )
+VAR r69  = SUMX( FILTER(tbl,VALUE([order_id])=69),  [amount] )
+VAR r70  = SUMX( FILTER(tbl,VALUE([order_id])=70),  [amount] )
+VAR r71  = SUMX( FILTER(tbl,VALUE([order_id])=71),  [amount] )
+VAR r72  = SUMX( FILTER(tbl,VALUE([order_id])=72),  [amount] )
+VAR r73  = SUMX( FILTER(tbl,VALUE([order_id])=73),  [amount] )
+VAR r74  = SUMX( FILTER(tbl,VALUE([order_id])=74),  [amount] )
+VAR r75  = SUMX( FILTER(tbl,VALUE([order_id])=75),  [amount] )
+VAR r76  = SUMX( FILTER(tbl,VALUE([order_id])=76),  [amount] )
+VAR r77  = SUMX( FILTER(tbl,VALUE([order_id])=77),  [amount] )
+VAR r78  = SUMX( FILTER(tbl,VALUE([order_id])=78),  [amount] )
+VAR r79  = SUMX( FILTER(tbl,VALUE([order_id])=79),  [amount] )
+VAR r80  = SUMX( FILTER(tbl,VALUE([order_id])=80),  [amount] )
+VAR r81  = SUMX( FILTER(tbl,VALUE([order_id])=81),  [amount] )
+VAR r82  = SUMX( FILTER(tbl,VALUE([order_id])=82),  [amount] )
+VAR r83  = SUMX( FILTER(tbl,VALUE([order_id])=83),  [amount] )
+VAR r88  = SUMX( FILTER(tbl,VALUE([order_id])=88),  [amount] )
+VAR r89  = SUMX( FILTER(tbl,VALUE([order_id])=89),  [amount] )
+VAR r91  = SUMX( FILTER(tbl,VALUE([order_id])=91),  [amount] )
+VAR r92  = SUMX( FILTER(tbl,VALUE([order_id])=92),  [amount] )
+VAR r94  = SUMX( FILTER(tbl,VALUE([order_id])=94),  [amount] )
+VAR r106 = SUMX( FILTER(tbl,VALUE([order_id])=106), [amount] )
+VAR r107 = SUMX( FILTER(tbl,VALUE([order_id])=107), [amount] )
+VAR r109 = SUMX( FILTER(tbl,VALUE([order_id])=109), [amount] )
+VAR r110 = SUMX( FILTER(tbl,VALUE([order_id])=110), [amount] )
+VAR r111 = SUMX( FILTER(tbl,VALUE([order_id])=111), [amount] )
+VAR r113 = SUMX( FILTER(tbl,VALUE([order_id])=113), [amount] )
+VAR r114 = SUMX( FILTER(tbl,VALUE([order_id])=114), [amount] )
+VAR r115 = SUMX( FILTER(tbl,VALUE([order_id])=115), [amount] )
+VAR r117 = SUMX( FILTER(tbl,VALUE([order_id])=117), [amount] )
+VAR r122 = SUMX( FILTER(tbl,VALUE([order_id])=122), [amount] )
+VAR r123 = SUMX( FILTER(tbl,VALUE([order_id])=123), [amount] )
+VAR r124 = SUMX( FILTER(tbl,VALUE([order_id])=124), [amount] )
+VAR r125 = SUMX( FILTER(tbl,VALUE([order_id])=125), [amount] )
+VAR r126 = SUMX( FILTER(tbl,VALUE([order_id])=126), [amount] )
+VAR r127 = SUMX( FILTER(tbl,VALUE([order_id])=127), [amount] )
+VAR r129 = SUMX( FILTER(tbl,VALUE([order_id])=129), [amount] )
+VAR r130 = SUMX( FILTER(tbl,VALUE([order_id])=130), [amount] )
+VAR r133 = SUMX( FILTER(tbl,VALUE([order_id])=133), [amount] )
+VAR r134 = SUMX( FILTER(tbl,VALUE([order_id])=134), [amount] )
+VAR r135 = SUMX( FILTER(tbl,VALUE([order_id])=135), [amount] )
+VAR r137 = SUMX( FILTER(tbl,VALUE([order_id])=137), [amount] )
+VAR r139 = SUMX( FILTER(tbl,VALUE([order_id])=139), [amount] )
+VAR r140 = SUMX( FILTER(tbl,VALUE([order_id])=140), [amount] )
+VAR r143 = SUMX( FILTER(tbl,VALUE([order_id])=143), [amount] )
+VAR r144 = SUMX( FILTER(tbl,VALUE([order_id])=144), [amount] )
+VAR r145 = SUMX( FILTER(tbl,VALUE([order_id])=145), [amount] )
+VAR r147 = SUMX( FILTER(tbl,VALUE([order_id])=147), [amount] )
+VAR r148 = SUMX( FILTER(tbl,VALUE([order_id])=148), [amount] )
+VAR r149 = SUMX( FILTER(tbl,VALUE([order_id])=149), [amount] )
+VAR r151 = SUMX( FILTER(tbl,VALUE([order_id])=151), [amount] )
+VAR r152 = SUMX( FILTER(tbl,VALUE([order_id])=152), [amount] )
+VAR r153 = SUMX( FILTER(tbl,VALUE([order_id])=153), [amount] )
+VAR r154 = SUMX( FILTER(tbl,VALUE([order_id])=154), [amount] )
+VAR r155 = SUMX( FILTER(tbl,VALUE([order_id])=155), [amount] )
+VAR r156 = SUMX( FILTER(tbl,VALUE([order_id])=156), [amount] )
+VAR r158 = SUMX( FILTER(tbl,VALUE([order_id])=158), [amount] )
+VAR r159 = SUMX( FILTER(tbl,VALUE([order_id])=159), [amount] )
+VAR f = "#,##0.00"
+VAR z = "<span style='color:#d1d5db'>-</span>"
+VAR StyleBlock =
+    "<style>" &
+    ".soc{font-family:Segoe UI,Calibri,sans-serif;font-size:11px;color:#1e2d40;}" &
+    ".soc-t{width:100%;border-collapse:collapse;}" &
+    ".soc-t td{padding:3px 12px;border-bottom:1px solid #e8edf3;vertical-align:middle;}" &
+    ".soc-t tr:hover td{background:#f5f8ff;}" &
+    ".h-row td{background:#003366!important;color:#fff!important;font-weight:700;font-size:12px;text-transform:uppercase;border-bottom:3px solid #f0a500!important;padding:7px 12px!important;}" &
+    ".sub1 td{background:#e8f0fb!important;font-weight:700;color:#003366;border-bottom:1px solid #b8cce4!important;}" &
+    ".sub2 td{background:#f0f6ff!important;font-weight:600;color:#1a4a7a;}" &
+    ".tot td{background:#f0a500!important;font-weight:800;font-size:12px;color:#003366!important;border-top:2px solid #003366!important;}" &
+    ".chk td{background:#fff8e8!important;font-weight:600;color:#92400e!important;}" &
+    ".cd{color:#9ca3af;font-size:9px;width:110px;}" &
+    ".cd-w{color:#f0a500!important;font-size:9px;width:110px;}" &
+    ".ar{text-align:right!important;font-family:Consolas,monospace;font-size:10px;white-space:nowrap;width:130px;}" &
+    ".i1{padding-left:20px!important;}" &
+    ".i2{padding-left:32px!important;}" &
+    ".i3{padding-left:44px!important;color:#6b7280;}" &
+    ".i4{padding-left:56px!important;color:#9ca3af;}" &
+    "</style>"
+VAR ModernHeader =
+    "<div style='background:#003366;padding:16px 25px 12px;border-bottom:4px solid #f0a500;display:flex;align-items:center;gap:16px;'>" &
+    "<img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;width:auto;flex-shrink:0;' />" &
+    "<div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-family:Segoe UI,sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;'>STATEMENT OF CONDITION &mdash; ASSETS &amp; LIABILITIES (PO SOC)</div>" &
+    "<div style='color:#cbd5e1;font-family:Segoe UI,sans-serif;font-size:12px;'>" & PeriodLabel & "</div>" &
+    "</div>" &
+    "</div>"
+VAR TH = "<table class='soc-t'><thead><tr style='background:#f8fafc;'><td style='font-size:10px;font-weight:700;color:#003366;padding:6px 12px;border-bottom:2px solid #003366;width:110px;'>CODE</td><td style='font-size:10px;font-weight:700;color:#003366;padding:6px 12px;border-bottom:2px solid #003366;'>DESCRIPTION</td><td style='text-align:right;font-size:10px;font-weight:700;color:#003366;padding:6px 12px;border-bottom:2px solid #003366;width:130px;'>AMOUNT (USD)</td></tr></thead><tbody>"
+VAR TableHTML = TH &
+    "<tr class='h-row'><td class='cd-w'>1.0</td><td>A S S E T S</td><td class='ar'></td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.01</td><td class='i1'>LIQUID FUNDS</td><td class='ar'>" & IF(r9=0,z,FORMAT(r9,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.1.1</td><td class='i2'>Cash in Vault / on hand</td><td class='ar'>" & IF(r10=0,z,FORMAT(r10,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.1.2</td><td class='i2'>Cash in ATM Vault</td><td class='ar'>" & IF(r11=0,z,FORMAT(r11,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.2</td><td class='i2'>Due from Banco Central</td><td class='ar'>" & IF(r12=0,z,FORMAT(r12,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.3</td><td class='i2'>Items in course of collection</td><td class='ar'>" & IF(r13=0,z,FORMAT(r13,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.01.4</td><td class='i2'>Due from Commercial Banks</td><td class='ar'>" & IF(r14=0,z,FORMAT(r14,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.1</td><td class='i3'>Domestic Currency</td><td class='ar'>" & IF(r15=0,z,FORMAT(r15,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.01.4.2</td><td class='i3'>Foreign Currency (IDR)</td><td class='ar'>" & IF(r16=0,z,FORMAT(r16,f)) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.02</td><td class='i1'>INVESTMENT</td><td class='ar'>" & IF(r18=0,z,FORMAT(r18,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.02.1</td><td class='i2'>Securities/SB (foreign)</td><td class='ar'>" & IF(r19=0,z,FORMAT(r19,f)) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.04</td><td class='i1'>LOAN, ADVANCES &amp; DISCOUNTS</td><td class='ar'>" & IF(r20=0,z,FORMAT(r20,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.04.1</td><td class='i2'>CURRENT LOAN</td><td class='ar'>" & IF(r21=0,z,FORMAT(r21,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.20</td><td class='i3'>Seasonal Crop Loans</td><td class='ar'>" & IF(r22=0,z,FORMAT(r22,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.30</td><td class='i3'>Other Business Loans</td><td class='ar'>" & IF(r23=0,z,FORMAT(r23,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.50</td><td class='i3'>Project Loan</td><td class='ar'>" & IF(r24=0,z,FORMAT(r24,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.60</td><td class='i3'>Investment Loans</td><td class='ar'>" & IF(r25=0,z,FORMAT(r25,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.20</td><td class='i3'>Payroll Loans</td><td class='ar'>" & IF(r29=0,z,FORMAT(r29,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.30</td><td class='i3'>Loans to Employee and Staff</td><td class='ar'>" & IF(r30=0,z,FORMAT(r30,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.40</td><td class='i3'>Asuwa'in Loan</td><td class='ar'>" & IF(r32=0,z,FORMAT(r32,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.50</td><td class='i3'>Bukae Loan</td><td class='ar'>" & IF(r33=0,z,FORMAT(r33,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.4.60</td><td class='i3'>Pension Loan</td><td class='ar'>" & IF(r34=0,z,FORMAT(r34,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.1.1.3.10</td><td class='i3'>Kreditu Fiar</td><td class='ar'>" & IF(r35=0,z,FORMAT(r35,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.04.2</td><td class='i2'>PAST DUE LOANS</td><td class='ar'>" & IF(r37=0,z,FORMAT(r37,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.3.20</td><td class='i3'>Past Due Seas. C.Loans</td><td class='ar'>" & IF(r39=0,z,FORMAT(r39,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.3.30</td><td class='i3'>Past Due Other Busi. L.</td><td class='ar'>" & IF(r40=0,z,FORMAT(r40,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.3.50</td><td class='i3'>Past Due Project Loans</td><td class='ar'>" & IF(r41=0,z,FORMAT(r41,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.20</td><td class='i3'>Past Due Payroll Loans</td><td class='ar'>" & IF(r46=0,z,FORMAT(r46,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.40</td><td class='i3'>Past Due Asuwa'in Loan</td><td class='ar'>" & IF(r48=0,z,FORMAT(r48,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.2.1.4.50</td><td class='i3'>Past Due Pension Loan</td><td class='ar'>" & IF(r50=0,z,FORMAT(r50,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.04.3</td><td class='i2'>PROVISION FOR LOAN LOSSES</td><td class='ar'>" & IF(r54=0,z,FORMAT(r54,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.3.1.3</td><td class='i3'>Business Enterprises</td><td class='ar'>" & IF(r55=0,z,FORMAT(r55,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.3.1.4</td><td class='i3'>Others</td><td class='ar'>" & IF(r56=0,z,FORMAT(r56,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.04.3.1.5</td><td class='i3'>ECL Distribuition</td><td class='ar'>" & IF(r57=0,z,FORMAT(r57,f)) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.05</td><td class='i1'>ACCOUNTS RECEIVABLE</td><td class='ar'>" & IF(r58=0,z,FORMAT(r58,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.05.1</td><td class='i2'>Interest Deposit Accrued</td><td class='ar'>" & IF(r59=0,z,FORMAT(r59,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.05.1</td><td class='i2'>Interest Loans Accrued</td><td class='ar'>" & IF(r60=0,z,FORMAT(r60,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.05.3</td><td class='i2'>Other Receivable</td><td class='ar'>" & IF(r61=0,z,FORMAT(r61,f)) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.06</td><td class='i1'>FIXED ASSETS</td><td class='ar'>" & IF(r62=0,z,FORMAT(r62,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.2.1</td><td class='i2'>Offices</td><td class='ar'>" & IF(r63=0,z,FORMAT(r63,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.2.2</td><td class='i2'>Office Under Construction</td><td class='ar'>" & IF(r64=0,z,FORMAT(r64,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.2.3</td><td class='i2'>Leasehold Improvements</td><td class='ar'>" & IF(r65=0,z,FORMAT(r65,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.3</td><td class='i2'>Furniture and Fixtures</td><td class='ar'>" & IF(r66=0,z,FORMAT(r66,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.4</td><td class='i2'>Machinery and Equipment</td><td class='ar'>" & IF(r67=0,z,FORMAT(r67,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.5</td><td class='i2'>Vehicles</td><td class='ar'>" & IF(r68=0,z,FORMAT(r68,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.6</td><td class='i2'>Non Physical Assets</td><td class='ar'>" & IF(r69=0,z,FORMAT(r69,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.06.9</td><td class='i2'>RESERVE FOR DEPRECIATION</td><td class='ar'>" & IF(r70=0,z,FORMAT(r70,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.3</td><td class='i3'>Accum. Depr. Furniture &amp; Fixture</td><td class='ar'>" & IF(r71=0,z,FORMAT(r71,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.4</td><td class='i3'>Accum. Depr. Machinery &amp; Equipment</td><td class='ar'>" & IF(r72=0,z,FORMAT(r72,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.5</td><td class='i3'>Accum. Depr. Vehicles</td><td class='ar'>" & IF(r73=0,z,FORMAT(r73,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.6</td><td class='i3'>Accum. Depr. Non-Physical Assets</td><td class='ar'>" & IF(r74=0,z,FORMAT(r74,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.7</td><td class='i3'>Accum. Depr. Building</td><td class='ar'>" & IF(r75=0,z,FORMAT(r75,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.06.9.8</td><td class='i3'>Accum. Depr. Leasehold</td><td class='ar'>" & IF(r76=0,z,FORMAT(r76,f)) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>1.09</td><td class='i1'>OTHER ASSETS</td><td class='ar'>" & IF(r77=0,z,FORMAT(r77,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.1</td><td class='i2'>Prepaid Expenses</td><td class='ar'>" & IF(r78=0,z,FORMAT(r78,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.2</td><td class='i2'>Inter Branch Transactions (NET)</td><td class='ar'>" & IF(r79=0,z,FORMAT(r79,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.09.3</td><td class='i2'>Office Accounts</td><td class='ar'>" & IF(r80=0,z,FORMAT(r80,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.3.1</td><td class='i3'>Petty Cash Fund</td><td class='ar'>" & IF(r81=0,z,FORMAT(r81,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.3.3</td><td class='i3'>Stationery and Office Supplies</td><td class='ar'>" & IF(r82=0,z,FORMAT(r82,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.3.5</td><td class='i3'>Shortages</td><td class='ar'>" & IF(r83=0,z,FORMAT(r83,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>1.09.6</td><td class='i2'>Miscellaneous Assets</td><td class='ar'>" & IF(r88=0,z,FORMAT(r88,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.6.9.2.1</td><td class='i3'>Right Of Use Assets IFRS</td><td class='ar'>" & IF(r89=0,z,FORMAT(r89,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.6.9.2</td><td class='i3'>Intangible Assets (in Progress)</td><td class='ar'>" & IF(r91=0,z,FORMAT(r91,f)) & "</td></tr>" &
+    "<tr><td class='cd'>1.09.6.9.4</td><td class='i3'>Other Assets - Deposit Payment Emp</td><td class='ar'>" & IF(r92=0,z,FORMAT(r92,f)) & "</td></tr>" &
+    "<tr class='tot'><td class='cd-w'></td><td>TOTAL ASSETS</td><td class='ar'>" & IF(r94=0,z,FORMAT(r94,f)) & "</td></tr>" &
+    "<tr style='height:8px;background:#f1f5f9;'><td colspan='3'></td></tr>" &
+    "<tr class='h-row'><td class='cd-w'>2.0</td><td>L I A B I L I T I E S</td><td class='ar'></td></tr>" &
+    "<tr class='sub1'><td class='cd'>2.04</td><td class='i1'>DEPOSITS</td><td class='ar'>" & IF(r106=0,z,FORMAT(r106,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.04.1</td><td class='i2'>Demand Deposit</td><td class='ar'>" & IF(r107=0,z,FORMAT(r107,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.1.2</td><td class='i3'>Government</td><td class='ar'>" & IF(r109=0,z,FORMAT(r109,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.1.3</td><td class='i3'>Business Enterprises</td><td class='ar'>" & IF(r110=0,z,FORMAT(r110,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.4.1.1.4</td><td class='i3'>Others</td><td class='ar'>" & IF(r111=0,z,FORMAT(r111,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.04.1.2</td><td class='i2'>Time Deposits</td><td class='ar'>" & IF(r113=0,z,FORMAT(r113,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.2</td><td class='i3'>Government</td><td class='ar'>" & IF(r114=0,z,FORMAT(r114,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4</td><td class='i3'>Others</td><td class='ar'>" & IF(r115=0,z,FORMAT(r115,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>2.04.1.3</td><td class='i2'>Other (Passbook Saving)</td><td class='ar'>" & IF(r117=0,z,FORMAT(r117,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.1</td><td class='i3'>Passbook Saving</td><td class='ar'>" & IF(r122=0,z,FORMAT(r122,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.2</td><td class='i3'>Pledge Saving</td><td class='ar'>" & IF(r123=0,z,FORMAT(r123,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.5</td><td class='i3'>Saving Enderly</td><td class='ar'>" & IF(r124=0,z,FORMAT(r124,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.6</td><td class='i3'>Bolsa da Mae</td><td class='ar'>" & IF(r125=0,z,FORMAT(r125,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.7</td><td class='i3'>Deposito Asuwain</td><td class='ar'>" & IF(r126=0,z,FORMAT(r126,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.6</td><td class='i3'>Deposito Hau Nia Futuru</td><td class='ar'>" & IF(r127=0,z,FORMAT(r127,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.8</td><td class='i3'>Depozitu Matenek</td><td class='ar'>" & IF(r129=0,z,FORMAT(r129,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.04.1.4.9</td><td class='i3'>Depozitu Pensionista</td><td class='ar'>" & IF(r130=0,z,FORMAT(r130,f)) & "</td></tr>" &
+    "<tr class='sub1'><td class='cd'>2.06</td><td class='i1'>OTHER SUNDRY CURRENT LIABILITIES</td><td class='ar'>" & IF(r133=0,z,FORMAT(r133,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.2</td><td class='i2'>Staff Expense</td><td class='ar'>" & IF(r134=0,z,FORMAT(r134,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.3.1</td><td class='i2'>Income Tax</td><td class='ar'>" & IF(r135=0,z,FORMAT(r135,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.3.3</td><td class='i2'>Other Tax</td><td class='ar'>" & IF(r137=0,z,FORMAT(r137,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.1</td><td class='i2'>Interest Accrued</td><td class='ar'>" & IF(r139=0,z,FORMAT(r139,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.6</td><td class='i2'>Items in Suspense</td><td class='ar'>" & IF(r140=0,z,FORMAT(r140,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.5</td><td class='i2'>Lease Liability IFRS</td><td class='ar'>" & IF(r143=0,z,FORMAT(r143,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.8</td><td class='i2'>Restricted Deposit (Bank Garansi)</td><td class='ar'>" & IF(r144=0,z,FORMAT(r144,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.06.9</td><td class='i2'>Unearned Interest (Loan Fee)</td><td class='ar'>" & IF(r145=0,z,FORMAT(r145,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2.08</td><td class='i2'>Other Liabilities / Inter Branch</td><td class='ar'>" & IF(r147=0,z,FORMAT(r147,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2-08-1</td><td class='i3'>Others / Overages</td><td class='ar'>" & IF(r148=0,z,FORMAT(r148,f)) & "</td></tr>" &
+    "<tr><td class='cd'>2-08-2</td><td class='i3'>Overages ATM</td><td class='ar'>" & IF(r149=0,z,FORMAT(r149,f)) & "</td></tr>" &
+    "<tr style='height:8px;background:#f1f5f9;'><td colspan='3'></td></tr>" &
+    "<tr class='h-row'><td class='cd-w'>3.0</td><td>C A P I T A L &nbsp; A C C O U N T S</td><td class='ar'></td></tr>" &
+    "<tr><td class='cd'>3.01</td><td class='i1'>Provisioning</td><td class='ar'>" & IF(r151=0,z,FORMAT(r151,f)) & "</td></tr>" &
+    "<tr><td class='cd'>3.02</td><td class='i1'>Capital Paid-Up &amp; Assigned</td><td class='ar'>" & IF(r152=0,z,FORMAT(r152,f)) & "</td></tr>" &
+    "<tr><td class='cd'>3-04-3-2</td><td class='i1'>Capital Reserve / Reserva Legais</td><td class='ar'>" & IF(r153=0,z,FORMAT(r153,f)) & "</td></tr>" &
+    "<tr class='sub2'><td class='cd'>3.06</td><td class='i1'>Profits / Losses</td><td class='ar'>" & IF(r154=0,z,FORMAT(r154,f)) & "</td></tr>" &
+    "<tr><td class='cd'>3.06.1</td><td class='i2'>Previous Financial Year</td><td class='ar'>" & IF(r155=0,z,FORMAT(r155,f)) & "</td></tr>" &
+    "<tr><td class='cd'>3.06.2</td><td class='i2'>Current Financial Year</td><td class='ar'>" & IF(r156=0,z,FORMAT(r156,f)) & "</td></tr>" &
+    "<tr class='tot'><td class='cd-w'></td><td>TOTAL LIABILITIES &amp; CAPITAL ACCOUNTS</td><td class='ar'>" & IF(r158=0,z,FORMAT(r158,f)) & "</td></tr>" &
+    "<tr class='chk'><td class='cd'></td><td class='i1'>Balance Check</td><td class='ar'>" & IF(r159<0.01,"<span style='color:#16a34a;font-weight:700;'>Balanced</span>",FORMAT(r159,f)) & "</td></tr>" &
+    "</tbody></table>"
+VAR FooterHTML =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-family:Segoe UI;font-size:10px;color:#9ca3af;'>All amounts in USD</span>" &
+    "<span style='font-family:Segoe UI;font-size:10px;color:#9ca3af;'>BNCTL &mdash; Confidential</span>" &
+    "</div>"
+RETURN
+    "<div class='soc'>" & StyleBlock & ModernHeader &
+    "<div style='overflow-x:auto;'>" & TableHTML & "</div>" &
+    FooterHTML & "</div>"

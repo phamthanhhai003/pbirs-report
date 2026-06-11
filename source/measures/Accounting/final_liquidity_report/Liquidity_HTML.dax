@@ -1,0 +1,143 @@
+﻿MEASURE 'final_liquidity_report'[Liquidity_HTML] =
+VAR SelectedYear  = SELECTEDVALUE( Calendar[Year] )
+VAR SelectedMonth = SELECTEDVALUE( Calendar[report_month] )
+VAR MaxMonth      = MAX( final_liquidity_report[report_month] )
+VAR MaxYear       = LEFT( MaxMonth, 4 )
+VAR ActiveYear    = IF( ISBLANK(SelectedYear),  MaxYear,  SelectedYear )
+VAR ActiveMonth   = IF( ISBLANK(SelectedMonth), MaxMonth, SelectedMonth )
+VAR PeriodLabel   =
+    IF(
+        NOT ISBLANK(SelectedMonth),
+        "Report for Month Ended: " & FORMAT( DATE( LEFT(ActiveMonth,4), RIGHT(ActiveMonth,2), 1 ), "MMMM YYYY" ),
+        "Report for Year Ended: " & ActiveYear
+    )
+VAR tbl =
+    FILTER( ALL(final_liquidity_report),
+        IF(
+            NOT ISBLANK(SelectedMonth),
+            [report_month] = ActiveMonth,
+            LEFT( [report_month], 4 ) = ActiveYear
+        )
+    )
+VAR vVault    = SUMX( tbl, [Vault_Cash] )
+VAR vGold     = SUMX( tbl, [Precious_metals] )
+VAR vBCTL     = SUMX( tbl, [Deposits_with_BCTL] )
+VAR vOthers   = SUMX( tbl, [Deposits_in_Other_Financial_Institutions] )
+VAR vSec      = SUMX( tbl, [Readily_Marketable_Securities] )
+VAR vInterbank= SUMX( tbl, [Net_inter_bank_lending_borrowing_1_month] )
+VAR vTotal    = SUMX( tbl, [Total_Highly_Liquid_Assets] )
+VAR vLiab     = SUMX( tbl, [Total_Liabilities] )
+VAR vRatio    = AVERAGEX( tbl, [Liquidity_Ratio] )
+VAR fVault    = FORMAT( vVault,     "#,##0.00" )
+VAR fGold     = FORMAT( vGold,      "#,##0.00" )
+VAR fBCTL     = FORMAT( vBCTL,      "#,##0.00" )
+VAR fOthers   = FORMAT( vOthers,    "#,##0.00" )
+VAR fSec      = FORMAT( vSec,       "#,##0.00" )
+VAR fInterbank= FORMAT( vInterbank, "#,##0.00" )
+VAR fTotal    = FORMAT( vTotal,     "#,##0.00" )
+VAR fLiab     = FORMAT( vLiab,      "#,##0.00" )
+VAR fRatio    = FORMAT( vRatio * 100, "0.00" ) & "%"
+VAR RatioColor =
+    IF( vRatio >= 0.20, "#16a34a", IF( vRatio >= 0.10, "#d97706", "#f0a500" ) )
+VAR StyleBlock =
+    "<style>" &
+    ".lq{font-family:Segoe UI,Calibri,sans-serif;font-size:11.5px;color:#1e2d40;background:#fff;}" &
+    ".lq-meta{padding:14px 20px 10px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0;}" &
+    ".lq-meta-row{display:flex;gap:40px;flex-wrap:wrap;}" &
+    ".lq-meta-label{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}" &
+    ".lq-meta-value{font-size:12px;font-weight:600;color:#1e2d40;}" &
+    ".lq-section-title{background:#003366;color:#fff;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;padding:8px 20px;border-bottom:3px solid #f0a500;}" &
+    ".lq-table{width:100%;border-collapse:collapse;}" &
+    ".lq-table td{padding:8px 20px;border-bottom:1px solid #e8edf3;vertical-align:middle;}" &
+    ".lq-table tr:hover td{background:#f0f6ff;}" &
+    ".lq-num{font-size:11px;color:#6b7280;font-weight:700;width:30px;text-align:center;}" &
+    ".lq-desc{color:#374151;}" &
+    ".lq-amt{text-align:right;font-family:Consolas,monospace;font-size:11px;color:#1e2d40;white-space:nowrap;}" &
+    ".lq-total-row td{background:#e8f0fb!important;font-weight:700;color:#003366;border-top:2px solid #003366;border-bottom:2px solid #003366;}" &
+    ".lq-liab-row td{background:#fff8e8!important;font-weight:600;}" &
+    ".lq-ratio-wrap{padding:20px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}" &
+    ".lq-ratio-box{background:#003366;border-radius:8px;padding:16px 28px;text-align:center;}" &
+    ".lq-ratio-label{color:#f0a500;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}" &
+    ".lq-ratio-value{font-size:36px;font-weight:800;font-family:Consolas,monospace;}" &
+    ".lq-formula{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;font-size:11px;color:#374151;}" &
+    ".lq-frac{display:inline-block;text-align:center;vertical-align:middle;margin:0 6px;}" &
+    ".lq-frac-num{border-bottom:1.5px solid #374151;padding:0 8px 2px 8px;font-family:Consolas,monospace;font-size:11px;display:block;}" &
+    ".lq-frac-den{padding:2px 8px 0 8px;font-family:Consolas,monospace;font-size:11px;display:block;}" &
+    ".lq-approved{padding:14px 20px;display:flex;justify-content:flex-end;gap:60px;border-top:1px solid #e2e8f0;}" &
+    ".lq-sig{text-align:center;}" &
+    ".lq-sig-line{border-top:1px solid #374151;width:160px;margin:20px auto 4px auto;}" &
+    ".lq-sig-label{font-size:10px;color:#6b7280;}" &
+    "</style>"
+VAR ModernHeader =
+    "<div style='background:#003366;padding:16px 25px 12px;border-bottom:4px solid #f0a500;display:flex;align-items:center;gap:16px;'>" &
+    "<img src='https://i.ibb.co/rWhBLgw/image-2026-04-21-094244962.png' style='height:90px;width:auto;flex-shrink:0;' />" &
+    "<div>" &
+    "<div style='color:#fff;font-family:Segoe UI,sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div>" &
+    "<div style='color:#f0a500;font-family:Segoe UI,sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;'>REPORT ON LIQUIDITY</div>" &
+    "<div style='color:#cbd5e1;font-family:Segoe UI,sans-serif;font-size:12px;'>" & PeriodLabel & "</div>" &
+    "</div>" &
+    "</div>"
+VAR MetaBlock =
+    "<div class='lq-meta'>" &
+    "<div class='lq-meta-row'>" &
+    "<div><div class='lq-meta-label'>Name of Bank</div><div class='lq-meta-value'>BANCO NACIONAL DE COMERCIO DE TIMOR LESTE</div></div>" &
+    "<div><div class='lq-meta-label'>Period</div><div class='lq-meta-value'>" & PeriodLabel & "</div></div>" &
+    "</div></div>"
+VAR SectionTitle =
+    "<div class='lq-section-title'>I. LIQUIDITY RATIO</div>"
+VAR TableBlock =
+    "<table class='lq-table'>" &
+    "<thead><tr style='background:#f8fafc;'>" &
+    "<td style='width:40px;font-size:10px;font-weight:700;color:#003366;padding:6px 20px;border-bottom:2px solid #003366;'>#</td>" &
+    "<td style='font-size:10px;font-weight:700;color:#003366;padding:6px 20px;border-bottom:2px solid #003366;'>DESCRIPTION</td>" &
+    "<td style='text-align:right;font-size:10px;font-weight:700;color:#003366;padding:6px 20px;width:180px;border-bottom:2px solid #003366;'>AMOUNT (USD)</td>" &
+    "</tr></thead><tbody>" &
+    "<tr><td class='lq-num'>1</td><td class='lq-desc'>Vault Cash</td><td class='lq-amt'>" & fVault & "</td></tr>" &
+    "<tr><td class='lq-num'>2</td><td class='lq-desc'>Precious Metals (Gold)</td><td class='lq-amt'>" & fGold & "</td></tr>" &
+    "<tr><td class='lq-num'>3</td><td class='lq-desc'>Deposits with the BCTL</td><td class='lq-amt'>" & fBCTL & "</td></tr>" &
+    "<tr><td class='lq-num'>4</td><td class='lq-desc'>Deposits in Other Financial Institutions</td><td class='lq-amt'>" & fOthers & "</td></tr>" &
+    "<tr><td class='lq-num'>5</td><td class='lq-desc'>Readily Marketable Securities</td><td class='lq-amt'>" & fSec & "</td></tr>" &
+    "<tr><td class='lq-num'>6</td><td class='lq-desc'>Net Inter-bank Lending and Borrowing (maturity &le; 1 month)</td><td class='lq-amt'>" & fInterbank & "</td></tr>" &
+    "<tr class='lq-total-row'><td class='lq-num'>7</td><td>Total Highly Liquid Assets &nbsp;<span style='font-size:10px;font-weight:400;color:#1a4a7a;'>(7 = 1 + 2 + 3 + 4 + 5 + 6)</span></td><td class='lq-amt'>" & fTotal & "</td></tr>" &
+    "<tr class='lq-liab-row'><td class='lq-num'>8</td><td class='lq-desc'>Total Liabilities</td><td class='lq-amt'>" & fLiab & "</td></tr>" &
+    "</tbody></table>"
+VAR RatioBlock =
+    "<div class='lq-ratio-wrap'>" &
+    "<div class='lq-ratio-box'>" &
+    "<div class='lq-ratio-label'>Liquidity Ratio (7/8 &times; 100)</div>" &
+    "<div class='lq-ratio-value' style='color:" & RatioColor & ";'>" & fRatio & "</div>" &
+    "</div>" &
+    "<div class='lq-formula'>" &
+    "<div style='font-weight:700;color:#003366;margin-bottom:8px;font-size:12px;'>Formula:</div>" &
+    "<div style='display:flex;align-items:center;gap:8px;'>" &
+    "<span style='font-weight:700;color:#003366;'>Liquidity Ratio =</span>" &
+    "<span class='lq-frac'><span class='lq-frac-num'>Total Highly Liquid Assets</span><span class='lq-frac-den'>Total Liabilities</span></span>" &
+    "<span style='color:#6b7280;'>&times; 100 =</span>" &
+    "<span class='lq-frac'><span class='lq-frac-num'>" & fTotal & "</span><span class='lq-frac-den'>" & fLiab & "</span></span>" &
+    "<span style='color:#6b7280;'>&times; 100 =</span>" &
+    "<span style='font-size:16px;font-weight:800;font-family:Consolas,monospace;color:" & RatioColor & ";'>" & fRatio & "</span>" &
+    "</div>" &
+    "<div style='margin-top:10px;font-size:10px;color:#6b7280;'>" &
+    IF( vRatio >= 0.20, "&#9989; Liquidity ratio is <b>healthy</b> (above 20% threshold)", IF( vRatio >= 0.10, "&#9888; Liquidity ratio is <b>moderate</b> (between 10%–20%)", "&#9888; Liquidity ratio is <b>below minimum threshold</b> (below 10%)" ) ) &
+    "</div></div></div>"
+VAR ApprovedBlock =
+    "<div class='lq-approved'>" &
+    "<div class='lq-sig'><div class='lq-sig-line'></div><div class='lq-sig-label'>Prepared By</div></div>" &
+    "<div class='lq-sig'><div class='lq-sig-line'></div><div class='lq-sig-label'>Approved By</div></div>" &
+    "</div>"
+VAR FooterHTML =
+    "<div style='background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 15px;display:flex;justify-content:space-between;'>" &
+    "<span style='font-family:Segoe UI;font-size:10px;color:#9ca3af;'>All amounts in USD</span>" &
+    "<span style='font-family:Segoe UI;font-size:10px;color:#9ca3af;'>BNCTL &mdash; Confidential</span>" &
+    "</div>"
+RETURN
+    "<div class='lq'>" &
+    StyleBlock &
+    ModernHeader &
+    MetaBlock &
+    SectionTitle &
+    TableBlock &
+    RatioBlock &
+    ApprovedBlock &
+    FooterHTML &
+    "</div>"

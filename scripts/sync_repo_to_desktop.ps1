@@ -110,5 +110,5 @@ if ($updated -gt 0) { $model.SaveChanges() }
 $server.Disconnect()
 
 Write-Host ""
-Write-Host "Done — updated: $updated | skipped: $skipped | not found: $notFound"
+Write-Host "Done - updated: $updated | skipped: $skipped | not found: $notFound"
 Write-Host "Remember: Ctrl+S in PBI Desktop RS to save to .pbix"
