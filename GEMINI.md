@@ -44,8 +44,8 @@ bash scripts/ps.sh -File scripts/sync_repo_to_desktop.ps1 -PbixName "..."
 **Option 1 — invoke deploy skill:**
 Call `Skill("deploy")` with a commit message derived from the change.
 
-**Option 3 — revert:**
-Run `restore_measure.ps1` with the `.dax` file from repo. Tell user to verify.
+**Option 3 — invoke revert skill:**
+Call `Skill("revert")` with the `.dax` path that was just edited.
 
 **Never commit or push without user confirmation.**
 
