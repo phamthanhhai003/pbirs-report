@@ -7,4 +7,4 @@ $PbirsHost   = "http://YOUR-HOSTNAME/reports"
 $PbirsUser   = "Admin"
 $ReportFolder = "/REPORT_V2"   # folder path on PBIRS to upload into
 # $PbixPath = "C:\override\path\to\Report.pbix"  # optional — auto-detect từ cửa sổ PBI đang mở
-# $PbirsPass is read from $env:PBIRS_PASS — set it in your shell or .env
+$PbirsPass   = "2022-local"

@@ -1,14 +1,16 @@
 param(
     [string]$FilePath,
+    [string]$PbixName = "",
     [string]$BaseUrl,
     [string]$User,
-    [string]$Pass   = $env:PBIRS_PASS,
+    [string]$Pass   = "",
     [string]$Folder = ""
 )
 
 . "$PSScriptRoot\config.ps1"
 
 if (!$Folder -and $ReportFolder) { $Folder = $ReportFolder }
+if (!$Pass)   { $Pass = if ($env:PBIRS_PASS) { $env:PBIRS_PASS } else { $PbirsPass } }
 
 function Get-OpenPbixPath {
     param([string]$PbixName = "")
@@ -32,7 +34,7 @@ function Get-OpenPbixPath {
     return $null
 }
 
-if (!$FilePath) { $FilePath = if ($PbixPath) { $PbixPath } else { Get-OpenPbixPath } }
+if (!$FilePath) { $FilePath = if ($PbixPath) { $PbixPath } else { Get-OpenPbixPath -PbixName $PbixName } }
 if (!$BaseUrl)  { $BaseUrl  = "$PbirsHost/api/v2.0" }
 if (!$User)     { $User     = $PbirsUser }
 

@@ -112,7 +112,7 @@ $server.Disconnect()
 Write-Host ""
 Write-Host "Done - updated: $updated | skipped: $skipped | not found: $notFound"
 
-# Autosave .pbix via SendKeys Ctrl+S
+# Autosave .pbix via SendKeys Ctrl+S then upload to PBIRS
 if ($updated -gt 0) {
     Add-Type -AssemblyName Microsoft.VisualBasic
     Add-Type -AssemblyName System.Windows.Forms
@@ -121,7 +121,11 @@ if ($updated -gt 0) {
         Start-Sleep -Milliseconds 400
         [System.Windows.Forms.SendKeys]::SendWait("^s")
         Write-Host "Autosaved .pbix"
+        Start-Sleep -Milliseconds 800
     } catch {
         Write-Host "Autosave failed — Ctrl+S manually in PBI Desktop RS"
     }
+
+    Write-Host "Uploading to PBIRS..."
+    & "$PSScriptRoot\upload_pbirs.ps1" -PbixName $pbixLabel
 }
