@@ -2,10 +2,13 @@ param(
     [string]$FilePath,
     [string]$BaseUrl,
     [string]$User,
-    [string]$Pass = $env:PBIRS_PASS
+    [string]$Pass   = $env:PBIRS_PASS,
+    [string]$Folder = ""   # override $ReportFolder from config, e.g. "/v2"
 )
 
 . "$PSScriptRoot\config.ps1"
+
+if (!$Folder -and $ReportFolder) { $Folder = $ReportFolder }
 
 function Get-OpenPbixPath {
     $pbi = Get-Process | Where-Object { $_.MainWindowTitle -match 'Power BI Desktop' } |
@@ -67,21 +70,40 @@ $body = $bodyStream.ToArray()
 
 Write-Host "Uploading '$reportName' ($([math]::Round($fileBytes.Length/1MB, 1)) MB)..."
 
-$existing = Invoke-RestMethod -Uri "$BaseUrl/PowerBIReports" -Credential $cred -UseBasicParsing
-$match    = $existing.value | Where-Object { $_.Name -eq $reportName }
+$targetPath = if ($Folder) { "$($Folder.TrimEnd('/'))/$reportName" } else { "/$reportName" }
+Write-Host "Target path: $targetPath"
 
+# Delete existing report at target path if present
+$existing = Invoke-RestMethod -Uri "$BaseUrl/PowerBIReports" -Credential $cred -UseBasicParsing
+$match    = $existing.value | Where-Object { $_.Path -eq $targetPath }
 if ($match) {
     Write-Host "Deleting existing: $($match.Path)"
     Invoke-RestMethod -Uri "$BaseUrl/PowerBIReports($($match.Id))" -Method DELETE -Credential $cred -UseBasicParsing
 }
 
 try {
-    $resp = Invoke-WebRequest -Uri "$BaseUrl/PowerBIReports" `
+    # Upload to root first
+    $resp   = Invoke-WebRequest -Uri "$BaseUrl/PowerBIReports" `
         -Method POST -Body $body `
         -ContentType "multipart/form-data; boundary=$boundary" `
         -Credential $cred -UseBasicParsing
-    Write-Host "OK: HTTP $($resp.StatusCode)"
-    $resp.Content | ConvertFrom-Json | Select-Object Name, Path, Id
+    $result = $resp.Content | ConvertFrom-Json
+    Write-Host "Uploaded: $($result.Path)"
+
+    # Move to target folder if specified
+    if ($Folder -and $result.Path -ne $targetPath) {
+        Write-Host "Moving to $targetPath ..."
+        $moveBody = @{ Path = $targetPath } | ConvertTo-Json
+        Invoke-RestMethod -Uri "$BaseUrl/PowerBIReports($($result.Id))/Model.MoveItem()" `
+            -Method POST -Body $moveBody -ContentType "application/json" `
+            -Credential $cred -UseBasicParsing | Out-Null
+
+        # Fetch updated item to confirm
+        $updated = Invoke-RestMethod -Uri "$BaseUrl/PowerBIReports" -Credential $cred -UseBasicParsing
+        $result  = $updated.value | Where-Object { $_.Path -eq $targetPath } | Select-Object -First 1
+    }
+
+    Write-Host "OK: $($result.Name) → $($result.Path)"
 } catch {
     Write-Host "Failed: $($_.Exception.Response.StatusCode.value__)"
     Write-Host $_.ErrorDetails.Message

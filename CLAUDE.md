@@ -119,7 +119,7 @@ DAX files: `source/measures/<pbix-name>/<table>/<measure>.dax`
 
 | | |
 |--|--|
-| PBIRS | `http://192.168.100.98/reports` |
+| PBIRS | `http://10.0.40.122/reports/browse/REPORT_V2` |
 | PBI Desktop RS | `C:\Program Files\Microsoft Power BI Desktop RS` |
 | Tabular Editor 2 | `C:\Program Files (x86)\Tabular Editor` |
 | Config máy | `scripts/config.ps1` (gitignored) — copy từ `config.example.ps1` |

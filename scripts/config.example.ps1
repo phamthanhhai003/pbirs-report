@@ -3,7 +3,8 @@
 
 $RsDir     = "C:\Program Files\Microsoft Power BI Desktop RS\bin"
 $TeDir     = "C:\Program Files (x86)\Tabular Editor"
-$PbirsHost = "http://YOUR-HOSTNAME/reports"
-$PbirsUser = "Admin"
+$PbirsHost   = "http://YOUR-HOSTNAME/reports"
+$PbirsUser   = "Admin"
+$ReportFolder = "/REPORT_V2"   # folder path on PBIRS to upload into
 # $PbixPath = "C:\override\path\to\Report.pbix"  # optional — auto-detect từ cửa sổ PBI đang mở
 # $PbirsPass is read from $env:PBIRS_PASS — set it in your shell or .env
