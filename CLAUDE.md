@@ -13,11 +13,18 @@ Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
    ```
    Nếu không có → báo user mở file .pbix trong PBI Desktop RS trước.
 
-2. **Sau khi chạy `patch_measure.ps1` hoặc `restore_measure.ps1`**, nhắc user: *"Kiểm tra kết quả trực tiếp trong PBI Desktop RS. Ổn rồi thì báo để commit."*
+2. **Sau khi chạy `patch_measure.ps1` hoặc `restore_measure.ps1`**, nhắc user mở PBI Desktop RS kiểm tra, rồi đưa ra **đúng 3 lựa chọn** (không làm gì thêm cho đến khi user chọn):
 
-3. **Sau khi user xác nhận ổn**, hỏi: *"Muốn commit không?"*
+   > Sửa xong. Mở PBI Desktop RS kiểm tra kết quả, rồi chọn:
+   > 1. **Đồng ý và đẩy lên server** — commit + push luôn
+   > 2. **Tiếp tục sửa** — báo muốn sửa thêm gì
+   > 3. **Revert lại** — hoàn tác, khôi phục về trạng thái trong repo
 
-4. **Sau khi commit**, hỏi user: *"Muốn push lên PBIRS không?"*
+3. **Nếu user chọn 1**: commit (pre-commit hook tự extract) → push lên PBIRS.
+
+4. **Nếu user chọn 2**: chờ user mô tả thay đổi tiếp theo, xử lý rồi lại đưa ra 3 lựa chọn.
+
+5. **Nếu user chọn 3**: chạy `restore_measure.ps1` với file `.dax` hiện tại trong repo để revert measure về trạng thái đã commit gần nhất. Sau khi revert xong, nhắc user kiểm tra lại trong PBI Desktop RS.
 
 5. **Không tự commit hoặc push** khi chưa được user xác nhận.
 
@@ -40,7 +47,9 @@ Works cho mọi report có card HTML dạng `<div>Label</div><div>Value</div>`.
 → **Nếu là report khác hoặc thay đổi phức tạp hơn:**  
 AI không thể tự sửa DAX của report đó. Hướng dẫn user:
 - Mở PBI Desktop RS → sửa DAX trực tiếp → Ctrl+S → rồi `git commit`
-- Pre-commit hook sẽ tự extract + preview
+- Pre-commit hook sẽ tự extract DAX vào repo
+
+Sau mỗi thay đổi (dù qua script hay hướng dẫn thủ công), luôn đưa ra **3 lựa chọn** theo Nguyên tắc 2.
 
 ### User muốn thêm lại / restore (hoặc áp dụng thay đổi DAX file)
 
