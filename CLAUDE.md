@@ -37,8 +37,8 @@ Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
    ```bash
    # 1. Commit — SKIP_EXTRACT=1 bỏ qua extract (đã sync rồi, không cần)
    SKIP_EXTRACT=1 git commit -m "..."
-   # 2. Push lên Git remote
-   git push
+   # 2. Push lên Git remote (dùng Windows git để có credential manager)
+   bash scripts/ps.sh -Command "git -C 'D:\\pbirs-report' push"
    # 3. Upload .pbix lên PBIRS (credentials đã hardcode trong config.ps1)
    bash scripts/ps.sh -File scripts/upload_pbirs.ps1
    ```

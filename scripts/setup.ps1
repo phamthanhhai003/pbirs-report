@@ -1,8 +1,15 @@
 # One-time setup script for new machines.
-# Run as Administrator: powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
+# Native Windows:  powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+# From WSL/Bash:   called automatically by setup.sh — do not run directly.
+#
+# -Mode: "Windows" (default) | "WSL" | "GitBash"
+#   WSL/GitBash mode skips Node.js and Claude Code (already installed on Linux side).
+
+param([string]$Mode = "Windows")
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path $PSScriptRoot -Parent
+$LinuxMode = ($Mode -eq "WSL") -or ($Mode -eq "GitBash")
 
 function Write-Step($msg) { Write-Host "`n==> $msg" -ForegroundColor Cyan }
 function Write-OK($msg)   { Write-Host "    [OK] $msg" -ForegroundColor Green }
@@ -30,7 +37,9 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 
 # ── 3. Node.js (required for Claude Code) ───────────────────────────────────
 Write-Step "Node.js..."
-if (!(Get-Command node -ErrorAction SilentlyContinue)) {
+if ($LinuxMode) {
+    Write-Skip "WSL/GitBash mode — Node.js installed on Linux side by setup.sh"
+} elseif (!(Get-Command node -ErrorAction SilentlyContinue)) {
     Write-Host "    Installing Node.js LTS..."
     winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements
     $env:PATH += ";C:\Program Files\nodejs"
@@ -41,7 +50,9 @@ if (!(Get-Command node -ErrorAction SilentlyContinue)) {
 
 # ── 4. Claude Code CLI ───────────────────────────────────────────────────────
 Write-Step "Claude Code CLI..."
-if (!(Get-Command claude -ErrorAction SilentlyContinue)) {
+if ($LinuxMode) {
+    Write-Skip "WSL/GitBash mode — Claude Code installed on Linux side by setup.sh"
+} elseif (!(Get-Command claude -ErrorAction SilentlyContinue)) {
     Write-Host "    Installing Claude Code..."
     npm install -g @anthropic-ai/claude-code
     Write-OK "Claude Code installed"
@@ -104,22 +115,22 @@ if (!(Test-Path $ConfigDst)) {
     Write-Host "    config.ps1 created. Fill in the values below:" -ForegroundColor Yellow
     Write-Host ""
 
-    $PbirsHost = Read-Host "    PBIRS Server URL (e.g. http://10.0.40.122/reports)"
-    $PbirsUser = Read-Host "    PBIRS Username (default: Admin)"
-    if (!$PbirsUser) { $PbirsUser = "Admin" }
-    $PbirsPass = Read-Host "    PBIRS Password" -AsSecureString
-    $PbirsPassPlain = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-        [Runtime.InteropServices.Marshal]::SecureStringToBSTR($PbirsPass)
-    )
+    if ($LinuxMode) {
+        # Non-interactive: dev defaults already in config.example.ps1
+        Write-OK "config.ps1 created with dev defaults (http://10.0.40.122, administrator, 2022-local)"
+    } else {
+        $PbirsHost = Read-Host "    PBIRS Server URL (default: http://10.0.40.122/reports)"
+        if (!$PbirsHost) { $PbirsHost = "http://10.0.40.122/reports" }
+        $PbirsUser = Read-Host "    PBIRS Username (default: administrator)"
+        if (!$PbirsUser) { $PbirsUser = "administrator" }
 
-    (Get-Content $ConfigDst) `
-        -replace 'http://YOUR-HOSTNAME/reports', $PbirsHost `
-        -replace '\$PbirsUser\s*=\s*"Admin"', "`$PbirsUser = `"$PbirsUser`"" |
-        Set-Content $ConfigDst
+        (Get-Content $ConfigDst) `
+            -replace 'http://YOUR-HOSTNAME/reports', $PbirsHost `
+            -replace '\$PbirsUser\s*=\s*"Admin"', "`$PbirsUser = `"$PbirsUser`"" |
+            Set-Content $ConfigDst
 
-    # Set password as machine env var (not written to file)
-    [System.Environment]::SetEnvironmentVariable("PBIRS_PASS", $PbirsPassPlain, "User")
-    Write-OK "config.ps1 created. PBIRS_PASS saved to user environment variable."
+        Write-OK "config.ps1 created (password already set to dev default in file)."
+    }
 } else {
     Write-Skip "config.ps1 already exists"
 }
