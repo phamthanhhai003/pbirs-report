@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(cp /mnt/d/pbirs-report/hooks/pre-commit /mnt/d/pbirs-report/.git/hooks/pre-commit)",
-      "Bash(chmod +x /mnt/d/pbirs-report/.git/hooks/pre-commit)"
-    ]
-  }
-}
