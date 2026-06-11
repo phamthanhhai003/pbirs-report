@@ -1,115 +1,115 @@
 # PBIRS Report — AI Instructions
 
-Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
-Đọc file này trước khi làm bất cứ việc gì liên quan đến report.
+This repo contains DAX source files and the CI/CD pipeline for Power BI Report Server.
+Read this file before doing anything related to reports.
 
 ---
 
-## Nguyên tắc hoạt động
+## Operating Rules
 
-1. **Trước khi sửa bất kỳ thứ gì**, kiểm tra PBI Desktop RS đang chạy không:
+1. **Before making any change**, verify Power BI Desktop RS is running:
    ```bash
    bash scripts/ps.sh -Command "Get-Process | Where-Object { \$_.MainWindowTitle -match 'Power BI Desktop' } | Select-Object MainWindowTitle"
    ```
-   Nếu không có → báo user mở file .pbix trong PBI Desktop RS trước.
+   If no result → tell user to open the .pbix file in Power BI Desktop RS first.
 
-2. **Sau khi sửa DAX**, luôn thực hiện đúng thứ tự:
+2. **After editing DAX**, always follow this exact sequence:
 
-   **Bước A** — Apply vào Desktop trước:
+   **Step A** — Apply to Desktop first:
    ```bash
-   # Nếu sửa qua script patch/restore:
+   # Single measure (patch/restore):
    bash scripts/ps.sh -File scripts/restore_measure.ps1 -DaxFile "..." -Table "..." -Measure "..."
-   # Nếu sửa nhiều measure hoặc pbix mới:
+   # Multiple measures or new pbix:
    bash scripts/ps.sh -File scripts/sync_repo_to_desktop.ps1 -PbixName "..."
    ```
 
-   **Bước B** — Nhắc user kiểm tra:
-   > Đã apply và autosave vào Desktop. Mở report kiểm tra kết quả.
+   **Step B** — Notify user to verify:
+   > Change applied and auto-saved to Desktop. Open the report and check the result.
 
-   **Bước C** — Sau khi user xác nhận đã xem, đưa ra **đúng 3 lựa chọn**:
+   **Step C** — After user confirms they have checked, present exactly **3 choices**:
 
-   > Kiểm tra xong, chọn:
-   > 1. **Đồng ý và đẩy lên server** — commit + push + upload PBIRS
-   > 2. **Tiếp tục sửa** — báo muốn sửa thêm gì
-   > 3. **Revert lại** — hoàn tác, khôi phục về trạng thái trong repo
+   > Done reviewing? Choose:
+   > 1. **Approve and push to server** — commit + push + upload to PBIRS
+   > 2. **Keep editing** — describe the next change
+   > 3. **Revert** — undo, restore to last committed state in repo
 
-3. **Nếu user chọn 1**: chạy tuần tự:
+3. **If user picks 1**, run in sequence:
    ```bash
-   # 1. Commit — SKIP_EXTRACT=1 bỏ qua extract (đã sync rồi, không cần)
+   # 1. Commit — SKIP_EXTRACT=1 skips extraction (already synced, no need)
    SKIP_EXTRACT=1 git commit -m "..."
-   # 2. Push lên Git remote (dùng Windows git để có credential manager)
+   # 2. Push to Git remote (use Windows git for credential manager)
    bash scripts/ps.sh -Command "git -C 'D:\\pbirs-report' push"
-   # 3. Upload .pbix lên PBIRS (credentials đã hardcode trong config.ps1)
+   # 3. Upload .pbix to PBIRS (credentials hardcoded in config.ps1)
    bash scripts/ps.sh -File scripts/upload_pbirs.ps1
    ```
 
-4. **Nếu user chọn 2**: chờ user mô tả thay đổi tiếp theo, xử lý rồi lại đưa ra 3 lựa chọn.
+4. **If user picks 2**: wait for user to describe the next change, process it, then present 3 choices again.
 
-5. **Nếu user chọn 3**: chạy `restore_measure.ps1` với file `.dax` hiện tại trong repo để revert measure về trạng thái đã commit gần nhất. Sau khi revert xong, nhắc user kiểm tra lại trong PBI Desktop RS.
+5. **If user picks 3**: run `restore_measure.ps1` with the current `.dax` file in the repo to revert the measure to the last committed state. After revert, tell user to verify in Power BI Desktop RS.
 
-5. **Không tự commit hoặc push** khi chưa được user xác nhận.
+6. **Never commit or push** without user confirmation.
 
 ---
 
-## Nhận diện yêu cầu → hành động
+## Request Recognition → Action
 
-### User muốn xóa/ẩn một thứ gì đó khỏi report
+### User wants to hide / remove something from a report
 
-→ Chạy `patch_measure.ps1` với tên card. Script **tự scan tất cả measures** tìm card đó, không cần chỉ định report:
+→ Run `patch_measure.ps1` with the card label. Script **auto-scans all measures** — no need to specify a report:
 ```bash
 bash scripts/ps.sh -File scripts/patch_measure.ps1 -CardLabel "Total Write-Off"
 ```
-Nếu cùng tên card xuất hiện ở nhiều report, thêm `-Table` để giới hạn:
+If the same card label appears in multiple reports, add `-Table` to narrow it down:
 ```bash
 bash scripts/ps.sh -File scripts/patch_measure.ps1 -CardLabel "Total Write-Off" -Table "final_extra_accountable_report"
 ```
-Works cho mọi report có card HTML dạng `<div>Label</div><div>Value</div>`.
+Works on any report with HTML cards in the pattern `<div>Label</div><div>Value</div>`.
 
-→ **Nếu là report khác hoặc thay đổi phức tạp hơn:**  
-AI không thể tự sửa DAX của report đó. Hướng dẫn user:
-- Mở PBI Desktop RS → sửa DAX trực tiếp → Ctrl+S → rồi `git commit`
-- Pre-commit hook sẽ tự extract DAX vào repo
+→ **For other report types or complex changes:**
+AI cannot edit DAX for those reports directly. Guide the user to:
+- Open PBI Desktop RS → edit DAX directly → Ctrl+S → then `git commit`
+- The pre-commit hook will auto-extract DAX into the repo
 
-Sau mỗi thay đổi (dù qua script hay hướng dẫn thủ công), luôn đưa ra **3 lựa chọn** theo Nguyên tắc 2.
+After every change (whether via script or manual), always present the **3 choices** per Rule 2.
 
-### User muốn thêm lại / restore (hoặc áp dụng thay đổi DAX file)
+### User wants to restore / add back something (or apply a DAX file change)
 
-→ **Luôn truyền đủ 3 tham số** — thiếu `-Table` → script dùng default `final_provision_report`, write sai measure, không có lỗi rõ ràng:
+→ **Always pass all 3 params** — missing `-Table` causes the script to use the default `final_provision_report`, writing to the wrong measure with no visible error:
 ```bash
 bash scripts/ps.sh -File scripts/restore_measure.ps1 \
   -DaxFile "source/measures/<pbix-name>/<table>/<measure>.dax" \
   -Table "<table>" \
   -Measure "<measure>"
 ```
-`<pbix-name>` = tên .pbix đang mở (xem cột **Pbix** trong bảng Measures bên dưới).  
-Tra `<table>` và `<measure>` trong bảng **Measures hiện có** bên dưới.
+`<pbix-name>` = name of the open .pbix (see **Pbix** column in the Measures table below).
+Look up `<table>` and `<measure>` in the **Available Measures** table below.
 
-### User muốn deploy lên server
+### User wants to deploy to server
 
-→ Commit trước (nếu có thay đổi), rồi:
+→ Commit first (if there are changes), then:
 ```bash
-git push
+bash scripts/ps.sh -Command "git -C 'D:\\pbirs-report' push"
 ```
-Jenkins tự deploy sau khi push (khi Jenkins đã setup).
-Hoặc upload thủ công:
+Jenkins auto-deploys on push (once Jenkins is configured).
+Or upload manually:
 ```bash
 bash scripts/ps.sh -File scripts/upload_pbirs.ps1
 ```
 
 ---
 
-## Giới hạn AI biết
+## AI Capabilities
 
-| Có thể | Không thể |
+| Can do | Cannot do |
 |--------|-----------|
-| Sửa DAX bất kỳ report nào trong bảng measures | Tự tạo DAX measure mới (chưa có .dax file) |
-| Xóa/restore card HTML qua patch/restore script | Chạy khi PBI Desktop RS đóng |
-| Extract, eval, preview bất kỳ report nào | Tự quyết commit/push không hỏi user |
-| Deploy bất kỳ .pbix nào đang mở | |
+| Edit DAX for any report in the measures table | Create a brand-new DAX measure (no .dax file yet) |
+| Hide / restore HTML cards via patch/restore scripts | Run while Power BI Desktop RS is closed |
+| Extract, sync, deploy any open .pbix | Commit or push without user confirmation |
+| Deploy any open .pbix to PBIRS | |
 
 ---
 
-## Measures hiện có
+## Available Measures
 
 ### Credit Report (`source/measures/Credit Report/`)
 
@@ -132,6 +132,19 @@ bash scripts/ps.sh -File scripts/upload_pbirs.ps1
 | Remittance Daily | `Report_Remittance_Incoming_SWIFT_IN` | `rpt_remittance_daily` |
 | Remittance Quarterly | `Quarterly_Remittance_Report` | `rpt_remittance_quarterly` |
 
+### Accounting (`source/measures/Accounting/`)
+
+| Report | Measure | Table |
+|--------|---------|-------|
+| Liquidity | `Liquidity_HTML` | `final_liquidity_report` |
+| Assets | `Assets_HTML` | `final_assets_report` |
+| Balance Sheet Assets | `BS_Assets_HTML` | `final_balance_sheet_assets_report` |
+| Balance Sheet Liabilities | `BS_Liabilities_HTML` | `final_balance_sheet_liabilities_report` |
+| Income | `Income_HTML` | `final_income_report` |
+| Expense | `Expense_HTML` | `final_expense_report` |
+| Liabilities | `Liabilities_HTML` | `final_liabilities_report` |
+| Ratio | `Ratio_HTML` | `final_ratio_report` |
+
 DAX files: `source/measures/<pbix-name>/<table>/<measure>.dax`
 
 ---
@@ -143,5 +156,8 @@ DAX files: `source/measures/<pbix-name>/<table>/<measure>.dax`
 | PBIRS | `http://10.0.40.122/reports/browse/REPORT_V2` |
 | PBI Desktop RS | `C:\Program Files\Microsoft Power BI Desktop RS` |
 | Tabular Editor 2 | `C:\Program Files (x86)\Tabular Editor` |
-| Config máy | `scripts/config.ps1` (gitignored) — copy từ `config.example.ps1` |
-| msmdsrv port | Tự detect qua netstat — không hardcode |
+| Machine config | `scripts/config.ps1` (gitignored) — copy from `config.example.ps1` |
+| Repo root (Windows) | `D:\pbirs-report` |
+| Repo root (WSL) | `/mnt/d/pbirs-report` |
+| msmdsrv port | Auto-detected via netstat — never hardcoded |
+| PS wrapper | `bash scripts/ps.sh` — works on WSL and Git Bash |
