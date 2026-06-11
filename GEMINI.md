@@ -41,12 +41,8 @@ bash scripts/ps.sh -File scripts/sync_repo_to_desktop.ps1 -PbixName "..."
 > 2. **Keep editing** — describe next change
 > 3. **Revert** — restore to last committed state
 
-**Option 1 — run in sequence:**
-```bash
-SKIP_EXTRACT=1 git commit -m "..."
-bash scripts/ps.sh -Command "git -C 'D:\\pbirs-report' push"
-bash scripts/ps.sh -File scripts/upload_pbirs.ps1
-```
+**Option 1 — invoke deploy skill:**
+Call `Skill("deploy")` with a commit message derived from the change.
 
 **Option 3 — revert:**
 Run `restore_measure.ps1` with the `.dax` file from repo. Tell user to verify.
