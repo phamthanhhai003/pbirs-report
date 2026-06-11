@@ -1,111 +1,84 @@
 # PBIRS Report — AI Instructions
 
-This repo contains DAX source files and the CI/CD pipeline for Power BI Report Server.
-Read this file before doing anything related to reports.
+DAX source files + CI/CD for Power BI Report Server. Read before any report work.
 
 ---
 
-## Operating Rules
+## Quick Reference
 
-1. **Before making any change**, verify Power BI Desktop RS is running:
-   ```bash
-   bash scripts/ps.sh -Command "Get-Process | Where-Object { \$_.MainWindowTitle -match 'Power BI Desktop' } | Select-Object MainWindowTitle"
-   ```
-   If no result → tell user to open the .pbix file in Power BI Desktop RS first.
+| Intent | Script |
+|--------|--------|
+| Hide/remove card | `patch_measure.ps1 -CardLabel "..."` |
+| Restore/edit measure | `restore_measure.ps1 -DaxFile ... -Table ... -Measure ...` |
+| Sync all repo → Desktop | `sync_repo_to_desktop.ps1 -PbixName "..."` |
+| Upload to PBIRS | `upload_pbirs.ps1` |
 
-2. **After editing DAX**, always follow this exact sequence:
-
-   **Step A** — Apply to Desktop first:
-   ```bash
-   # Single measure (patch/restore):
-   bash scripts/ps.sh -File scripts/restore_measure.ps1 -DaxFile "..." -Table "..." -Measure "..."
-   # Multiple measures or new pbix:
-   bash scripts/ps.sh -File scripts/sync_repo_to_desktop.ps1 -PbixName "..."
-   ```
-
-   **Step B** — Notify user to verify:
-   > Change applied and auto-saved to Desktop. Open the report and check the result.
-
-   **Step C** — After user confirms they have checked, present exactly **3 choices**:
-
-   > Done reviewing? Choose:
-   > 1. **Approve and push to server** — commit + push + upload to PBIRS
-   > 2. **Keep editing** — describe the next change
-   > 3. **Revert** — undo, restore to last committed state in repo
-
-3. **If user picks 1**, run in sequence:
-   ```bash
-   # 1. Commit — SKIP_EXTRACT=1 skips extraction (already synced, no need)
-   SKIP_EXTRACT=1 git commit -m "..."
-   # 2. Push to Git remote (use Windows git for credential manager)
-   bash scripts/ps.sh -Command "git -C 'D:\\pbirs-report' push"
-   # 3. Upload .pbix to PBIRS (credentials hardcoded in config.ps1)
-   bash scripts/ps.sh -File scripts/upload_pbirs.ps1
-   ```
-
-4. **If user picks 2**: wait for user to describe the next change, process it, then present 3 choices again.
-
-5. **If user picks 3**: run `restore_measure.ps1` with the current `.dax` file in the repo to revert the measure to the last committed state. After revert, tell user to verify in Power BI Desktop RS.
-
-6. **Never commit or push** without user confirmation.
+All scripts: `bash scripts/ps.sh -File scripts/<script>.ps1 [params]`
 
 ---
 
-## Request Recognition → Action
+## Flow (every change)
 
-### User wants to hide / remove something from a report
-
-→ Run `patch_measure.ps1` with the card label. Script **auto-scans all measures** — no need to specify a report:
+**1. Check PBI running:**
 ```bash
-bash scripts/ps.sh -File scripts/patch_measure.ps1 -CardLabel "Total Write-Off"
+bash scripts/ps.sh -Command "Get-Process | Where-Object { \$_.MainWindowTitle -match 'Power BI Desktop' } | Select-Object MainWindowTitle"
 ```
-If the same card label appears in multiple reports, add `-Table` to narrow it down:
+No result → tell user to open .pbix first.
+
+**2. Apply to Desktop:**
 ```bash
-bash scripts/ps.sh -File scripts/patch_measure.ps1 -CardLabel "Total Write-Off" -Table "final_extra_accountable_report"
+# Single measure:
+bash scripts/ps.sh -File scripts/restore_measure.ps1 -DaxFile "..." -Table "..." -Measure "..."
+# Multiple / new pbix:
+bash scripts/ps.sh -File scripts/sync_repo_to_desktop.ps1 -PbixName "..."
 ```
-Works on any report with HTML cards in the pattern `<div>Label</div><div>Value</div>`.
 
-→ **For other report types or complex changes:**
-AI cannot edit DAX for those reports directly. Guide the user to:
-- Open PBI Desktop RS → edit DAX directly → Ctrl+S → then `git commit`
-- The pre-commit hook will auto-extract DAX into the repo
+**3. Notify user:**
+> Change applied and auto-saved. Check the report and confirm.
 
-After every change (whether via script or manual), always present the **3 choices** per Rule 2.
+**4. After user confirms, present 3 choices:**
+> 1. **Approve and push** — commit + push + upload to PBIRS
+> 2. **Keep editing** — describe next change
+> 3. **Revert** — restore to last committed state
 
-### User wants to restore / add back something (or apply a DAX file change)
-
-→ **Always pass all 3 params** — missing `-Table` causes the script to use the default `final_provision_report`, writing to the wrong measure with no visible error:
+**Option 1 — run in sequence:**
 ```bash
-bash scripts/ps.sh -File scripts/restore_measure.ps1 \
-  -DaxFile "source/measures/<pbix-name>/<table>/<measure>.dax" \
-  -Table "<table>" \
-  -Measure "<measure>"
-```
-`<pbix-name>` = name of the open .pbix (see **Pbix** column in the Measures table below).
-Look up `<table>` and `<measure>` in the **Available Measures** table below.
-
-### User wants to deploy to server
-
-→ Commit first (if there are changes), then:
-```bash
+SKIP_EXTRACT=1 git commit -m "..."
 bash scripts/ps.sh -Command "git -C 'D:\\pbirs-report' push"
-```
-Jenkins auto-deploys on push (once Jenkins is configured).
-Or upload manually:
-```bash
 bash scripts/ps.sh -File scripts/upload_pbirs.ps1
 ```
 
+**Option 3 — revert:**
+Run `restore_measure.ps1` with the `.dax` file from repo. Tell user to verify.
+
+**Never commit or push without user confirmation.**
+
 ---
 
-## AI Capabilities
+## Actions by Request
 
-| Can do | Cannot do |
-|--------|-----------|
-| Edit DAX for any report in the measures table | Create a brand-new DAX measure (no .dax file yet) |
-| Hide / restore HTML cards via patch/restore scripts | Run while Power BI Desktop RS is closed |
-| Extract, sync, deploy any open .pbix | Commit or push without user confirmation |
-| Deploy any open .pbix to PBIRS | |
+**Hide/remove card:**
+```bash
+bash scripts/ps.sh -File scripts/patch_measure.ps1 -CardLabel "Total Write-Off"
+# Multiple reports with same label — add -Table:
+bash scripts/ps.sh -File scripts/patch_measure.ps1 -CardLabel "Total Write-Off" -Table "final_extra_accountable_report"
+```
+
+**Restore/edit measure — always pass all 3 params** (missing `-Table` silently writes to wrong measure):
+```bash
+bash scripts/ps.sh -File scripts/restore_measure.ps1 \
+  -DaxFile "source/measures/<pbix-name>/<table>/<measure>.dax" \
+  -Table "<table>" -Measure "<measure>"
+```
+
+**Deploy only:**
+```bash
+bash scripts/ps.sh -Command "git -C 'D:\\pbirs-report' push"
+# or manual upload:
+bash scripts/ps.sh -File scripts/upload_pbirs.ps1
+```
+
+**Complex changes (no .dax file):** Guide user → edit DAX directly in PBI Desktop RS → Ctrl+S → `git commit` (hook auto-extracts).
 
 ---
 
@@ -152,7 +125,7 @@ bash scripts/ps.sh -File scripts/upload_pbirs.ps1
 | SOC Liabilities | `SOC_Liabilities_HTML` | `final_soc_liabilities_report` |
 | SOC Assets | `SOC_Assets_HTML` | `soc_assets_real_v2` |
 
-DAX files: `source/measures/<pbix-name>/<table>/<measure>.dax`
+DAX path: `source/measures/<pbix-name>/<table>/<measure>.dax`
 
 ---
 
@@ -163,8 +136,8 @@ DAX files: `source/measures/<pbix-name>/<table>/<measure>.dax`
 | PBIRS | `http://10.0.40.122/reports/browse/REPORT_V2` |
 | PBI Desktop RS | `C:\Program Files\Microsoft Power BI Desktop RS` |
 | Tabular Editor 2 | `C:\Program Files (x86)\Tabular Editor` |
-| Machine config | `scripts/config.ps1` (gitignored) — copy from `config.example.ps1` |
-| Repo root (Windows) | `D:\pbirs-report` |
-| Repo root (WSL) | `/mnt/d/pbirs-report` |
-| msmdsrv port | Auto-detected via netstat — never hardcoded |
-| PS wrapper | `bash scripts/ps.sh` — works on WSL and Git Bash |
+| Config | `scripts/config.ps1` (gitignored) — copy from `config.example.ps1` |
+| Repo (Windows) | `D:\pbirs-report` |
+| Repo (WSL) | `/mnt/d/pbirs-report` |
+| msmdsrv port | Auto-detected via netstat |
+| PS wrapper | `bash scripts/ps.sh` — WSL + Git Bash |
