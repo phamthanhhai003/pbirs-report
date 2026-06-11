@@ -35,14 +35,13 @@ Repo này chứa source DAX + CI/CD pipeline cho Power BI Report Server.
 
 3. **Nếu user chọn 1**: chạy tuần tự:
    ```bash
-   # 1. Commit (pre-commit hook tự extract DAX)
-   git commit -m "..."
+   # 1. Commit — SKIP_EXTRACT=1 bỏ qua extract (đã sync rồi, không cần)
+   SKIP_EXTRACT=1 git commit -m "..."
    # 2. Push lên Git remote
    powershell.exe -Command "git -C 'D:\pbirs-report' push 2>&1"
-   # 3. Upload .pbix lên PBIRS (base64 JSON — không dùng multipart)
+   # 3. Upload .pbix lên PBIRS (credentials đã hardcode trong config.ps1)
    powershell.exe -ExecutionPolicy Bypass -File scripts/upload_pbirs.ps1
    ```
-   Nếu `$env:PBIRS_PASS` chưa set → nhắc user chạy: `$env:PBIRS_PASS="2022-local"` trước.
 
 4. **Nếu user chọn 2**: chờ user mô tả thay đổi tiếp theo, xử lý rồi lại đưa ra 3 lựa chọn.
 

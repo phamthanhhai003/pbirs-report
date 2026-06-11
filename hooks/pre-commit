@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Extract DAX từ live model
+if [ "$SKIP_EXTRACT" = "1" ]; then
+    git add source/ 2>/dev/null
+    exit 0
+fi
+
 echo "Extracting DAX measures..."
 powershell.exe -ExecutionPolicy Bypass -File "scripts/extract_dax.ps1" -OutputDir "./source"
 if [ $? -ne 0 ]; then
